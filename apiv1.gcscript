@@ -1,0 +1,10 @@
+{
+  "type": "tx",
+  "title": "Demo",
+  "description": "created with gamechanger-dapp-cli",
+  "metadata": {
+    "123": {
+      "message": "Hello World!"
+    }
+  }
+}

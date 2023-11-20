@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "ESNext"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "strict": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node", "mocha"],
+    "rootDirs": ["src"]
+  },
+  "include": ["src"]
+}
