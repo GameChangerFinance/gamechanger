@@ -11,13 +11,13 @@ and solve other tasks (https://gamechanger.finance/)
 ## Install CLI
 
 ```
-$ npm install --global gamechanger
+$ npm install --global @gamechanger-finance/gc
 ```
 
 ## Install Library
 
 ```
-$ npm install -s gamechanger
+$ npm install -s @gamechanger-finance/gc
 ```
 
 ## CLI Usage
@@ -107,7 +107,7 @@ Examples
 
 ```
 Install:
-  $ npm install -s gamechanger
+  $ npm install -s @gamechanger-finance/gc
     or
   copy host individual file 'dist/browser.min.js'
 Load:
@@ -120,9 +120,9 @@ Use:
 
 ```
 Install:
-  $ npm install -s gamechanger
+  $ npm install -s @gamechanger-finance/gc
 Use:
-  import {gc} from 'gamechanger'
+  import {gc} from '@gamechanger-finance/gc'
 
 ```
 

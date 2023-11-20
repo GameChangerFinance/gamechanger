@@ -11140,7 +11140,7 @@ const AstonMaartenTemplate = (args) => {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import {gc,encodings} from 'gamechanger'
+      // import {gc,encodings} from '@gamechanger-finance/gc'
       const {gc,encodings} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
@@ -11474,10 +11474,10 @@ const baseTemplate$1 = async (args) => {
   //#!/usr/bin/env node
 
   //Install on project:
-  //  $ npm install -s gamechanger
+  //  $ npm install -s @gamechanger-finance/gc
   // or
   //Install globally:
-  //  $ npm install -g gamechanger
+  //  $ npm install -g @gamechanger-finance/gc
   //Run this file
   //  $ node <FILENAME>.js
 
@@ -11485,7 +11485,7 @@ const baseTemplate$1 = async (args) => {
   //import { gc } from './dist/nodejs.js'
   // or
   //Import normally:
-  import { gc } from 'gamechanger'
+  import { gc } from '@gamechanger-finance/gc'
 
   import express from 'express';
   
@@ -11589,7 +11589,7 @@ const baseTemplate = (args) => {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // import {gc,encodings} from 'gamechanger'
+      // import {gc,encodings} from '@gamechanger-finance/gc'
       const {gc,encodings} = window;
 
       const App=()=>{

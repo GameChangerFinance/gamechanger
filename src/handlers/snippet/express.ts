@@ -13,10 +13,10 @@ const baseTemplate = async (args: {
   //#!/usr/bin/env node
 
   //Install on project:
-  //  $ npm install -s gamechanger
+  //  $ npm install -s @gamechanger-finance/gc
   // or
   //Install globally:
-  //  $ npm install -g gamechanger
+  //  $ npm install -g @gamechanger-finance/gc
   //Run this file
   //  $ node <FILENAME>.js
 
@@ -24,7 +24,7 @@ const baseTemplate = async (args: {
   //import { gc } from './dist/nodejs.js'
   // or
   //Import normally:
-  import { gc } from 'gamechanger'
+  import { gc } from '@gamechanger-finance/gc'
 
   import express from 'express';
   

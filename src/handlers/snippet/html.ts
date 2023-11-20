@@ -71,7 +71,7 @@ const AstonMaartenTemplate = (args: {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import {gc,encodings} from 'gamechanger'
+      // import {gc,encodings} from '@gamechanger-finance/gc'
       const {gc,encodings} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
