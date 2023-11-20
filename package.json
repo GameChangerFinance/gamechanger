@@ -1,5 +1,5 @@
 {
-  "name": "gamechanger",
+  "name": "@gamechanger-finance/gc",
   "version": "0.0.1",
   "description": "Official GameChanger Wallet library and CLI for integrating with Cardano dapps and solve other tasks (https://gamechanger.finance/)",
   "license": "MIT",
@@ -11,7 +11,7 @@
   },
   "keywords": [
     "Cardano",
-    "testnet",
+    "preprod",
     "mainnet",
     "GameChanger",
     "GameChanger Wallet",
