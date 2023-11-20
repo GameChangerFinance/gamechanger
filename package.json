@@ -37,7 +37,8 @@
     "build-browser": "npm run lint && rollup -c rollup.browser.config.js",
     "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min",
     "size": "gzip-size dist/browser.min.js --include-original",
-    "test": "npm run build-browser-min && http-server . -c-1 -o test/"
+    "test": "npm run build-browser-min && http-server . -c-1 -o test/",
+    "npm-publish":"npm publish --access public"
   },
   "dependencies": {
     "@rollup/plugin-babel": "^6.0.4",
