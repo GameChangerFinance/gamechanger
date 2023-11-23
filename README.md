@@ -1,3 +1,5 @@
+[![](https://data.jsdelivr.com/v1/package/npm/@gamechanger-finance/gc/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@gamechanger-finance/gc)
+
 ![Build with us, a great future await us together](src/assets/images/dapp-cli-banner.png?raw=true)
 
 # GameChanger Wallet Library and CLI
@@ -121,8 +123,13 @@ Install:
   $ npm install -s @gamechanger-finance/gc
     or
   copy host individual file 'dist/browser.min.js'
-Load:
-  \\<script src='dist/browser.min.js'\\>\\</script\\>
+
+Load locally:
+  <script src='dist/browser.min.js'></script>
+
+Load using CDN :
+  <script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js"></script>
+
 Use:
   const {gc} = window;
 ```
