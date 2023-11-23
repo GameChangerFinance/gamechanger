@@ -23,6 +23,7 @@ $ npm install -s @gamechanger-finance/gc
 ## CLI Usage
 
 ```
+
 Usage
         $ gamechanger-cli [network] [action] [subaction]
 
@@ -68,38 +69,48 @@ Examples
                 https://wallet.gamechanger.finance/api/1/tx/...
 
         URL APIv2
-                $ gamechanger-cli mainnet encode url -v 2 -f connect.gcscript
+                $ gamechanger-cli mainnet encode url -v 2 -f examples/connect.gcscript
                 https://beta-wallet.gamechanger.finance/api/1/run/...
 
         QR APIv1:
                 $ gamechanger-cli preprod encode qr -v 1 -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}' > qr_output.png
 
-                $ gamechanger-cli mainnet encode qr -v 1 -o qr_output.png -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
+                $ gamechanger-cli mainnet encode qr -v 1 -o examples/qr_output.png -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
 
         QR APIv2:
-                $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+                $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
         Code snippet generation and serve dapp (-S):
 
         HTML:
-                $ gamechanger-cli preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+                $ gamechanger-cli preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
         ReactJS:
-                $ gamechanger-cli mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+                $ gamechanger-cli mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
         HTML Button snippet:
-                $ gamechanger-cli mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+                $ gamechanger-cli mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
         Express Backend:
-                $ gamechanger-cli mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
-                $ node expressBackend.js
+                $ gamechanger-cli mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
+                $ node examples/expressBackend.js
                 🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
 
 ```
+
+## Example CLI/Library outputs:
+
+- [URL](examples/URL.txt)
+- [QR (png)](examples/QR.png)
+- [QR (svg)](examples/QR.svg)
+- [Button](examples/button.html)
+- [HTML5 Dapp](examples/htmlDapp.html)
+- [ReactJs Dapp](examples/reactDapp.html)
+- [ExpressJs Backend](examples/expressBackend.js)
 
 ## Import library on your projects:
 

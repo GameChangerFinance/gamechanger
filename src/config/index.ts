@@ -106,7 +106,7 @@ Examples
 		https://wallet.gamechanger.finance/api/1/tx/...
 
 	URL APIv2
-		$ ${cliName} mainnet encode url -v 2 -f connect.gcscript
+		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
 		https://beta-wallet.gamechanger.finance/api/1/run/...
 
 	QR APIv1:
@@ -114,31 +114,31 @@ Examples
   JSON.stringify(demoGCS)
 )} > qr_output.png
 
-		$ ${cliName} mainnet encode qr -v 1 -o qr_output.png -a ${escapeShellArg(
+		$ ${cliName} mainnet encode qr -v 1 -o examples/qr_output.png -a ${escapeShellArg(
   JSON.stringify(demoGCS)
 )}
 	
 	QR APIv2:
-		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
 	Code snippet generation and serve dapp (-S):
 
 	HTML:
-		$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
 	ReactJS:
-		$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+		$ ${cliName} mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
 	HTML Button snippet:
-		$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+		$ ${cliName} mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 		
 	Express Backend:
-		$ ${cliName} mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
-		$ node expressBackend.js
+		$ ${cliName} mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
+		$ node examples/expressBackend.js
 		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
 
 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cardano React Dapp Boilerplate</title>
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    <script src="dist/browser.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        background: #334d56;
+        color: #fff;
+      }
+      body {
+        padding: 30px;
+        box-sizing: content-box;
+      }
+      span {
+        font-size: 50px;
+        margin: 10px;
+      }
+      .centered {
+        text-align: center;
+      }
+      .qrImage {
+        height: 65vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // import {gc,encodings} from '@gamechanger-finance/gc'
+      const { gc, encodings } = window
+
+      const App = () => {
+        const _gcscript = {
+          type: 'script',
+          title: '🚀 Connect with dapp?',
+          description:
+            'About to share your public wallet information and a CIP-8 signature to verify this data',
+          exportAs: 'connect',
+          run: {
+            data: {
+              type: 'script',
+              run: {
+                name: {
+                  type: 'getName'
+                },
+                address: {
+                  type: 'getCurrentAddress'
+                },
+                spendPubKey: {
+                  type: 'getSpendingPublicKey'
+                },
+                stakePubKey: {
+                  type: 'getStakingPublicKey'
+                },
+                addressInfo: {
+                  type: 'macro',
+                  run: "{getAddressInfo(get('cache.data.address'))}"
+                },
+                agreement: {
+                  type: 'macro',
+                  run: "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
+                },
+                salt: {
+                  type: 'macro',
+                  run: '{uuid()}'
+                }
+              }
+            },
+            hash: {
+              type: 'macro',
+              run: "{sha512(objToJson(get('cache.data')))}"
+            },
+            sign: {
+              type: 'signDataWithAddress',
+              address: "{get('cache.data.address')}",
+              dataHex: "{get('cache.hash')}"
+            }
+          }
+        }
+        //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
+        //so this way executed scripts data exports can be captured back on the hosted dapp
+        _gcscript.returnURLPattern = `${
+          window.location.origin + window.location.pathname
+        }?result={result}`
+        const [gcscript, setGCscript] = React.useState(_gcscript)
+        const [url, setUrl] = React.useState('')
+        const [qr, setQr] = React.useState('')
+        const [result, setResult] = React.useState(null)
+
+        React.useEffect(() => {
+          const currentUrl = new URL(window.location.href)
+          const msg = currentUrl.searchParams.get('result')
+
+          if (msg) {
+            encodings.msg
+              .decoder(msg)
+              .then((newResult) => {
+                setResult(newResult)
+                //avoids current url carrying latest results all the time
+                window.history.pushState({}, '', window.location.pathname)
+              })
+              .catch(console.error)
+          }
+
+          gc.encode
+            .url({
+              input: JSON.stringify(gcscript),
+              apiVersion: '2',
+              network: 'mainnet',
+              encoding: 'gzip'
+            })
+            .then((newUrl) => setUrl(newUrl))
+            .catch(console.error)
+
+          gc.encode
+            .qr({
+              input: JSON.stringify(gcscript),
+              apiVersion: '2',
+              network: 'mainnet',
+              encoding: 'gzip',
+
+              qrResultType: 'png',
+              outputFile: 'examples/reactDapp.html',
+              template: undefined,
+              styles: undefined
+            })
+            .then((newQr) => setQr(newQr))
+            .catch(console.error)
+        }, [gcscript])
+
+        return (
+          <div class="centered">
+            <h1>Cardano React Dapp Boilerplate</h1>
+            <br />
+            {result && (
+              <div>
+                <h3>this is the response from the wallet:</h3>
+                <pre style={{ textAlign: 'left' }}>
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+                <br />
+                <a href="#" onClick={() => setResult(null)}>
+                  <h2>Reset</h2>
+                </a>
+              </div>
+            )}
+            {!result && (
+              <div>
+                <h3>connect with wallet by clicking on this link:</h3>
+                <a href={url}>
+                  <h2>Connect</h2>
+                </a>
+                <br />
+                <br />
+                <h3>
+                  or by scanning the QR code with wallet or mobile camera:
+                </h3>
+                <img class="qrImage" src={qr} />
+              </div>
+            )}
+            <br />
+            <br />
+            <i>
+              Created with <a href="#">gamechanger-cli</a>
+            </i>
+          </div>
+        )
+      }
+      ReactDOM.render(<App />, document.querySelector('#root'))
+    </script>
+  </body>
+</html>

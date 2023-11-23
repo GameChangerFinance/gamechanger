@@ -1,4 +1,5 @@
 import testDeps from './tests/deps'
+import _utils from './utils/exportedUtils'
 import { usageMessage, QRRenderTypes, GCDomains, contact } from './config'
 
 import _handlers from './handlers'
@@ -19,6 +20,8 @@ export const config = {
   GCDomains,
   contact
 }
+export const utils = _utils
+
 export const _testDeps = testDeps
 
 //TODO: check https://github.com/knightedcodemonkey/duel

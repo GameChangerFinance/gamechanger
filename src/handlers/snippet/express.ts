@@ -21,10 +21,10 @@ const baseTemplate = async (args: {
   //  $ node <FILENAME>.js
 
   //Import if testing the library:
-  //import { gc } from './dist/nodejs.js'
+  //import { gc,encodings } from '../dist/nodejs.cjs'
   // or
   //Import normally:
-  import { gc } from '@gamechanger-finance/gc'
+  import { gc,encodings } from '@gamechanger-finance/gc/dist/nodejs.cjs'
 
   import express from 'express';
   
@@ -40,10 +40,16 @@ const baseTemplate = async (args: {
       const app = express()
       const routeDescriptions={
           '/dist':"Gamechanger library files",
-          
-          '/':"hosted output file",
+          '/returnURL':"Endpoint to receive exported data back from the wallet",
       }
       app.use('/dist', express.static(libPath))
+      app.get('/returnURL', async (req, res) => {
+        const resultRaw = req.query.result;
+        const resultObj = await encodings.msg.decoder(resultRaw);
+        //If worried about privacy or user wallet authentication use CIP-8 and or encryption GCScript features
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(resultObj,null,2));
+      });
       if(url){
           app.get('/url', (req, res) => {
               res.status(301).redirect(url);
@@ -69,13 +75,28 @@ const baseTemplate = async (args: {
     }
   
   export const main= async()=>{
+    const host="localhost"
+    const port=3000
+
+    //GameChanger Wallet support arbitrary data returning from script execution, encoded in a redirect URL
+    const patchedGCScript={
+        ...gcscript,
+        returnURLPattern:\`http://\${host}:\${port}/returnURL/\`
+    }
       const url=await gc.encode.url({
-        input:JSON.stringify(gcscript),
+        input:JSON.stringify(patchedGCScript,null,2),
         apiVersion:${strProp(args?.apiVersion)},
         network:${strProp(args?.network)},
         encoding:${strProp(args?.encoding)},
         });
-      serve({url,indexHtml:\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`})
+      const indexHtml=\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`
+      serve({
+          host,
+          port,
+          url,
+          indexHtml
+      })
+
   }
   
   main();

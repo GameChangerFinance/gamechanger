@@ -336,8 +336,7 @@ const AstonMaartenTemplate = (args: {
       <a target="_blank" rel="noopener noreferrer" href="${origin}playground"> GameChanger Wallet Playground IDE</a>
   </b>
   <br/>
-   2023 </i></p>
-  </p>
+   2023 </i>
 
   <h6 class="flexrow">
       <a target="_blank" rel="noopener noreferrer" href="${

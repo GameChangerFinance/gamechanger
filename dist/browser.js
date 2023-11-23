@@ -9773,6 +9773,15 @@ var testDeps = async () => {
   return 'OK'
 }
 
+var _utils = {
+  Buffer: Buffer$1,
+  ArrayBuffer: ArrayBuffer,
+  Uint8Array: Uint8Array,
+  Uint16Array: Uint16Array,
+  Uint32Array: Uint32Array,
+  BigInt: BigInt
+}
+
 const cliName = 'gamechanger-cli'
 const networks = ['mainnet', 'preprod']
 const apiVersions = ['1', '2']
@@ -9875,7 +9884,7 @@ Examples
 		https://wallet.gamechanger.finance/api/1/tx/...
 
 	URL APIv2
-		$ ${cliName} mainnet encode url -v 2 -f connect.gcscript
+		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
 		https://beta-wallet.gamechanger.finance/api/1/run/...
 
 	QR APIv1:
@@ -9883,31 +9892,31 @@ Examples
   JSON.stringify(demoGCS)
 )} > qr_output.png
 
-		$ ${cliName} mainnet encode qr -v 1 -o qr_output.png -a ${escapeShellArg(
+		$ ${cliName} mainnet encode qr -v 1 -o examples/qr_output.png -a ${escapeShellArg(
   JSON.stringify(demoGCS)
 )}
 	
 	QR APIv2:
-		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
 	Code snippet generation and serve dapp (-S):
 
 	HTML:
-		$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
 	ReactJS:
-		$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+		$ ${cliName} mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
 	HTML Button snippet:
-		$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+		$ ${cliName} mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 		
 	Express Backend:
-		$ ${cliName} mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
-		$ node expressBackend.js
+		$ ${cliName} mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
+		$ node examples/expressBackend.js
 		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
 
 
@@ -11405,8 +11414,7 @@ const AstonMaartenTemplate = (args) => {
       <a target="_blank" rel="noopener noreferrer" href="${origin}playground"> GameChanger Wallet Playground IDE</a>
   </b>
   <br/>
-   2023 </i></p>
-  </p>
+   2023 </i>
 
   <h6 class="flexrow">
       <a target="_blank" rel="noopener noreferrer" href="${
@@ -11482,10 +11490,10 @@ const baseTemplate$1 = async (args) => {
   //  $ node <FILENAME>.js
 
   //Import if testing the library:
-  //import { gc } from './dist/nodejs.js'
+  //import { gc,encodings } from '../dist/nodejs.cjs'
   // or
   //Import normally:
-  import { gc } from '@gamechanger-finance/gc'
+  import { gc,encodings } from '@gamechanger-finance/gc/dist/nodejs.cjs'
 
   import express from 'express';
   
@@ -11501,10 +11509,16 @@ const baseTemplate$1 = async (args) => {
       const app = express()
       const routeDescriptions={
           '/dist':"Gamechanger library files",
-          
-          '/':"hosted output file",
+          '/returnURL':"Endpoint to receive exported data back from the wallet",
       }
       app.use('/dist', express.static(libPath))
+      app.get('/returnURL', async (req, res) => {
+        const resultRaw = req.query.result;
+        const resultObj = await encodings.msg.decoder(resultRaw);
+        //If worried about privacy or user wallet authentication use CIP-8 and or encryption GCScript features
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(resultObj,null,2));
+      });
       if(url){
           app.get('/url', (req, res) => {
               res.status(301).redirect(url);
@@ -11530,13 +11544,28 @@ const baseTemplate$1 = async (args) => {
     }
   
   export const main= async()=>{
+    const host="localhost"
+    const port=3000
+
+    //GameChanger Wallet support arbitrary data returning from script execution, encoded in a redirect URL
+    const patchedGCScript={
+        ...gcscript,
+        returnURLPattern:\`http://\${host}:\${port}/returnURL/\`
+    }
       const url=await gc.encode.url({
-        input:JSON.stringify(gcscript),
+        input:JSON.stringify(patchedGCScript,null,2),
         apiVersion:${strProp(args?.apiVersion)},
         network:${strProp(args?.network)},
         encoding:${strProp(args?.encoding)},
         });
-      serve({url,indexHtml:\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`})
+      const indexHtml=\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`
+      serve({
+          host,
+          port,
+          url,
+          indexHtml
+      })
+
   }
   
   main();
@@ -11751,6 +11780,7 @@ const config = {
   GCDomains,
   contact
 }
+const utils = _utils
 const _testDeps = testDeps
 //TODO: check https://github.com/knightedcodemonkey/duel
 
@@ -26735,4 +26765,4 @@ var jsonUrlSingle$1 = /*#__PURE__*/ _mergeNamespaces(
   [jsonUrlSingleExports]
 )
 
-export { _testDeps, config, _handlers as default, encodings, gc }
+export { _testDeps, config, _handlers as default, encodings, gc, utils }
