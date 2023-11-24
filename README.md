@@ -89,7 +89,7 @@ const gcscript={
         },
         "addressInfo": {
                 "type": "macro",
-                "run": "{getAddressInfo(get('cache.data.address'))}"
+                "run": "{getAddressInfo(get('cache.address'))}"
         }
     }
 }
