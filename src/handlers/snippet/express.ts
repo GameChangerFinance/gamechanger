@@ -21,10 +21,10 @@ const baseTemplate = async (args: {
   //  $ node <FILENAME>.js
 
   //Import if testing the library:
-  //import { gc,encodings } from '../dist/nodejs.cjs'
+  //import gc from '../dist/nodejs.cjs'
   // or
   //Import normally:
-  import { gc,encodings } from '@gamechanger-finance/gc/dist/nodejs.cjs'
+  import gc from '@gamechanger-finance/gc/dist/nodejs.cjs'
 
   import express from 'express';
   
@@ -45,7 +45,7 @@ const baseTemplate = async (args: {
       app.use('/dist', express.static(libPath))
       app.get('/returnURL', async (req, res) => {
         const resultRaw = req.query.result;
-        const resultObj = await encodings.msg.decoder(resultRaw);
+        const resultObj = await gc.encodings.msg.decoder(resultRaw);
         //If worried about privacy or user wallet authentication use CIP-8 and or encryption GCScript features
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(resultObj,null,2));

@@ -1,4 +1,10 @@
 import { APIEncoding, APIVersion, NetworkType } from '../types'
+//import packageJson from '../../package.json'
+const packageJson: any = {} //TODO: make this work with bundlers
+export const version = packageJson.version
+export const projectName = packageJson.name
+export const repositoryUrl = packageJson.repository
+
 export const cliName = 'gamechanger-cli'
 export const networks: NetworkType[] = ['mainnet', 'preprod']
 export const apiVersions: APIVersion[] = ['1', '2']

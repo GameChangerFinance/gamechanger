@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable quotes */
-/* global chai, gc,_testDeps */
+/* global chai, gc */
 
 mocha.setup({
   ui: 'bdd'
@@ -11,7 +11,7 @@ describe('unit tests', () => {
 
   describe('Dependencies Test', () => {
     it('should load dependencies', async () => {
-      const res = await _testDeps()
+      const res = await gc.utils._testDeps()
       expect(res).to.equal('OK')
     })
   })

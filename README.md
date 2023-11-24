@@ -10,6 +10,16 @@ and solve other tasks (https://gamechanger.finance/)
 > Complete new project now compatible with GameChanger Wallet V2 and keeping
 > some support for legacy GameChanger V1
 
+## Example CLI/Library outputs:
+
+- [URL](examples/URL.txt)
+- [QR (png)](examples/QR.png)
+- [QR (svg)](examples/QR.svg)
+- [Button](examples/button.html)
+- [HTML5 Dapp](examples/htmlDapp.html)
+- [ReactJs Dapp](examples/reactDapp.html)
+- [ExpressJs Backend](examples/expressBackend.js)
+
 ## Install CLI
 
 ```
@@ -20,6 +30,155 @@ $ npm install --global @gamechanger-finance/gc
 
 ```
 $ npm install -s @gamechanger-finance/gc
+```
+
+## Import library on your projects:
+
+### For importing on html document:
+
+```
+Install:
+  $ npm install -s @gamechanger-finance/gc
+    or
+  copy host individual file 'dist/browser.min.js'
+
+Load locally:
+  <script src='dist/browser.min.js'></script>
+
+Load using CDN :
+  <script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js"></script>
+
+Use:
+  const {gc} = window;
+```
+
+### For webpack projects like using create-react-app:
+
+```
+Install:
+  $ npm install -s @gamechanger-finance/gc
+Use:
+  import gc from '@gamechanger-finance/gc'
+
+```
+
+## Library usage:
+
+### Encode dapp connection (dapp -> wallet message):
+
+```javascript
+
+//GCScript: the DSL scripting language to interact with GameChanger Wallet
+const gcscript={
+    "type": "script",
+    "title":"🚀 Connect with dapp?",
+    "description":"About to share your basic public wallet information to the dapp",
+    "exportAs": "connect",
+    "run": {
+        "name": {
+                "type": "getName"
+        },
+        "address": {
+                "type": "getCurrentAddress"
+        },
+        "spendPubKey": {
+                "type": "getSpendingPublicKey"
+        },
+        "stakePubKey": {
+                "type": "getStakingPublicKey"
+        },
+        "addressInfo": {
+                "type": "macro",
+                "run": "{getAddressInfo(get('cache.data.address'))}"
+        }
+    }
+}
+
+const url = await gc.encode.url({
+        input: JSON.stringify(gcscript), // GCScript is pure JSON code, supported on all platforms
+        apiVersion: '2', //APIV2
+        network: 'mainnet', // mainnet or preprod
+        encoding: 'gzip' //suggested, default message encoding/compression 
+});
+```
+then redirect users to the URL like:
+
+```html
+<a href="${url}">Connect with GC Wallet</a>
+```
+or render a QR encoded URL image like this:
+
+```javascript
+const pngDataURI = gc.encode.qr({
+        input: JSON.stringify(gcscript),
+        apiVersion: '2',
+        network: 'mainnet',
+        encoding: 'gzip',
+        qrResultType: 'png',
+});
+```
+
+then redirect users with the QR code like:
+
+```html
+<image src="${pngDataURI}">Scan QR code to connect</image>
+```
+
+### Decode dapp connection results (wallet -> dapp message):
+
+```javascript
+//GCWallet dapp connections can return arbirary JSON data you exported from the DSL code
+const resultObj = await gc.encodings.msg.decoder(resultRaw)
+console.log(resultObj); 
+
+```
+and will log something like:
+```json
+{
+  "exports": {
+    "connect": {
+        "name": "MyCardanoWallet",
+        "address": "addr1q8aw6dzpw3cld828cqywp0sql4sxfw6syhzyh2kfcfccakddqwj2u3djrag0mene2cm9elu5mdqmcz9zc2rzgq7c5g6qshxn7l",
+        "spendPubKey": {
+          "pubKeyHex": "48362707efe478336740139127d8468aca10bf1358d2ab903d2d58876c99733b",
+          "pubKeyHashHex": "faed34417471f69d47c008e0be00fd6064bb5025c44baac9c2718ed9",
+          "derivationKind": "spend"
+        },
+        "stakePubKey": {
+          "pubKeyHex": "9bef2297c79a52da05c33e99097e806e44ddda04e0dbaf7afef9274a64059557",
+          "pubKeyHashHex": "cb6785612a53f5a093f38212db67bf4da23881d0fcf99518d02463a0",
+          "derivationKind": "stake"
+        },
+        "addressInfo": {
+          "isByron": false,
+          "isReward": false,
+          "isEnterprise": false,
+          "isPointer": false,
+          "isPaymentScript": false,
+          "isStakingScript": false,
+          "paymentScriptHash": "",
+          "stakingScriptHash": "",
+          "isScript": false,
+          "kind": "base",
+          "isCardano": true,
+          "isShelley": true,
+          "isBase": true,
+          "isPaymentKey": true,
+          "isStakingKey": true,
+          "paymentKeyHash": "faed34417471f69d47c008e0be00fd6064bb5025c44baac9c2718ed9",
+          "stakingKeyHash": "ad03a4ae45b21f50fde67956365cff94db41bc08a2c2862403d8a234",
+          "rewardAddress": "stake1uxks8f9wgkep758aueu4vdjul72dksdupz3v9p3yq0v2ydqpd3mre",
+          "network": "mainnet",
+          "networkId": 1,
+          "identity": {
+            "scriptHex": "8201818200581cfaed34417471f69d47c008e0be00fd6064bb5025c44baac9c2718ed9",
+            "scriptHash": "ddb4f2d0f44774964f57b444995e4a4a750d7b452a7177e739f8e21c",
+            "scriptRefHex": "d818582582008201818200581cfaed34417471f69d47c008e0be00fd6064bb5025c44baac9c2718ed9"
+          }
+        },
+    }
+  }
+}
 ```
 
 ## CLI Usage
@@ -101,46 +260,6 @@ Examples
                 $ gamechanger-cli mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
                 $ node examples/expressBackend.js
                 🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
-
-```
-
-## Example CLI/Library outputs:
-
-- [URL](examples/URL.txt)
-- [QR (png)](examples/QR.png)
-- [QR (svg)](examples/QR.svg)
-- [Button](examples/button.html)
-- [HTML5 Dapp](examples/htmlDapp.html)
-- [ReactJs Dapp](examples/reactDapp.html)
-- [ExpressJs Backend](examples/expressBackend.js)
-
-## Import library on your projects:
-
-### For importing on html document:
-
-```
-Install:
-  $ npm install -s @gamechanger-finance/gc
-    or
-  copy host individual file 'dist/browser.min.js'
-
-Load locally:
-  <script src='dist/browser.min.js'></script>
-
-Load using CDN :
-  <script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js"></script>
-
-Use:
-  const {gc} = window;
-```
-
-### For webpack projects like using create-react-app:
-
-```
-Install:
-  $ npm install -s @gamechanger-finance/gc
-Use:
-  import {gc} from '@gamechanger-finance/gc'
 
 ```
 

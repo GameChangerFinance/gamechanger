@@ -33,6 +33,8 @@ const baseTemplate = (args: {
     <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js'></script>
     <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
     <script src='dist/browser.min.js'></script>
+    <!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+
     <style>
     * { margin: 0; background: #334d56; color: #fff; }
     body { padding: 30px; box-sizing: content-box; }
@@ -45,8 +47,8 @@ const baseTemplate = (args: {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // import {gc,encodings} from '@gamechanger-finance/gc'
-      const {gc,encodings} = window;
+      // import gc from '@gamechanger-finance/gc'
+      const {gc} = window;
 
       const App=()=>{
         const _gcscript=${args.input};
@@ -63,7 +65,7 @@ const baseTemplate = (args: {
           const msg        = currentUrl.searchParams.get("result");
 
           if(msg){
-            encodings.msg.decoder(msg)
+            gc.encodings.msg.decoder(msg)
               .then(newResult=>{
                 setResult(newResult);
                 //avoids current url carrying latest results all the time
@@ -159,19 +161,3 @@ export default async (args: {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'

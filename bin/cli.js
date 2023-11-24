@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { gc, config } from '../dist/nodejs.cjs'
+import gc from '../dist/nodejs.cjs'
 import meow from 'meow'
 import getStdin from 'get-stdin'
 import fs from 'fs'
@@ -27,7 +27,7 @@ export const serveHtml = ({
 }
 
 export default async function main() {
-  const { usageMessage, QRRenderTypes } = config
+  const { usageMessage, QRRenderTypes } = gc.config
 
   try {
     process.on('uncaughtException', function (err) {

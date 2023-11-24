@@ -1,27 +1,20 @@
-import testDeps from './tests/deps'
-import _utils from './utils/exportedUtils'
-import { usageMessage, QRRenderTypes, GCDomains, contact } from './config'
+import utils from './utils/exported'
+import config from './config/exported'
+import handlers from './handlers'
+import encodings from './encodings'
 
-import _handlers from './handlers'
-import _encodings from './encodings'
-
-export const encodings = _encodings
-export const gc = _handlers
-// export const cli =
-//   typeof window === 'object'
-//     ? undefined
-//     : import('./cli.ts.old').then((d) => d.default())
-
-export default _handlers
-
-export const config = {
-  usageMessage,
-  QRRenderTypes,
-  GCDomains,
-  contact
+/**
+ * GameChanger Lib unified export object.
+ *
+ * On browser, could be used as `const {gc} = window;`
+ */
+/*export*/ const gc = {
+  ...handlers,
+  encodings, // soon users should not use these, handlers should be used instead.
+  utils,
+  config
 }
-export const utils = _utils
 
-export const _testDeps = testDeps
+export default gc
 
-//TODO: check https://github.com/knightedcodemonkey/duel
+//TODO: also check https://github.com/knightedcodemonkey/duel

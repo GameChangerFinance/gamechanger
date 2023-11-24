@@ -63,6 +63,7 @@ const AstonMaartenTemplate = (args: {
 <meta name="theme-color" content="#6d41a1" />
 
 <script src='dist/browser.min.js'></script>
+<!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
 
 <script>
   let handleSetEncoder;
@@ -71,8 +72,8 @@ const AstonMaartenTemplate = (args: {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import {gc,encodings} from '@gamechanger-finance/gc'
-      const {gc,encodings} = window;
+      // import gc from '@gamechanger-finance/gc'
+      const {gc} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
       let   actionUrl   = "";
@@ -109,7 +110,7 @@ const AstonMaartenTemplate = (args: {
           try{                
               const resultRaw   = (new URL(currentUrl)).searchParams.get("result");
               if(resultRaw){
-                  resultObj     = await encodings.msg.decoder(resultRaw);
+                  resultObj     = await gc.encodings.msg.decoder(resultRaw);
                   //avoids current url carrying latest results all the time 
                   history.pushState({}, '', window.location.pathname);
               }
@@ -396,19 +397,3 @@ export default async (args: {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'

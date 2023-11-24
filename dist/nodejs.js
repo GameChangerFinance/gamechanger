@@ -1,7 +1,5 @@
 'use strict'
 
-Object.defineProperty(exports, '__esModule', { value: true })
-
 var Canvas = require('canvas')
 
 function _mergeNamespaces(n, m) {
@@ -2309,7 +2307,7 @@ var safeJSONStringify = /*@__PURE__*/ getDefaultExportFromCjs(stringifyExports)
 /**
  * Based on urlsafe-base64, on version:
  */
-const version$1 = '1.0.0'
+const version$2 = '1.0.0'
 /**
  * .encode
  *
@@ -2365,7 +2363,7 @@ var URLSafeBase64 = /*#__PURE__*/ Object.freeze({
   decode: decode,
   encode: encode$1,
   validate: validate,
-  version: version$1
+  version: version$2
 })
 
 /*! pako 2.1.0 https://github.com/nodeca/pako @license (MIT AND Zlib) */
@@ -9731,7 +9729,7 @@ var template$1 = /*@__PURE__*/ getDefaultExportFromCjs(stringPlaceholder)
  * It has been very hard to allow dual support for browser and nodejs due to dependencies conflicts.
  * This is un ugly unified test for now, should be improved
  */
-var testDeps = async () => {
+var _testDeps = async () => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
   console.info(
     `Running dependencies test on '${isNode ? 'nodejs' : 'browser'}'`
@@ -9809,15 +9807,21 @@ var testDeps = async () => {
   return 'OK'
 }
 
-var _utils = {
+var utils = {
   Buffer: Buffer$1,
   ArrayBuffer: ArrayBuffer,
   Uint8Array: Uint8Array,
   Uint16Array: Uint16Array,
   Uint32Array: Uint32Array,
-  BigInt: BigInt
+  BigInt: BigInt,
+  _testDeps //will be deprecated
 }
 
+//import packageJson from '../../package.json'
+const packageJson = {} //TODO: make this work with bundlers
+const version$1 = packageJson.version
+const projectName = packageJson.name
+const repositoryUrl = packageJson.repository
 const cliName = 'gamechanger-cli'
 const networks = ['mainnet', 'preprod']
 const apiVersions = ['1', '2']
@@ -9957,6 +9961,16 @@ Examples
 
 
 `
+
+var config$1 = {
+  version: version$1,
+  projectName,
+  repositoryUrl,
+  usageMessage,
+  QRRenderTypes,
+  GCDomains,
+  contact
+}
 
 const DefaultNetwork = 'mainnet'
 const DefaultAPIVersion = '2'
@@ -10964,20 +10978,6 @@ var ButtonEncoder = async (args) => {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'
 
 // import { GCDappConnUrls } from '../../config'
 // import urlEncoder from '../../encodings/url'
@@ -11020,6 +11020,7 @@ const AstonMaartenTemplate = (args) => {
 <meta name="theme-color" content="#6d41a1" />
 
 <script src='dist/browser.min.js'></script>
+<!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
 
 <script>
   let handleSetEncoder;
@@ -11028,8 +11029,8 @@ const AstonMaartenTemplate = (args) => {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import {gc,encodings} from '@gamechanger-finance/gc'
-      const {gc,encodings} = window;
+      // import gc from '@gamechanger-finance/gc'
+      const {gc} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
       let   actionUrl   = "";
@@ -11066,7 +11067,7 @@ const AstonMaartenTemplate = (args) => {
           try{                
               const resultRaw   = (new URL(currentUrl)).searchParams.get("result");
               if(resultRaw){
-                  resultObj     = await encodings.msg.decoder(resultRaw);
+                  resultObj     = await gc.encodings.msg.decoder(resultRaw);
                   //avoids current url carrying latest results all the time 
                   history.pushState({}, '', window.location.pathname);
               }
@@ -11339,20 +11340,6 @@ var HtmlEncoder = async (args) => {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'
 
 const baseTemplate$1 = async (args) => {
   const strProp = (str) =>
@@ -11369,10 +11356,10 @@ const baseTemplate$1 = async (args) => {
   //  $ node <FILENAME>.js
 
   //Import if testing the library:
-  //import { gc,encodings } from '../dist/nodejs.cjs'
+  //import gc from '../dist/nodejs.cjs'
   // or
   //Import normally:
-  import { gc,encodings } from '@gamechanger-finance/gc/dist/nodejs.cjs'
+  import gc from '@gamechanger-finance/gc/dist/nodejs.cjs'
 
   import express from 'express';
   
@@ -11393,7 +11380,7 @@ const baseTemplate$1 = async (args) => {
       app.use('/dist', express.static(libPath))
       app.get('/returnURL', async (req, res) => {
         const resultRaw = req.query.result;
-        const resultObj = await encodings.msg.decoder(resultRaw);
+        const resultObj = await gc.encodings.msg.decoder(resultRaw);
         //If worried about privacy or user wallet authentication use CIP-8 and or encryption GCScript features
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(resultObj,null,2));
@@ -11485,6 +11472,8 @@ const baseTemplate = (args) => {
     <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js'></script>
     <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
     <script src='dist/browser.min.js'></script>
+    <!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+
     <style>
     * { margin: 0; background: #334d56; color: #fff; }
     body { padding: 30px; box-sizing: content-box; }
@@ -11497,8 +11486,8 @@ const baseTemplate = (args) => {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // import {gc,encodings} from '@gamechanger-finance/gc'
-      const {gc,encodings} = window;
+      // import gc from '@gamechanger-finance/gc'
+      const {gc} = window;
 
       const App=()=>{
         const _gcscript=${args.input};
@@ -11515,7 +11504,7 @@ const baseTemplate = (args) => {
           const msg        = currentUrl.searchParams.get("result");
 
           if(msg){
-            encodings.msg.decoder(msg)
+            gc.encodings.msg.decoder(msg)
               .then(newResult=>{
                 setResult(newResult);
                 //avoids current url carrying latest results all the time
@@ -11597,20 +11586,6 @@ var ReactEncoder = async (args) => {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'
 
 var snippet = {
   button: ButtonEncoder,
@@ -11619,7 +11594,7 @@ var snippet = {
   react: ReactEncoder
 }
 
-var _handlers = {
+var handlers = {
   encode,
   snippet
 }
@@ -11644,24 +11619,25 @@ const baseEncodings = {
   'json-url-lzw': handler$4,
   base64url: handler$3
 }
-var _encodings = {
+var encodings = {
   ...baseEncodings,
   msg: handler$2,
   url: handler$1,
   qr: handler
 }
 
-const encodings = _encodings
-const gc = _handlers
-const config$1 = {
-  usageMessage,
-  QRRenderTypes,
-  GCDomains,
-  contact
+/**
+ * GameChanger Lib unified export object.
+ *
+ * On browser, could be used as `const {gc} = window;`
+ */
+/*export*/ const gc = {
+  ...handlers,
+  encodings, // soon users should not use these, handlers should be used instead.
+  utils,
+  config: config$1
 }
-const utils = _utils
-const _testDeps = testDeps
-//TODO: check https://github.com/knightedcodemonkey/duel
+//TODO: also check https://github.com/knightedcodemonkey/duel
 
 var jsonUrl = () => {
   return Promise.resolve()
@@ -28442,9 +28418,4 @@ var index$1 = /*#__PURE__*/ _mergeNamespaces(
   [nodeExports]
 )
 
-exports._testDeps = _testDeps
-exports.config = config$1
-exports.default = _handlers
-exports.encodings = encodings
-exports.gc = gc
-exports.utils = utils
+module.exports = gc

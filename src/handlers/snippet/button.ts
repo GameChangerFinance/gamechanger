@@ -72,19 +72,3 @@ export default async (args: {
     else throw new Error('URL generation failed. ' + 'Unknown error')
   }
 }
-
-// For importing on html document:
-// Install:
-//   $ npm install -s gamechanger
-//     or
-//   copy host individual file 'dist/browser.min.js'
-// Load:
-//   \\<script src='dist/browser.min.js'\\>\\</script\\>
-// Use:
-//   const {gc} = window;
-
-// For webpack projects like using create-react-app:
-// Install:
-//   $ npm install -s gamechanger
-// Use:
-//   import {gc} from 'gamechanger'

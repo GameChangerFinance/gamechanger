@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import { _testDeps } from '../dist/nodejs.cjs'
-_testDeps()
+import gc from '../dist/nodejs.cjs'
+gc.utils._testDeps()
