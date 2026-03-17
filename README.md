@@ -5,10 +5,18 @@
 # GameChanger Wallet Library and CLI
 
 Official GameChanger Wallet library and CLI for integrating with Cardano dapps
-and solve other tasks (https://gamechanger.finance/)
+and solve other related tasks (https://gamechanger.finance/)
 
-> Complete new project now compatible with GameChanger Wallet V2 and keeping
-> some support for legacy GameChanger V1
+> Complete refactor for Node v24.x.x .
+> Supports all GameChanger Wallet V2.x.x flavors
+
+## Try it online:
+
+[✨ Kitchen Sink Dapp ✨](https://gclib-kitchen-sink.netlify.app/)
+
+- 100 % backend-less: (no special backend required)
+- All the supported outputs formats for you to integrate or share
+- All the supported code generation languages for you to integrate
 
 ## Example CLI/Library outputs:
 
@@ -25,7 +33,7 @@ $ npm run examples:express
 
 ```
 
-- [Kitchen Sink ✨ - all outputs in one example](examples/index.html)
+- [Kitchen Sink - all outputs in one example](examples/index.html)
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
 - [QR (svg)](examples/QR.svg)
