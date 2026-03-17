@@ -33,8 +33,8 @@ const baseTemplate = (args: {
     <script src='https://unpkg.com/react@18.2.0/umd/react.production.min.js'></script>
     <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js'></script>
     <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
-    <script src='dist/browser.min.js'></script>
-    <!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+    <!--<script src='res/browser.min.js'></script>-->
+    <script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>
 
     <style>
     * { margin: 0; background: #334d56; color: #fff; }
@@ -48,7 +48,7 @@ const baseTemplate = (args: {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // Loaded from dist/browser.min.js or CDN
+      // Loaded from res/browser.min.js or CDN
       const {gc} = window;
 
       const App=()=>{

@@ -69,14 +69,14 @@ export const serve = ({
   url,
   host = 'localhost',
   port = 3000,
-  libPath = 'dist'
+  libPath = 'res'
 }) => {
   const app = express()
   const routeDescriptions = {
-    '/dist': 'Gamechanger library files',
+    '/res': 'Gamechanger library files (self-hosted)',
     '/returnURL': 'Endpoint to receive exported data back from the wallet'
   }
-  app.use('/dist', express.static(libPath))
+  app.use('/res', express.static(libPath))
   app.get('/returnURL', async (req, res) => {
     const resultRaw = req.query.result
     const resultObj = await gc.encodings.msg.decoder(resultRaw)

@@ -12,27 +12,28 @@ npm install
 npm run build
 ```
 
-Serve the examples locally:
+Serve the examples locally to run web based examples:
 
 ```bash
-npm run examples:serve
+$ npm run examples
+```
+
+To run the backend example and consume it's endpoints:
+
+```bash
+$ npm run examples:express
+
 ```
 
 Then open:
 
-- `http://127.0.0.1:3000/examples/reactKitchenSink.html`
+- `http://127.0.0.1:3000/examples/index.html` (kitchen sink dapp)
 - `http://127.0.0.1:3000/examples/htmlDapp.html`
 - `http://127.0.0.1:3000/examples/reactDapp.html`
 
-Or run the convenience command that builds first and then starts the server:
+## What is `examples/res/`?
 
-```bash
-npm run examples:kitchen-sink
-```
-
-## What is `examples/dist/`?
-
-`examples/dist/` is a convenience copy of the current root `dist/` folder. It is
+`examples/res/` is a convenience copy of the current root `dist/` folder. It is
 refreshed by `scripts/postbuild.mjs` after builds so the example HTML files can
 be opened and tested from the `examples/` folder without changing their import
 paths.
@@ -57,8 +58,8 @@ import gc from '@gamechanger-finance/gc'
 
 ## Files
 
-- `reactKitchenSink.html`: all-in-one browser playground for the public library
-  outputs
+- `index.html`: Kitchen Sink dapp> 100% in-browser playground for testing ALL
+  the library outputs
 - `htmlDapp.html`: minimal HTML integration example
 - `reactDapp.html`: minimal React integration example
 - `expressBackend.js`: minimal Node/Express backend example

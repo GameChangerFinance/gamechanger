@@ -14,7 +14,7 @@ and solve other tasks (https://gamechanger.finance/)
 
 To run web based examples:
 
-```bash 
+```bash
 $ npm run examples
 ```
 
@@ -25,7 +25,7 @@ $ npm run examples:express
 
 ```
 
-- [Kitchen Sink ✨ - all outputs in one example](examples/reactKitchenSink.html)
+- [Kitchen Sink ✨ - all outputs in one example](examples/index.html)
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
 - [QR (svg)](examples/QR.svg)

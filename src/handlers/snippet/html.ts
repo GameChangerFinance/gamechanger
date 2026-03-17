@@ -63,8 +63,8 @@ const AstonMaartenTemplate = (args: {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#6d41a1" />
 
-<script src='dist/browser.min.js'></script>
-<!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+<!--<script src='res/browser.min.js'></script>-->
+<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>
 
 <script>
   let handleSetEncoder;
@@ -73,7 +73,7 @@ const AstonMaartenTemplate = (args: {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // Loaded from dist/browser.min.js or CDN
+      // Loaded from res/browser.min.js or CDN
       const {gc} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
