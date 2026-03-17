@@ -1,7 +1,19 @@
+class JSONURLDeprecationError extends Error {
+  code: string
+  name: string
+
+  constructor() {
+    super('json-url is deprecated and is intentionally disabled')
+    this.name = 'DeprecationError'
+    this.code = 'ERR_DEPRECATED'
+  }
+}
+
 export default () => {
-  return import('json-url').then((jsonUrlLib) => {
-    return jsonUrlLib.default
-  })
+  throw new JSONURLDeprecationError()
+  // return import('json-url').then((jsonUrlLib) => {
+  //   return jsonUrlLib.default
+  // })
 }
 
 // export default () => {

@@ -1,5 +1,6 @@
 import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
+import { Buffer } from 'buffer'
 const baseTemplate = async (args: {
   apiVersion: APIVersion
   network: NetworkType
@@ -20,11 +21,11 @@ const baseTemplate = async (args: {
   //Run this file
   //  $ node <FILENAME>.js
 
-  //Import if testing the library:
-  //import gc from '../dist/nodejs.cjs'
+  //Import if testing the library from this repository:
+  //import gc from '../dist/nodejs.js'
   // or
   //Import normally:
-  import gc from '@gamechanger-finance/gc/dist/nodejs.cjs'
+  import gc from '@gamechanger-finance/gc'
 
   import express from 'express';
   

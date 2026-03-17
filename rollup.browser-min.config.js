@@ -29,17 +29,12 @@ export default {
     }),
     typescript({
       tsconfig: './tsconfig.json',
-      exclude: [
-        './src/assets/*',
-        './bin/*',
-        './node_modules/easyqrcodejs-nodejs/*'
-      ]
+      exclude: ['./src/assets/*', './bin/*']
     }),
     nodeResolve({
       browser: true // <-- suppress node-specific features
     }),
     CommonJS({
-      exclude: ['./node_modules/easyqrcodejs-nodejs/*'],
       strictRequires: 'debug',
       transformMixedEsModules: true
     }),

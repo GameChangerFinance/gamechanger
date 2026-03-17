@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameChanger React Kitchen Sink</title>
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    <script src="dist/browser.min.js"></script>
+    <!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #17212b;
+        color: #f4f7fb;
+      }
+      a {
+        color: #7bc3ff;
+      }
+      button,
+      select,
+      textarea,
+      input {
+        font: inherit;
+      }
+      .app {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .hero {
+        margin-bottom: 20px;
+      }
+      .hero h1 {
+        margin: 0 0 8px;
+      }
+      .hero p {
+        margin: 0;
+        color: #c2d2e2;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr);
+        gap: 20px;
+      }
+      .card {
+        background: #233140;
+        border: 1px solid #32465d;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+      }
+      .card h2,
+      .card h3 {
+        margin-top: 0;
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .controls label,
+      .checkboxRow label {
+        display: block;
+        font-size: 14px;
+        color: #c2d2e2;
+        margin-bottom: 4px;
+      }
+      .controls select,
+      .controls input,
+      .editor,
+      .code,
+      .urlBox {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #445d79;
+        background: #111923;
+        color: #eef7ff;
+        padding: 10px 12px;
+      }
+      .editor {
+        min-height: 420px;
+        resize: vertical;
+        line-height: 1.45;
+      }
+      .actions,
+      .inlineActions,
+      .checkboxRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .actions {
+        margin-top: 12px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        background: #4aa3ff;
+        color: #061019;
+        font-weight: bold;
+      }
+      .btn.secondary {
+        background: #364b61;
+        color: #f4f7fb;
+      }
+      .btn.linkish {
+        background: #27384a;
+        color: #d9eaff;
+      }
+      .muted {
+        color: #c2d2e2;
+      }
+      .error {
+        white-space: pre-wrap;
+        color: #ff9c9c;
+        background: #2a1820;
+        border: 1px solid #5d2b3b;
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .resultGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .resultGrid .full {
+        grid-column: 1 / -1;
+      }
+      .urlBox,
+      .code {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .code {
+        min-height: 180px;
+        max-height: 320px;
+        overflow: auto;
+      }
+      .previewFrame {
+        width: 100%;
+        min-height: 280px;
+        border: 1px solid #445d79;
+        border-radius: 10px;
+        background: #fff;
+      }
+      .qrImage {
+        max-width: 100%;
+        width: 100%;
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #445d79;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #2f4154;
+        color: #d9eaff;
+        font-size: 12px;
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+      .decodedResult {
+        min-height: 120px;
+      }
+
+      .modeGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+      }
+      .modeButton {
+        border: 1px solid #445d79;
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: #111923;
+        color: #eef7ff;
+        cursor: pointer;
+        text-align: left;
+      }
+      .modeButton.active {
+        background: #4aa3ff;
+        color: #061019;
+        border-color: #4aa3ff;
+        font-weight: bold;
+      }
+      @media (max-width: 1100px) {
+        .grid,
+        .resultGrid,
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { gc } = window
+
+      const fallbackScript = `{
+  "type": "script",
+  "title": "🚀 Connect with dapp?",
+  "description": "About to share your public wallet information and a CIP-8 signature to verify this data",
+  "exportAs": "connect",
+  "run": {
+    "data": {
+      "type": "script",
+      "run": {
+        "name": {
+          "type": "getName"
+        },
+        "address": {
+          "type": "getCurrentAddress"
+        },
+        "spendPubKey": {
+          "type": "getSpendingPublicKey"
+        },
+        "stakePubKey": {
+          "type": "getStakingPublicKey"
+        },
+        "addressInfo": {
+          "type": "macro",
+          "run": "{getAddressInfo(get('cache.data.address'))}"
+        },
+        "agreement": {
+          "type": "macro",
+          "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
+        },
+        "salt": {
+          "type": "macro",
+          "run": "{uuid()}"
+        }
+      }
+    },
+    "hash": {
+      "type": "macro",
+      "run": "{sha512(objToJson(get('cache.data')))}"
+    },
+    "sign": {
+      "type": "signDataWithAddress",
+      "address": "{get('cache.data.address')}",
+      "dataHex": "{get('cache.hash')}"
+    }
+  }
+}`
+
+      const encodingsByApi = {
+        1: ['json-url-lzw'],
+        2: ['json-url-lzma', 'gzip', 'base64url']
+      }
+
+      const outputModes = [
+        {
+          value: 'all',
+          label: 'Show everything',
+          help: 'Render every output and preview.'
+        },
+        {
+          value: 'url',
+          label: 'URL only',
+          help: 'Focus on the encoded wallet URL and launch modes.'
+        },
+        {
+          value: 'qr',
+          label: 'QR only',
+          help: 'Focus on QR image outputs and raw SVG source.'
+        },
+        {
+          value: 'button',
+          label: 'Button snippet',
+          help: 'Preview and inspect the simple connect button snippet.'
+        },
+        {
+          value: 'html',
+          label: 'HTML snippet',
+          help: 'Preview and inspect the HTML dapp example.'
+        },
+        {
+          value: 'react',
+          label: 'React snippet',
+          help: 'Preview and inspect the React dapp example.'
+        },
+        {
+          value: 'express',
+          label: 'Express snippet',
+          help: 'Inspect the backend helper snippet.'
+        },
+        {
+          value: 'result',
+          label: 'Decoded result',
+          help: 'Focus on the wallet returnURL payload decoder.'
+        }
+      ]
+
+      const outputKeyToTitle = {
+        url: 'Encoded wallet URL',
+        qrPng: 'QR PNG',
+        qrSvg: 'QR SVG',
+        button: 'Button snippet',
+        html: 'HTML snippet',
+        react: 'React snippet',
+        express: 'Express snippet',
+        result: 'Decoded result'
+      }
+
+      const defaultStatusMap = {
+        url: { state: 'idle', error: '' },
+        qrPng: { state: 'idle', error: '' },
+        qrSvg: { state: 'idle', error: '' },
+        button: { state: 'idle', error: '' },
+        html: { state: 'idle', error: '' },
+        react: { state: 'idle', error: '' },
+        express: { state: 'idle', error: '' },
+        result: { state: 'idle', error: '' }
+      }
+
+      const viewToKeys = {
+        all: ['url', 'qrPng', 'qrSvg', 'button', 'html', 'react', 'express'],
+        url: ['url'],
+        qr: ['qrPng', 'qrSvg'],
+        button: ['button'],
+        html: ['html'],
+        react: ['react'],
+        express: ['express'],
+        result: ['result']
+      }
+
+      const decodeDataUri = (value) => {
+        if (!value || typeof value !== 'string') return ''
+        const commaIndex = value.indexOf(',')
+        if (commaIndex === -1) return value
+        const header = value.slice(0, commaIndex)
+        const body = value.slice(commaIndex + 1)
+        return header.includes(';base64')
+          ? atob(body)
+          : decodeURIComponent(body)
+      }
+
+      const toBase64 = (value) => {
+        try {
+          return btoa(unescape(encodeURIComponent(value || '')))
+        } catch (err) {
+          return btoa(value || '')
+        }
+      }
+
+      const normalizeSvgResult = (value) => {
+        const raw = typeof value === 'string' ? value.trim() : ''
+        if (!raw) {
+          return {
+            dataUri: '',
+            svgText: '',
+            error: 'Library returned an empty SVG payload.'
+          }
+        }
+
+        if (raw.indexOf('<svg') === 0) {
+          return {
+            dataUri: 'data:image/svg+xml;base64,' + toBase64(raw),
+            svgText: raw,
+            error: ''
+          }
+        }
+
+        if (raw.indexOf('data:image/svg+xml') === 0) {
+          const svgText = decodeDataUri(raw)
+          return {
+            dataUri: svgText
+              ? 'data:image/svg+xml;base64,' + toBase64(svgText)
+              : '',
+            svgText,
+            error: svgText ? '' : 'Library returned an empty SVG payload.'
+          }
+        }
+
+        return {
+          dataUri: '',
+          svgText: raw,
+          error: 'Library returned SVG in an unexpected format.'
+        }
+      }
+
+      const copyText = async (value) => {
+        const text = value || ''
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text)
+          return
+        }
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.setAttribute('readonly', 'readonly')
+        textarea.style.position = 'fixed'
+        textarea.style.top = '-9999px'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+
+      const setReturnURLPattern = (source) => {
+        const parsed = JSON.parse(source)
+        parsed.returnURLPattern = `${window.location.origin}${window.location.pathname}?result={result}`
+        return parsed
+      }
+
+      const createBaseSharedArgs = (source, apiVersion, network, encoding) => {
+        const gcscript = setReturnURLPattern(source)
+        return {
+          input: JSON.stringify(gcscript),
+          apiVersion,
+          network,
+          encoding
+        }
+      }
+
+      const createInitialOutputs = () => ({
+        url: '',
+        qrPng: '',
+        qrSvg: '',
+        buttonDataUri: '',
+        htmlDataUri: '',
+        reactDataUri: '',
+        expressDataUri: '',
+        buttonCode: '',
+        htmlCode: '',
+        reactCode: '',
+        expressCode: '',
+        svgText: ''
+      })
+
+      const getSelectedKeys = (outputMode) => {
+        return (viewToKeys[outputMode] || []).slice()
+      }
+
+      const clearSelectedOutputs = (previous, selectedKeys) => {
+        const next = Object.assign({}, previous || createInitialOutputs())
+        if (selectedKeys.indexOf('url') !== -1) {
+          next.url = ''
+        }
+        if (selectedKeys.indexOf('qrPng') !== -1) {
+          next.qrPng = ''
+        }
+        if (selectedKeys.indexOf('qrSvg') !== -1) {
+          next.qrSvg = ''
+          next.svgText = ''
+        }
+        if (selectedKeys.indexOf('button') !== -1) {
+          next.buttonDataUri = ''
+          next.buttonCode = ''
+        }
+        if (selectedKeys.indexOf('html') !== -1) {
+          next.htmlDataUri = ''
+          next.htmlCode = ''
+        }
+        if (selectedKeys.indexOf('react') !== -1) {
+          next.reactDataUri = ''
+          next.reactCode = ''
+        }
+        if (selectedKeys.indexOf('express') !== -1) {
+          next.expressDataUri = ''
+          next.expressCode = ''
+        }
+        return next
+      }
+
+      const createPendingStatusMap = (selectedKeys) => {
+        const next = {}
+        Object.keys(defaultStatusMap).forEach((key) => {
+          next[key] = Object.assign({}, defaultStatusMap[key])
+        })
+        selectedKeys.forEach((key) => {
+          next[key] = { state: 'loading', error: '' }
+        })
+        return next
+      }
+
+      const getViewSummary = (outputMode, statuses) => {
+        const selectedKeys = getSelectedKeys(outputMode)
+        if (!selectedKeys.length) return 'Nothing selected.'
+        if (outputMode === 'result') return 'Showing returnURL decoder state.'
+
+        const loadingKeys = selectedKeys.filter((key) => {
+          return statuses[key] && statuses[key].state === 'loading'
+        })
+        const errorKeys = selectedKeys.filter((key) => {
+          return statuses[key] && statuses[key].state === 'error'
+        })
+        const readyKeys = selectedKeys.filter((key) => {
+          return statuses[key] && statuses[key].state === 'ready'
+        })
+
+        if (loadingKeys.length) {
+          return 'Generating selected outputs…'
+        }
+        if (errorKeys.length && !readyKeys.length) {
+          return 'Selected outputs failed. Check the output-specific error cards below.'
+        }
+        if (errorKeys.length && readyKeys.length) {
+          return 'Some selected outputs are ready and some failed. Check the output-specific status cards below.'
+        }
+        if (readyKeys.length) {
+          return 'Selected outputs are ready.'
+        }
+        return 'Nothing generated yet for the current selection.'
+      }
+
+      const LinkOutput = ({ title, href, popupMode, onCopy }) => {
+        if (!href) return null
+        const handleClick = (event) => {
+          if (!popupMode) return
+          event.preventDefault()
+          window.open(href, 'dapp connection', 'noopener,width=500,height=750')
+        }
+        return (
+          <div className="card full">
+            <h3>{title}</h3>
+            <div className="urlBox">{href}</div>
+            <div className="inlineActions" style={{ marginTop: 10 }}>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleClick}
+              >
+                {popupMode ? 'Launch GC in Popup Mode' : 'Open link in new tab'}
+              </a>
+              <button className="btn linkish" onClick={onCopy}>
+                Copy URL
+              </button>
+            </div>
+            {popupMode && (
+              <p className="muted" style={{ marginTop: 12 }}>
+                Popup mode note: after wallet redirection, one practical pattern
+                is to land on a page that stores the result in localStorage,
+                signals the opener, and closes itself. The arpradio.media flow
+                is a good reference technique for that popup-return pattern.
+              </p>
+            )}
+          </div>
+        )
+      }
+
+      const CodeBlock = ({
+        title,
+        code,
+        copyLabel = 'Copy code',
+        minHeight
+      }) => (
+        <div className="card full">
+          <h3>{title}</h3>
+          <pre
+            className="code"
+            style={minHeight ? { minHeight: minHeight } : undefined}
+          >
+            {code}
+          </pre>
+          <div className="inlineActions" style={{ marginTop: 10 }}>
+            <button className="btn linkish" onClick={() => copyText(code)}>
+              {copyLabel}
+            </button>
+          </div>
+        </div>
+      )
+
+      const OutputStatusCard = ({ statusKey, statuses }) => {
+        const status = statuses[statusKey] || { state: 'idle', error: '' }
+        if (status.state === 'ready') return null
+        const title = outputKeyToTitle[statusKey] || statusKey
+        const textByState = {
+          idle: 'Not generated for the current selection.',
+          loading: 'Generating…',
+          error: status.error || 'Unknown error.'
+        }
+        return (
+          <div className="card full">
+            <h3>{title} status</h3>
+            {status.state === 'error' ? (
+              <div className="error">{textByState[status.state]}</div>
+            ) : (
+              <p className="muted">{textByState[status.state]}</p>
+            )}
+          </div>
+        )
+      }
+
+      const PreviewNotice = () => (
+        <p className="muted" style={{ marginTop: 10 }}>
+          Preview note: wallets may refuse to work in embedded iframe modes. A
+          failed preview box here does not necessarily mean the generated method
+          itself is broken outside this kitchen-sink app.
+        </p>
+      )
+
+      const shouldShow = (outputMode, key) => {
+        if (outputMode === 'all') return true
+        if (outputMode === 'qr') return key === 'qr'
+        return outputMode === key
+      }
+
+      const App = () => {
+        const [source, setSource] = React.useState(fallbackScript)
+        const [apiVersion, setApiVersion] = React.useState('2')
+        const [network, setNetwork] = React.useState('mainnet')
+        const [encoding, setEncoding] = React.useState('gzip')
+        const [template, setTemplate] = React.useState('boxed')
+        const [outputMode, setOutputMode] = React.useState('all')
+        const [popupMode, setPopupMode] = React.useState(false)
+        const [loading, setLoading] = React.useState(false)
+        const [error, setError] = React.useState('')
+        const [result, setResult] = React.useState(null)
+        const [outputs, setOutputs] = React.useState(createInitialOutputs())
+        const [statuses, setStatuses] = React.useState(defaultStatusMap)
+
+        React.useEffect(() => {
+          fetch('./connect.gcscript')
+            .then((res) =>
+              res.ok
+                ? res.text()
+                : Promise.reject(
+                    new Error('Failed to load examples/connect.gcscript')
+                  )
+            )
+            .then((text) => setSource(text))
+            .catch(() => setSource(fallbackScript))
+        }, [])
+
+        React.useEffect(() => {
+          const currentUrl = new URL(window.location.href)
+          const msg = currentUrl.searchParams.get('result')
+          if (!msg) return
+          setStatuses((previous) => {
+            const next = Object.assign({}, previous)
+            next.result = { state: 'loading', error: '' }
+            return next
+          })
+          gc.encodings.msg
+            .decoder(msg)
+            .then((decoded) => {
+              setResult(decoded)
+              setStatuses((previous) => {
+                const next = Object.assign({}, previous)
+                next.result = { state: 'ready', error: '' }
+                return next
+              })
+              window.history.pushState({}, '', window.location.pathname)
+            })
+            .catch((err) => {
+              const message = `Failed to decode result: ${
+                (err && err.message) || 'unknown error'
+              }`
+              setError(message)
+              setStatuses((previous) => {
+                const next = Object.assign({}, previous)
+                next.result = { state: 'error', error: message }
+                return next
+              })
+            })
+        }, [])
+
+        React.useEffect(() => {
+          const supported = encodingsByApi[apiVersion] || []
+          if (supported.indexOf(encoding) === -1) {
+            setEncoding(supported[0] || '')
+          }
+        }, [apiVersion])
+
+        const generateSelected = async () => {
+          const selectedKeys = getSelectedKeys(outputMode)
+          setLoading(true)
+          setError('')
+          setOutputs((previous) => clearSelectedOutputs(previous, selectedKeys))
+          setStatuses(createPendingStatusMap(selectedKeys))
+
+          const activeKeys =
+            outputMode === 'all' ? viewToKeys.all.slice() : selectedKeys.slice()
+          const executableKeys = activeKeys.filter((key) => key !== 'result')
+
+          if (!executableKeys.length) {
+            setStatuses((previous) => {
+              const next = Object.assign({}, previous)
+              selectedKeys.forEach((key) => {
+                next[key] = { state: 'ready', error: '' }
+              })
+              return next
+            })
+            setLoading(false)
+            return
+          }
+
+          let sharedArgs
+          try {
+            sharedArgs = createBaseSharedArgs(
+              source,
+              apiVersion,
+              network,
+              encoding
+            )
+          } catch (err) {
+            const message = (err && err.message) || String(err)
+            setError(message)
+            setStatuses((previous) => {
+              const next = Object.assign({}, previous)
+              executableKeys.forEach((key) => {
+                next[key] = { state: 'error', error: message }
+              })
+              return next
+            })
+            setLoading(false)
+            return
+          }
+
+          const tasks = {
+            url: async () => {
+              const value = await gc.encode.url(sharedArgs)
+              return { url: value }
+            },
+            qrPng: async () => {
+              const value = await gc.encode.qr({
+                ...sharedArgs,
+                qrResultType: 'png',
+                template: template
+              })
+              if (!value) {
+                throw new Error('Library returned an empty PNG payload.')
+              }
+              return { qrPng: value }
+            },
+            qrSvg: async () => {
+              const value = await gc.encode.qr({
+                ...sharedArgs,
+                qrResultType: 'svg',
+                template: template
+              })
+              const normalized = normalizeSvgResult(value)
+              if (normalized.error) {
+                throw new Error(normalized.error)
+              }
+              return { qrSvg: normalized.dataUri, svgText: normalized.svgText }
+            },
+            button: async () => {
+              const dataUri = await gc.snippet.button(sharedArgs)
+              return {
+                buttonDataUri: dataUri,
+                buttonCode: decodeDataUri(dataUri)
+              }
+            },
+            html: async () => {
+              const dataUri = await gc.snippet.html(sharedArgs)
+              return {
+                htmlDataUri: dataUri,
+                htmlCode: decodeDataUri(dataUri)
+              }
+            },
+            react: async () => {
+              const dataUri = await gc.snippet.react({
+                ...sharedArgs,
+                qrResultType: 'png',
+                template: template
+              })
+              return {
+                reactDataUri: dataUri,
+                reactCode: decodeDataUri(dataUri)
+              }
+            },
+            express: async () => {
+              const dataUri = await gc.snippet.express(sharedArgs)
+              return {
+                expressDataUri: dataUri,
+                expressCode: decodeDataUri(dataUri)
+              }
+            },
+            result: async () => ({})
+          }
+
+          const settled = await Promise.all(
+            executableKeys.map(async (key) => {
+              try {
+                const payload = await tasks[key]()
+                return { key: key, ok: true, payload: payload }
+              } catch (err) {
+                return {
+                  key: key,
+                  ok: false,
+                  error: (err && err.message) || String(err)
+                }
+              }
+            })
+          )
+
+          setOutputs((previous) => {
+            const next = Object.assign({}, previous)
+            settled.forEach((entry) => {
+              if (entry.ok) {
+                Object.keys(entry.payload).forEach((payloadKey) => {
+                  next[payloadKey] = entry.payload[payloadKey]
+                })
+              }
+            })
+            return next
+          })
+
+          setStatuses((previous) => {
+            const next = Object.assign({}, previous)
+            settled.forEach((entry) => {
+              next[entry.key] = entry.ok
+                ? { state: 'ready', error: '' }
+                : { state: 'error', error: entry.error }
+            })
+            if (selectedKeys.indexOf('result') !== -1) {
+              next.result = { state: 'ready', error: '' }
+            }
+            return next
+          })
+
+          const failedSelected = settled.filter((entry) => {
+            return selectedKeys.indexOf(entry.key) !== -1 && !entry.ok
+          })
+          if (failedSelected.length) {
+            setError(
+              'Selected output generation hit one or more output-specific errors.'
+            )
+          }
+          setLoading(false)
+        }
+
+        React.useEffect(() => {
+          generateSelected().catch((err) => {
+            setError((err && err.message) || String(err))
+            setLoading(false)
+          })
+        }, [source, apiVersion, network, encoding, template, outputMode])
+
+        const selectedMode =
+          outputModes.find((item) => item.value === outputMode) || {}
+        const statusSummary = getViewSummary(outputMode, statuses)
+
+        return (
+          <div className="app">
+            <div className="hero">
+              <h1>GameChanger React Kitchen Sink</h1>
+              <p>
+                Edit the GCScript DSL code and generate all the supported
+                outputs based on it.
+              </p>
+            </div>
+
+            <div className="grid">
+              <div className="card">
+                <h2>Input</h2>
+                <div className="controls">
+                  <div>
+                    <label>API version</label>
+                    <select
+                      value={apiVersion}
+                      onChange={(e) => setApiVersion(e.target.value)}
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Network</label>
+                    <select
+                      value={network}
+                      onChange={(e) => setNetwork(e.target.value)}
+                    >
+                      <option value="mainnet">mainnet</option>
+                      <option value="preprod">preprod</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Encoding</label>
+                    <select
+                      value={encoding}
+                      onChange={(e) => setEncoding(e.target.value)}
+                    >
+                      {(encodingsByApi[apiVersion] || []).map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>QR template</label>
+                    <select
+                      value={template}
+                      onChange={(e) => setTemplate(e.target.value)}
+                    >
+                      <option value="default">default</option>
+                      <option value="boxed">boxed</option>
+                      <option value="printable">printable</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="checkboxRow" style={{ marginBottom: 12 }}>
+                  <label style={{ marginBottom: 0 }}>
+                    <input
+                      type="checkbox"
+                      checked={popupMode}
+                      onChange={(e) => setPopupMode(e.target.checked)}
+                      style={{ marginRight: 8 }}
+                    />
+                    Launch generated wallet links as popup windows
+                  </label>
+                </div>
+
+                <div style={{ marginBottom: 12 }}>
+                  <label>Output view</label>
+                  <div className="modeGrid">
+                    {outputModes.map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        className={`modeButton ${
+                          outputMode === item.value ? 'active' : ''
+                        }`}
+                        onClick={() => setOutputMode(item.value)}
+                        title={item.help}
+                      >
+                        <div>{item.label}</div>
+                        <div
+                          className="muted"
+                          style={{ fontSize: 12, marginTop: 4 }}
+                        >
+                          {item.help}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/*
+                  The editor drives every library output from one GC script.
+                  The default content is examples/connect.gcscript, with a small
+                  fallback embedded so the page is still useful when opened from
+                  a different directory or static host.
+                */}
+                <textarea
+                  className="editor"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  spellCheck="false"
+                />
+                <div className="actions">
+                  <button
+                    className="btn"
+                    onClick={() => generateSelected()}
+                    disabled={loading}
+                  >
+                    {loading ? 'Generating…' : 'Generate selected view data'}
+                  </button>
+                  <button
+                    className="btn secondary"
+                    onClick={() => copyText(source)}
+                  >
+                    Copy input
+                  </button>
+                </div>
+                <div style={{ marginTop: 12 }}>
+                  <span className="pill">encode.url</span>
+                  <span className="pill">encode.qr png</span>
+                  <span className="pill">encode.qr svg</span>
+                  <span className="pill">snippet.button</span>
+                  <span className="pill">snippet.html</span>
+                  <span className="pill">snippet.react</span>
+                  <span className="pill">snippet.express</span>
+                </div>
+              </div>
+
+              <div className="card">
+                <h2>Status</h2>
+                {error && <div className="error">{error}</div>}
+                {!error && <p className="muted">{statusSummary}</p>}
+                <h3 style={{ marginTop: 18 }}>Current view</h3>
+                <p className="muted">
+                  {selectedMode.label || 'Unknown'} — {selectedMode.help || ''}
+                </p>
+                <h3 style={{ marginTop: 18 }}>Return URL decode</h3>
+                <pre className="code decodedResult">
+                  {result
+                    ? JSON.stringify(result, null, 2)
+                    : 'No wallet returnURL result captured in the current page URL.'}
+                </pre>
+                <div className="inlineActions" style={{ marginTop: 10 }}>
+                  <button
+                    className="btn linkish"
+                    onClick={() => setResult(null)}
+                  >
+                    Clear decoded result
+                  </button>
+                </div>
+                <h3 style={{ marginTop: 18 }}>Notes</h3>
+                <p className="muted">
+                  Public QR output types currently exposed by this library are
+                  PNG and SVG. JPG is not exposed by the current public API.
+                </p>
+              </div>
+            </div>
+
+            <div className="resultGrid" style={{ marginTop: 20 }}>
+              {shouldShow(outputMode, 'url') &&
+                statuses.url.state !== 'ready' && (
+                  <OutputStatusCard statusKey="url" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'url') &&
+                statuses.url.state === 'ready' && (
+                  <LinkOutput
+                    title="Encoded wallet URL"
+                    href={outputs.url}
+                    popupMode={popupMode}
+                    onCopy={() => copyText(outputs.url)}
+                  />
+                )}
+
+              {shouldShow(outputMode, 'qr') &&
+                statuses.qrPng.state !== 'ready' && (
+                  <OutputStatusCard statusKey="qrPng" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'qr') &&
+                statuses.qrPng.state === 'ready' && (
+                  <div className="card">
+                    <h3>QR PNG</h3>
+                    <img className="qrImage" src={outputs.qrPng} alt="QR PNG" />
+                    <div className="inlineActions" style={{ marginTop: 10 }}>
+                      <a href={outputs.qrPng} download="gc-qr.png">
+                        Download PNG
+                      </a>
+                      <button
+                        className="btn linkish"
+                        onClick={() => copyText(outputs.qrPng)}
+                      >
+                        Copy data URI
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              {shouldShow(outputMode, 'qr') &&
+                statuses.qrSvg.state !== 'ready' && (
+                  <OutputStatusCard statusKey="qrSvg" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'qr') &&
+                statuses.qrSvg.state === 'ready' && (
+                  <React.Fragment>
+                    <div className="card">
+                      <h3>QR SVG</h3>
+                      <img
+                        className="qrImage"
+                        src={outputs.qrSvg}
+                        alt="QR SVG"
+                      />
+                      <div className="inlineActions" style={{ marginTop: 10 }}>
+                        <a href={outputs.qrSvg} download="gc-qr.svg">
+                          Download SVG
+                        </a>
+                        <button
+                          className="btn linkish"
+                          onClick={() => copyText(outputs.qrSvg)}
+                        >
+                          Copy data URI
+                        </button>
+                      </div>
+                    </div>
+
+                    <CodeBlock
+                      title="QR SVG source"
+                      code={outputs.svgText}
+                      copyLabel="Copy SVG"
+                      minHeight={220}
+                    />
+                  </React.Fragment>
+                )}
+
+              {shouldShow(outputMode, 'button') &&
+                statuses.button.state !== 'ready' && (
+                  <OutputStatusCard statusKey="button" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'button') &&
+                statuses.button.state === 'ready' && (
+                  <React.Fragment>
+                    <div className="card full">
+                      <h3>Button snippet preview</h3>
+                      <iframe
+                        className="previewFrame"
+                        title="Button snippet preview"
+                        srcDoc={outputs.buttonCode}
+                      />
+                      <PreviewNotice />
+                    </div>
+                    <CodeBlock
+                      title="Button snippet source"
+                      code={outputs.buttonCode}
+                    />
+                  </React.Fragment>
+                )}
+
+              {shouldShow(outputMode, 'html') &&
+                statuses.html.state !== 'ready' && (
+                  <OutputStatusCard statusKey="html" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'html') &&
+                statuses.html.state === 'ready' && (
+                  <React.Fragment>
+                    <div className="card full">
+                      <h3>HTML dapp snippet preview</h3>
+                      <iframe
+                        className="previewFrame"
+                        title="HTML dapp snippet preview"
+                        sandbox="allow-scripts allow-popups allow-same-origin"
+                        srcDoc={outputs.htmlCode}
+                      />
+                      <PreviewNotice />
+                    </div>
+                    <CodeBlock
+                      title="HTML dapp snippet source"
+                      code={outputs.htmlCode}
+                    />
+                  </React.Fragment>
+                )}
+
+              {shouldShow(outputMode, 'react') &&
+                statuses.react.state !== 'ready' && (
+                  <OutputStatusCard statusKey="react" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'react') &&
+                statuses.react.state === 'ready' && (
+                  <React.Fragment>
+                    <div className="card full">
+                      <h3>React dapp snippet preview</h3>
+                      <iframe
+                        className="previewFrame"
+                        title="React dapp snippet preview"
+                        sandbox="allow-scripts allow-popups allow-same-origin"
+                        srcDoc={outputs.reactCode}
+                      />
+                      <PreviewNotice />
+                    </div>
+                    <CodeBlock
+                      title="React dapp snippet source"
+                      code={outputs.reactCode}
+                    />
+                  </React.Fragment>
+                )}
+
+              {shouldShow(outputMode, 'express') &&
+                statuses.express.state !== 'ready' && (
+                  <OutputStatusCard statusKey="express" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'express') &&
+                statuses.express.state === 'ready' && (
+                  <CodeBlock
+                    title="Express backend snippet source"
+                    code={outputs.expressCode}
+                  />
+                )}
+
+              {shouldShow(outputMode, 'result') &&
+                statuses.result.state !== 'ready' && (
+                  <OutputStatusCard statusKey="result" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'result') &&
+                statuses.result.state === 'ready' && (
+                  <CodeBlock
+                    title="Decoded wallet returnURL result"
+                    code={JSON.stringify(result, null, 2)}
+                    copyLabel="Copy decoded result"
+                    minHeight={220}
+                  />
+                )}
+            </div>
+          </div>
+        )
+      }
+
+      ReactDOM.render(<App />, document.querySelector('#root'))
+    </script>
+  </body>
+</html>

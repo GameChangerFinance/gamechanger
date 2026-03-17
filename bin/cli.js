@@ -33,6 +33,7 @@ export default async function main() {
     process.on('uncaughtException', function (err) {
       console.error('Error: ' + err.message)
       console.error(usageMessage)
+      process.exit(1)
     })
     const cli = meow(usageMessage, {
       help: usageMessage,
@@ -163,7 +164,7 @@ export default async function main() {
                 parsedDataUri?.typeFull || ''
               ).slice(0, 20)}`
             )
-          fs.writeFileSync(filePath, parsedDataUri, 'utf8')
+          fs.writeFileSync(filePath, Buffer.from(parsedDataUri))
         } else {
           process.stdout.write(parsedDataUri)
         }

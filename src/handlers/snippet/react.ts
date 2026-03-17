@@ -7,6 +7,7 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 // import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 const baseTemplate = (args: {
   apiVersion: APIVersion
   network: NetworkType
@@ -47,7 +48,7 @@ const baseTemplate = (args: {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // import gc from '@gamechanger-finance/gc'
+      // Loaded from dist/browser.min.js or CDN
       const {gc} = window;
 
       const App=()=>{

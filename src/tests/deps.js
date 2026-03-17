@@ -32,24 +32,25 @@ export default async () => {
   //   const lzwCodec = await jsonUrl['lzw']()
   //   const lzmaCodec = await jsonUrl['lzma']()
 
+  // json-url is now deprecated!
   //const jsonUrl = await import('json-url').then((d) => d.default)
-  const jsonUrl = await import('../modules/json-url')
-    .then((d) => d.default())
-    .catch((err) => {
-      console.error(err)
-      return undefined
-    })
+  // const jsonUrl = await import('../modules/json-url')
+  //   .then((d) => d.default())
+  //   .catch((err) => {
+  //     console.error(err)
+  //     return undefined
+  //   })
 
-  const lzwCodec = jsonUrl('lzw') //jsonUrl ? jsonUrl('lzw') : undefined
-  console.log({ lzwCodec })
+  // const lzwCodec = jsonUrl('lzw') //jsonUrl ? jsonUrl('lzw') : undefined
+  // console.log({ lzwCodec })
 
   //const lzmaCodec = jsonUrl('lzma')
   //   const lzmaLib = await import('lzma/src/lzma_worker.js')
   //   //const lzmaLib = await import('lzma')
   //   console.log({ lzmaLib })
   //   const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
-  const lzmaCodec = await import('../modules/lzma').then((d) => d.default())
-  console.log({ lzmaCodec })
+  // const lzmaCodec = await import('../modules/lzma').then((d) => d.default())
+  // console.log({ lzmaCodec })
   //const template = await import('string-placeholder').then((d) => d.default)
   //const template = require('string-placeholder')
 
@@ -62,13 +63,13 @@ export default async () => {
     pako: Buffer.from(
       pako.gzip(Buffer.from(safeJSONStringify({ foo: 'bar' }), 'utf-8'))
     ).toString('hex'),
-    lzwCodec: jsonUrl
-      ? await lzwCodec.compress({ foo: 'bar' })
-      : 'disabled due to an error', //It is expected to fail for now
-
-    lzmaCodec: URLSafeBase64.encode(
-      Buffer.from(await lzmaCodec.compress({ foo: 'bar' }))
-    ),
+    // json-url is now deprecated!
+    // lzwCodec: jsonUrl
+    //   ? await lzwCodec.compress({ foo: 'bar' })
+    //   : 'disabled due to an error', //It is expected to fail for now
+    // lzmaCodec: URLSafeBase64.encode(
+    //   Buffer.from(await lzmaCodec.compress({ foo: 'bar' }))
+    // ),
     template: template(
       'hello {word}',
       { word: 'world' },

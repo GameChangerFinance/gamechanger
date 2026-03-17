@@ -13,11 +13,15 @@ const handler: EncodingHandler = {
     const { renderQRCode } = await qrLoader() //If turns into async, must be moved inside
 
     const url = await urlEncoder.encoder(obj, options)
+    const qrResultType = options?.qrResultType || 'png'
     const qrResult = await renderQRCode({
       text: url,
-      style: { ...(options?.qrCodeStyle || {}) }
+      style: {
+        ...(options?.qrCodeStyle || {}),
+        drawer:
+          qrResultType === 'svg' ? 'svg' : (options?.qrCodeStyle || {})?.drawer
+      }
     })
-    const qrResultType = options?.qrResultType || 'png'
     const handlers = {
       png: async () => qrResult?.dataURL, //qr.toDataURL(),
       svg: async () =>

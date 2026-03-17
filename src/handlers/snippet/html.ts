@@ -10,6 +10,7 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 // import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 
 const AstonMaartenTemplate = (args: {
   apiVersion: APIVersion
@@ -72,7 +73,7 @@ const AstonMaartenTemplate = (args: {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import gc from '@gamechanger-finance/gc'
+      // Loaded from dist/browser.min.js or CDN
       const {gc} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections

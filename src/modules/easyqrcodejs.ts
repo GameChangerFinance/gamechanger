@@ -1,69 +1,138 @@
-import Canvas from 'canvas'
-import path from 'path'
 import { ObjectType } from '../types'
 
-export default async () => {
-  const isNode = typeof process === 'object' && typeof window !== 'object'
-  //const useGlobal = isNode ? global : window;
+type QRLoaderResult = {
+  _QRCode: any
+  QRCode: any
+  Canvas: any
+  createQRCode: (options: ObjectType) => any
+  renderQRCode: (args: { text: string; style: any }) => Promise<any>
+  registerFonts: (items: Array<{ file: string; def: any }>) => void
+}
 
-  /**
-   * Trick:
-   * by using this dynamic argument on `import(pathStr)`
-   * I prevent rollup commonJs plugin to detect and auto-process the imported js files
-   *
-   * Excluding the files on rollup configs is producing bugs elsewhere. This solves it well for all targets
-   */
-  const pathStr = isNode
-    ? 'easyqrcodejs-nodejs'
-    : '../../dist/easy.qrcode.min.js'
-  //: 'https://cdn.jsdelivr.net/npm/easyqrcodejs@4.6.0/dist/easy.qrcode.min.js' //'json-url/dist/browser/json-url-single.js'
+type FontRegistryItem = { file: string; def: any }
+
+const runtimeImport = async (pathStr: string) =>
+  Function('pathStr', 'return import(pathStr)')(pathStr) as Promise<any>
+
+const nodeFontRegistry: FontRegistryItem[] = []
+let nodeRuntimePromise: Promise<any> | undefined
+
+const uniqueFontRegistry = () => {
+  const map = new Map<string, FontRegistryItem>()
+  nodeFontRegistry.forEach((item) => {
+    const key = `${String(item?.file || '')}::${String(
+      item?.def?.family || ''
+    )}`
+    if (!map.has(key)) map.set(key, item)
+  })
+  return Array.from(map.values())
+}
+
+const resolveNodeFontPath = (file: string, runtime: any) => {
+  if (!file || file.startsWith('data:')) return ''
+
+  const path = runtime?.path
+  const fileURLToPath = runtime?.fileURLToPath
+
+  if (file.startsWith('file:') && typeof fileURLToPath === 'function') {
+    return fileURLToPath(file)
+  }
+
+  if (path?.isAbsolute?.(file)) {
+    return file
+  }
+
+  return path.resolve(typeof __dirname === 'string' ? __dirname : '.', file)
+}
+
+const getNodeRuntime = async () => {
+  if (!nodeRuntimePromise) {
+    nodeRuntimePromise = (async () => {
+      const [{ createRequire }, path, { fileURLToPath }] = await Promise.all([
+        runtimeImport('node:module'),
+        runtimeImport('node:path'),
+        runtimeImport('node:url')
+      ])
+      const require = createRequire(
+        typeof __filename === 'string'
+          ? __filename
+          : `${process.cwd()}/package.json`
+      )
+
+      const QRCode = require('./easyqrcodejs-node.cjs')
+      const canvasCompat = require('@napi-rs/canvas/node-canvas')
+      const _QRCode = QRCode?.default || QRCode
+
+      return {
+        _QRCode,
+        QRCode: _QRCode,
+        Canvas: canvasCompat?.Canvas || null,
+        registerFont:
+          canvasCompat?.registerFont ||
+          canvasCompat?.GlobalFonts?.registerFromPath ||
+          null,
+        path,
+        fileURLToPath
+      }
+    })()
+  }
+
+  return nodeRuntimePromise
+}
+
+export default async (): Promise<QRLoaderResult> => {
+  const isNode = typeof process === 'object' && !!(<any>process)?.versions?.node
 
   if (isNode) {
-    const _QRCode = await import(pathStr).then((d) => d?.default) //QRCode4Node //require('easyqrcodejs-nodejs')
-    //const path = require('path')
-    const QRCode = _QRCode //replaceable by a wrapper class
-    const createQRCode = (options: ObjectType) => {
-      // const canvas = require('canvas').createCanvas(options.width, options.height) //https://github.com/Automattic/node-canvas
-      return new QRCode(options)
+    const runtime = await getNodeRuntime()
+    const { _QRCode, QRCode, Canvas, registerFont } = runtime
+
+    const createQRCode = (options: ObjectType) =>
+      new QRCode({ ...(options || {}) })
+
+    const registerFonts = (items: Array<{ file: string; def: any }>) => {
+      items.forEach((item) => {
+        nodeFontRegistry.push(item)
+      })
+
+      uniqueFontRegistry().forEach(({ file, def }) => {
+        if (!registerFont) return
+        const fontPath = resolveNodeFontPath(String(file || ''), runtime)
+        if (!fontPath) return
+        try {
+          registerFont(fontPath, {
+            family: String(def?.family || 'GameChangerFont'),
+            weight: String(def?.weight || 'normal'),
+            style: String(def?.style || 'normal')
+          })
+        } catch {
+          // Keep current behavior best-effort for duplicated or unsupported font registrations.
+        }
+      })
     }
+
     const renderQRCode = async (args: {
       text: string
       style: any
     }): Promise<any> => {
-      return new Promise(async (resolve) => {
-        const options = {
-          ...(args.style || {}),
-          text: args.text
-        }
-        const qr = createQRCode(options)
-        resolve({
-          qr,
-          qrCodeOptions: options,
-          dataURL: await qr.toDataURL(),
-          SVGText: await qr.toSVGText()
-        })
+      const qr = createQRCode({
+        ...(args.style || {}),
+        text: args.text
       })
+
+      const [dataURL, SVGText] = await Promise.all([
+        qr.toDataURL(),
+        qr.toSVGText()
+      ])
+
+      return {
+        qr,
+        qrCodeOptions: qr?._htOption,
+        dataURL,
+        SVGText
+      }
     }
-    const registerFonts = (items: Array<{ file: string; def: any }>) => {
-      const { registerFont } = Canvas
-      items.forEach(({ file, def }) => {
-        const fontPath = path.resolve(__dirname, file)
-        // console.log(
-        //   `Registering font '${fontPath}' (${
-        //     def?.family || 'Unknown'
-        //   }) on NodeJS Canvas...`
-        // )
-        try {
-          registerFont(fontPath, def)
-        } catch (err) {
-          throw new Error(
-            `Error registering font '${fontPath}' (${
-              def?.family || 'Unknown'
-            }) on NodeJS Canvas. ${err}`
-          )
-        }
-      })
-    }
+
     return {
       _QRCode,
       QRCode,
@@ -72,83 +141,58 @@ export default async () => {
       renderQRCode,
       registerFonts
     }
+  }
 
-    // return {
-    //   _QRCode: {},
-    //   QRCode: {},
-    //   Canvas: {},
-    //   createQRCode: () => {},
-    //   renderQRCode: () => {},
-    //   registerFonts: () => {}
-    // }
-  } else {
-    //const _QRCode = await import('easyqrcodejs/dist/easy.qrcode.min.js').then(() => {
-    //const _QRCode = await import('easyqrcodejs/src/easy.qrcode').then(() => {
-    //WORKS but nodejs version breaks it on browser?
-    //const _QRCode = await import('easyqrcodejs').then(() => {
-    const _QRCode = await import('easyqrcodejs').then(() => {
-      return (<any>window)?.QRCode
+  const easyQRCodeModule = await import('easyqrcodejs')
+  const QRCode =
+    (<any>window)?.QRCode ||
+    (<any>easyQRCodeModule)?.QRCode ||
+    (<any>easyQRCodeModule)?.default ||
+    easyQRCodeModule
+  const _QRCode = (<any>window)?.QRCode || QRCode //replaceable by a wrapper class
+  const createQRCode = (options: ObjectType) => {
+    const wantsSVG =
+      String((options || {}).drawer || '').toLowerCase() === 'svg'
+    const element = document.createElement(wantsSVG ? 'div' : 'canvas')
+    if (!element) throw new Error('QR host element creation failed on browser')
+    return new QRCode(element, options)
+  }
+  const renderQRCode = async (args: {
+    text: string
+    style: any
+  }): Promise<any> => {
+    return new Promise(async (resolve) => {
+      let qr: any
+      qr = createQRCode({
+        ...(args.style || {}),
+        text: args.text,
+        onRenderingEnd: (qrCodeOptions: any, dataURL: string) => {
+          //console.dir({ dataURL, qrCodeOptions })
+          const isSVGText =
+            typeof dataURL === 'string' && dataURL.trim().startsWith('<svg')
+          queueMicrotask(() => {
+            resolve({
+              qr,
+              qrCodeOptions,
+              dataURL,
+              SVGText: isSVGText ? dataURL : ''
+            })
+          })
+        }
+      })
     })
-
-    const QRCode = _QRCode //replaceable by a wrapper class
-    const createQRCode = (options: ObjectType) => {
-      const canvas = document.createElement('canvas')
-      if (!canvas) throw new Error('canvas creation failed on browser')
-      return new QRCode(canvas, options)
-    }
-    const renderQRCode = async (args: {
-      text: string
-      style: any
-    }): Promise<any> => {
-      return new Promise(async (resolve) => {
-        const qr = createQRCode({
-          ...(args.style || {}),
-          text: args.text,
-          onRenderingEnd: (qrCodeOptions: any, dataURL: string) => {
-            //console.dir({ dataURL, qrCodeOptions })
-            resolve({ qr, qrCodeOptions, dataURL, SVGText: '' })
-          }
-        })
-      })
-    }
-    //TODO: fix paths on browser by bundling the files. Maybe as a blob or dataURI?
-    const registerFonts = (items: Array<{ file: string; def: any }>) => {
-      const { registerFont } = Canvas
-      items.forEach(({ file, def }) => {
-        const fontPath = file
-        // console.log(
-        //   `Registering font '${fontPath}' (${
-        //     def?.family || 'Unknown'
-        //   }) on Browser Canvas...`
-        // )
-        try {
-          registerFont(fontPath, def)
-        } catch (err) {
-          // throw new Error(
-          //   `Error registering font '${fontPath}' (${
-          //     def?.family || 'Unknown'
-          //   }) on Browser Canvas. ${err}`
-          // )
-        }
-      })
-    }
-    return {
-      _QRCode,
-      QRCode,
-      Canvas,
-      createQRCode,
-      renderQRCode,
-      registerFonts
-    }
-
-    // return {
-    //   _QRCode: {},
-    //   QRCode: {},
-    //   Canvas: {},
-    //   createQRCode: () => {},
-    //   renderQRCode: () => {},
-    //   registerFonts: () => {}
-    // }
+  }
+  //TODO: fix paths on browser by bundling the files. Maybe as a blob or dataURI?
+  const registerFonts = (_items: Array<{ file: string; def: any }>) => {
+    // Browser target keeps the current behavior here.
+  }
+  return {
+    _QRCode,
+    QRCode,
+    Canvas: null,
+    createQRCode,
+    renderQRCode,
+    registerFonts
   }
 }
 

@@ -2,3 +2,5 @@
 node_modules/
 .rollup.cache/
 .rollup.cache/**/*
+dist/
+examples/dist/

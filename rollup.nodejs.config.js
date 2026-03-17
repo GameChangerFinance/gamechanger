@@ -15,14 +15,7 @@ export default {
     extend: true,
     inlineDynamicImports: true //Solves: Invalid value "umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
   },
-  external: [
-    'canvas-prebuilt',
-    'canvas',
-    'jsdom/lib/jsdom/utils',
-    'jsdom/lib/jsdom/living/generated/utils',
-    'jsdom',
-    'xmldom'
-  ],
+  external: ['jsdom', 'xmldom'],
   plugins: [
     json(),
     filesAsDataURIs({

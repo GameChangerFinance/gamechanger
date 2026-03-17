@@ -7,6 +7,7 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 const baseTemplate = async (args: {
   apiVersion: APIVersion
   network: NetworkType
