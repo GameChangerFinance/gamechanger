@@ -16,9 +16,9 @@ export const apiEncodings: { [apiVer: string]: APIEncoding[] } = {
   '2': ['json-url-lzma', 'gzip', 'base64url']
 }
 
-const isDevelopment = true
+const isDevelopment = false
 const SingleDomainV2 = isDevelopment
-  ? 'https://dev-wallet.gamechanger.finance/'
+  ? ''
   : 'https://wallet.gamechanger.finance/'
 
 export const GCDomains = {
