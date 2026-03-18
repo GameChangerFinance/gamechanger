@@ -151,8 +151,8 @@ const url = await gc.encode.url({
   apiVersion: '2', //APIV2
   network: 'mainnet', // mainnet or preprod
   encoding: 'gzip', //suggested, default message encoding/compression
-  refAddress: 'addr1...', // optional: appends ref=<address>
-  disableNetworkRouter: false // optional: by default appends networkTag=<network>
+  refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
+  disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in
 })
 ```
 
@@ -170,8 +170,8 @@ const pngDataURI = gc.encode.qr({
   apiVersion: '2',
   network: 'mainnet',
   encoding: 'gzip',
-  refAddress: 'addr1...', // optional
-  disableNetworkRouter: false, // optional
+  refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
+  disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in `network` tag
   qrResultType: 'png'
 })
 ```
@@ -286,17 +286,24 @@ Options:
 
         --serve | -S : Serve code snippet outputs on http://localhost:3000
 
+        --refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
+
+        --disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
 Examples
 
         ⭐ URL encoding:
                 $ gamechanger-cli mainnet encode url -v 2 -f examples/connect.gcscript
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
+
+                $ gamechanger-cli mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet&ref=addr1...
 
                 $ gamechanger-cli mainnet encode url -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
 
                 $ cat examples/connect.gcscript | gamechanger-cli mainnet encode url -v 2
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
 
         ⭐ QR encoding:
                 $ gamechanger-cli preprod encode qr -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}' > qr_output.png
@@ -327,6 +334,7 @@ Examples
                 $ gamechanger-cli mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
                 $ node examples/expressBackend.js
                 🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
+
 
 
 ```
