@@ -13,6 +13,8 @@ const baseTemplate = (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -80,6 +82,10 @@ const baseTemplate = (args: {
             apiVersion:${strProp(args?.apiVersion)},
             network:${strProp(args?.network)},
             encoding:${strProp(args?.encoding)},
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           })
             .then(newUrl=>setUrl(newUrl))
             .catch(console.error)
@@ -94,6 +100,10 @@ const baseTemplate = (args: {
             outputFile:${strProp(args?.outputFile)},
             template:${strProp(args?.template)},
             styles:${strProp(args?.styles)},                        
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           })
             .then(newQr=>setQr(newQr))
             .catch(console.error)
@@ -135,6 +145,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -149,6 +161,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,

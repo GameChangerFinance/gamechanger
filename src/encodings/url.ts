@@ -9,6 +9,7 @@ const encoder = async (
     msgPlaceholder?: string
     encodingOptions?: any
     encoding?: APIEncoding
+    queryParams?: { [key: string]: string | undefined | null }
   }
 ) => {
   //const template = require('string-placeholder');
@@ -57,6 +58,16 @@ const encoder = async (
       'Message was not embedded on URL. Invalid template or message placeholder provided'
     )
 
+  /**
+   * Query string additions happen only on the parsed URL instance so the final
+   * URL is rebuilt from the native URL object and preserves any preexisting
+   * query string data already present in the pattern.
+   */
+  Object.entries(options?.queryParams || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) return
+    parsedSolvedURL.searchParams.set(key, String(value))
+  })
+
   return parsedSolvedURL.toString() //finally we construct the URL from the parsed version to ensure it's valid
 }
 
@@ -67,6 +78,7 @@ const decoder = async (
     msgPlaceholder?: string
     encodingOptions?: any
     encoding?: APIEncoding
+    queryParams?: { [key: string]: string | undefined | null }
   }
 ) => {
   //const template = await import('string-placeholder').then((d) => d.exports)

@@ -8,7 +8,11 @@ const handler: EncodingHandler = {
   name: 'GameChanger Wallet QR transport. The URL transport encoded as QR code',
   encoder: async (
     obj: any,
-    options: { qrCodeStyle?: any; qrResultType?: 'png' | 'svg' }
+    options: {
+      qrCodeStyle?: any
+      qrResultType?: 'png' | 'svg'
+      queryParams?: { [key: string]: string | undefined | null }
+    }
   ) => {
     const { renderQRCode } = await qrLoader() //If turns into async, must be moved inside
 

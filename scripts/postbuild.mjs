@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { generateExamplesFromBuild } from './generate-examples.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -117,6 +118,10 @@ await copyNodeQrRuntimeFiles()
 await ensureFontAlias()
 await removeDanglingLegacyArtifacts()
 await copyDir(distDir, examplesDistDir)
+await generateExamplesFromBuild({
+  distDir,
+  examplesDir
+})
 
 try {
   await fs.access(browserMinBundle)

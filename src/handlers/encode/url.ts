@@ -1,13 +1,9 @@
 import { GCDappConnUrls } from '../../config'
-import {
-  APIEncoding,
-  APIVersion,
-  DefaultNetwork,
-  NetworkType
-} from '../../types'
+import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 
 import urlEncoder from '../../encodings/url'
+import buildWalletQueryParams from './urlQueryParams'
 
 export default async (args: {
   apiVersion: APIVersion
@@ -29,11 +25,11 @@ export default async (args: {
     const url = await urlEncoder.encoder(obj, {
       urlPattern,
       encoding,
-      //new
-      routeToNetwork: args?.disableNetworkRouter
-        ? undefined
-        : args.network || DefaultNetwork,
-      refAddress: args?.refAddress
+      queryParams: buildWalletQueryParams({
+        network,
+        refAddress: args?.refAddress,
+        disableNetworkRouter: args?.disableNetworkRouter
+      })
     })
 
     return url

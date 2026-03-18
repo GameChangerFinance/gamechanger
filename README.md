@@ -150,7 +150,9 @@ const url = await gc.encode.url({
   input: JSON.stringify(gcscript), // GCScript is pure JSON code, supported on all platforms
   apiVersion: '2', //APIV2
   network: 'mainnet', // mainnet or preprod
-  encoding: 'gzip' //suggested, default message encoding/compression
+  encoding: 'gzip', //suggested, default message encoding/compression
+  refAddress: 'addr1...', // optional: appends ref=<address>
+  disableNetworkRouter: false // optional: by default appends networkTag=<network>
 })
 ```
 
@@ -168,6 +170,8 @@ const pngDataURI = gc.encode.qr({
   apiVersion: '2',
   network: 'mainnet',
   encoding: 'gzip',
+  refAddress: 'addr1...', // optional
+  disableNetworkRouter: false, // optional
   qrResultType: 'png'
 })
 ```
@@ -177,6 +181,12 @@ then redirect users with the QR code like:
 ```html
 <image src="${pngDataURI}">Scan QR code to connect</image>
 ```
+
+By default, the opinionated `gc.encode.url(...)` and `gc.encode.qr(...)`
+handlers append `networkTag=<network>` to generated wallet URLs. Set
+`disableNetworkRouter: true` to skip that query string. When `refAddress` is
+provided, handlers also append `ref=<address>` while preserving any query string
+data already present in the base URL pattern.
 
 ### Decode dapp connection results (wallet -> dapp message):
 

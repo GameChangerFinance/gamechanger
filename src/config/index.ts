@@ -80,8 +80,9 @@ export const demoGCS2 = {
       }
     }
   },
-  gzipShort: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...',
-  gzip: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAAzWOQQrDMAwEvyJ07gt6KaGBnvoIUYvGECIhy1A3-O-VSXpbjZhld_TsK-MVH-wwpWRcCl4wcXlZVs-yxW8WaFKBqi9i-cvgAmUhY6DDGCCR6i1Ubzr6Dj9u_qiYTyXYs83kFMxq1O542iOe1pv9Xs148_-W3vsPri6B66UAAAA'
+  gzipShort:
+    'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet',
+  gzip: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAAzWOQQrDMAwEvyJ07gt6KaGBnvoIUYvGECIhy1A3-O-VSXpbjZhld_TsK-MVH-wwpWRcCl4wcXlZVs-yxW8WaFKBqi9i-cvgAmUhY6DDGCCR6i1Ubzr6Dj9u_qiYTyXYs83kFMxq1O542iOe1pv9Xs148_-W3vsPri6B66UAAAA?networkTag=mainnet'
 }
 
 export const usageMessage = `
@@ -122,11 +123,18 @@ Options:
 
 	--serve | -S : Serve code snippet outputs on http://localhost:3000
 
+	--refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
+
+	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
 Examples
 
 	⭐ URL encoding:
 		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
 		${demoGCS2.gzipShort}
+
+		$ ${cliName} mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
+		${demoGCS2.gzipShort}&ref=addr1...
 
 		$ ${cliName} mainnet encode url -v 2 -a ${escapeShellArg(
   JSON.stringify(demoGCS2.gcscript)

@@ -17,6 +17,8 @@ const AstonMaartenTemplate = (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -165,6 +167,10 @@ const AstonMaartenTemplate = (args: {
             apiVersion:${strProp(args?.apiVersion)},
             network:${strProp(args?.network)},
             encoding:useCodec,
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           });
           return url;
       }
@@ -370,6 +376,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -384,6 +392,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,

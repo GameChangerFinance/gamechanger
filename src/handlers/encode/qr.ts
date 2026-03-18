@@ -2,7 +2,6 @@ import { GCDappConnUrls } from '../../config'
 import {
   APIEncoding,
   APIVersion,
-  DefaultNetwork,
   DefaultQRTemplate,
   NetworkType,
   QRTemplateType
@@ -11,6 +10,7 @@ import { validateBuildMsgArgs } from '../../utils'
 
 import qrEncoder from '../../encodings/qr'
 import qrLibLoader from '../../modules/easyqrcodejs'
+import buildWalletQueryParams from './urlQueryParams'
 
 //import path from 'path'
 import stylesLoader from '../../config/styles'
@@ -67,13 +67,11 @@ export default async (args: {
       apiVersion,
       network,
       encoding,
-      
-      //new
-      routeToNetwork: args?.disableNetworkRouter
-        ? undefined
-        : args.network || DefaultNetwork,
-      refAddress: args?.refAddress,
-
+      queryParams: buildWalletQueryParams({
+        network,
+        refAddress: args?.refAddress,
+        disableNetworkRouter: args?.disableNetworkRouter
+      }),
       qrCodeStyle: style,
       qrResultType: args?.qrResultType
     })

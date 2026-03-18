@@ -14,6 +14,8 @@ const baseTemplate = async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -27,7 +29,9 @@ const baseTemplate = async (args: {
     network: args.network,
     encoding: args.encoding,
     input: args.input,
-    debug: args.debug
+    debug: args.debug,
+    refAddress: args?.refAddress,
+    disableNetworkRouter: args?.disableNetworkRouter
   })
 
   return `
@@ -48,6 +52,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -62,6 +68,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,

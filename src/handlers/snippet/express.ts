@@ -7,6 +7,8 @@ const baseTemplate = async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
   const gcscript = JSON.parse(args?.input)
   const strProp = (str?: string) =>
@@ -90,6 +92,8 @@ const baseTemplate = async (args: {
         apiVersion:${strProp(args?.apiVersion)},
         network:${strProp(args?.network)},
         encoding:${strProp(args?.encoding)},
+        refAddress:${strProp(args?.refAddress)},
+        disableNetworkRouter:${args?.disableNetworkRouter ? 'true' : 'false'},
         });
       const indexHtml=\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`
       serve({
@@ -111,6 +115,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -119,7 +125,9 @@ export default async (args: {
       apiVersion,
       network,
       encoding,
-      input
+      input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter
     })
     return `data:application/javascript;base64,${Buffer.from(text).toString(
       'base64'

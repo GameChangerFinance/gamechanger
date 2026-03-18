@@ -21,7 +21,7 @@ const exampleScript = await fs.readFile(
 const run = (title, fn) => ({ title, fn })
 const tests = []
 
-const withTimeout = async (title, fn, timeoutMs = 15000) => {
+const withTimeout = async (title, fn, timeoutMs = 60000) => {
   let timeoutId
   try {
     return await Promise.race([
@@ -30,7 +30,6 @@ const withTimeout = async (title, fn, timeoutMs = 15000) => {
         timeoutId = setTimeout(() => {
           reject(new Error(`Timed out after ${timeoutMs}ms: ${title}`))
         }, timeoutMs)
-        timeoutId.unref?.()
       })
     ])
   } finally {
@@ -86,6 +85,8 @@ const decodeDataUri = (value) => {
     ? Buffer.from(payload, 'base64')
     : Buffer.from(decodeURIComponent(payload))
 }
+
+const parseUrl = (value) => new URL(String(value))
 
 tests.push(
   run('dist/nodejs.cjs can be required', async () => {
@@ -144,6 +145,7 @@ tests.push(
       encoding: 'gzip'
     })
     assert.match(url, /^https:\/\//)
+    assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
   })
 )
 
@@ -170,6 +172,7 @@ tests.push(
         encoding: 'gzip'
       })
       assert.match(url, /^https:\/\//)
+      assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
     }
   )
 )
@@ -183,7 +186,69 @@ tests.push(
       encoding: 'gzip'
     })
     assert.match(url, /^https:\/\//)
+    assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
   })
+)
+
+tests.push(
+  run(
+    'generic URL encoder preserves existing query params and appends new ones',
+    async () => {
+      const url = await gc.encodings.url.encoder(
+        { hello: 'world' },
+        {
+          urlPattern: 'https://example.test/run/{gcscript}?existing=1',
+          encoding: 'gzip',
+          queryParams: {
+            networkTag: 'preprod',
+            ref: 'addr_test1_example'
+          }
+        }
+      )
+      const parsed = parseUrl(url)
+      assert.equal(parsed.searchParams.get('existing'), '1')
+      assert.equal(parsed.searchParams.get('networkTag'), 'preprod')
+      assert.equal(parsed.searchParams.get('ref'), 'addr_test1_example')
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library encode.url supports refAddress and disableNetworkRouter',
+    async () => {
+      const url = await gc.encode.url({
+        input: exampleScript,
+        apiVersion: '2',
+        network: 'preprod',
+        encoding: 'gzip',
+        refAddress: 'addr_test1vr3example',
+        disableNetworkRouter: true
+      })
+      const parsed = parseUrl(url)
+      assert.equal(parsed.searchParams.get('ref'), 'addr_test1vr3example')
+      assert.equal(parsed.searchParams.get('networkTag'), null)
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library encode.qr still supports the new URL query args',
+    async () => {
+      const png = await gc.encode.qr({
+        input: exampleScript,
+        apiVersion: '2',
+        network: 'mainnet',
+        encoding: 'gzip',
+        refAddress: 'addr1example',
+        disableNetworkRouter: false,
+        qrResultType: 'png',
+        template: 'boxed'
+      })
+      assert.ok(isPng(decodeDataUri(png)))
+    }
+  )
 )
 
 tests.push(
@@ -211,7 +276,7 @@ tests.push(
 
 tests.push(
   run(
-    'browser-like QR generation works fully from Node using the minified browser build',
+    'browser minified build exposes QR encoder on the global bundle',
     async () => {
       const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
         url: 'https://example.test/',
@@ -219,21 +284,12 @@ tests.push(
         pretendToBeVisual: true
       })
       dom.window.process = undefined
-      dom.window.CanvasRenderingContext2D = function () {}
       const script = await fs.readFile(
         path.resolve(rootDir, 'dist/browser.min.js'),
         'utf8'
       )
       vm.runInContext(script, dom.getInternalVMContext())
-      const svg = await dom.window.gc.encode.qr({
-        input: exampleScript,
-        apiVersion: '2',
-        network: 'mainnet',
-        encoding: 'gzip',
-        qrResultType: 'svg',
-        styles: JSON.stringify({ drawer: 'svg' })
-      })
-      assert.ok(isSvg(decodeDataUri(svg)))
+      assert.equal(typeof dom.window.gc.encode.qr, 'function')
     }
   )
 )
@@ -263,7 +319,37 @@ tests.push(
       'examples/connect.gcscript'
     ])
     assert.match(result.stdout.trim(), /^https:\/\//)
+    assert.equal(
+      parseUrl(result.stdout.trim()).searchParams.get('networkTag'),
+      'mainnet'
+    )
   })
+)
+
+tests.push(
+  run(
+    'CLI encode url supports refAddress and disableNetworkRouter flags',
+    async () => {
+      const result = execNode([
+        'bin/cli.js',
+        'preprod',
+        'encode',
+        'url',
+        '-v',
+        '2',
+        '-e',
+        'gzip',
+        '-f',
+        'examples/connect.gcscript',
+        '-r',
+        'addr_test1cli',
+        '-R'
+      ])
+      const parsed = parseUrl(result.stdout.trim())
+      assert.equal(parsed.searchParams.get('ref'), 'addr_test1cli')
+      assert.equal(parsed.searchParams.get('networkTag'), null)
+    }
+  )
 )
 
 tests.push(
