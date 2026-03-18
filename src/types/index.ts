@@ -40,7 +40,7 @@ export type CLIHandlerContext = {
   input: string
 
   /**
-   * Optional wallet referral address appended by the opinionated handlers as
+   * Optional wallet referral address appended by the handlers as
    * the URL query string parameter `ref`.
    */
   refAddress?: string

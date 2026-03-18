@@ -56,7 +56,7 @@ Node / bundlers:
 import gc from '@gamechanger-finance/gc'
 ```
 
-## Router and referral testing
+## Network Router and referral features
 
 The kitchen sink example also exposes the handler-only URL options:
 
@@ -64,7 +64,7 @@ The kitchen sink example also exposes the handler-only URL options:
 - `disableNetworkRouter`: when enabled, skips the default `networkTag=<network>`
   query string
 
-Those options are applied by the opinionated handlers. The lower-level encoders
+Those options are applied by the handlers. The lower-level encoders
 remain generic.
 
 ## Files

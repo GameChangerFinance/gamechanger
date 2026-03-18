@@ -182,7 +182,7 @@ then redirect users with the QR code like:
 <image src="${pngDataURI}">Scan QR code to connect</image>
 ```
 
-By default, the opinionated `gc.encode.url(...)` and `gc.encode.qr(...)`
+By default, `gc.encode.url(...)` and `gc.encode.qr(...)`
 handlers append `networkTag=<network>` to generated wallet URLs. Set
 `disableNetworkRouter: true` to skip that query string. When `refAddress` is
 provided, handlers also append `ref=<address>` while preserving any query string

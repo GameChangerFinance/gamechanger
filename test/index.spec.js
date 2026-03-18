@@ -70,7 +70,7 @@ describe('unit tests', () => {
       expect(parsed.searchParams.get('ref')).to.equal('addr_test1example')
     })
 
-    it('should support refAddress and disableNetworkRouter in opinionated handlers', async () => {
+    it('should support refAddress and disableNetworkRouter in handlers', async () => {
       const url = await gc.encode.url({
         apiVersion: '2',
         network: 'preprod',
