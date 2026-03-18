@@ -1,4 +1,3 @@
-// import { GCDappConnUrls } from '../../config'
 import { GCDomains, contact, apiEncodings } from '../../config'
 import {
   APIEncoding,
@@ -157,7 +156,7 @@ const AstonMaartenTemplate = (args: {
       async function buildActionUrl(args){
           //This is the GCScript code that GameChanger Wallet will execute
           //JSON code that will be encoded/compressed inside 'actionUrl'
-          var gcscript = ${args.input};
+          var gcscript = ${JSON.stringify(gcscript, null, 2)};
           //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
           //so this way executed scripts data exports can be captured back on dapp side
           gcscript.returnURLPattern  = window.location.origin +  window.location.pathname ;

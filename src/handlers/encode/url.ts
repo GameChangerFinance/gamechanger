@@ -1,5 +1,10 @@
 import { GCDappConnUrls } from '../../config'
-import { APIEncoding, APIVersion, NetworkType } from '../../types'
+import {
+  APIEncoding,
+  APIVersion,
+  DefaultNetwork,
+  NetworkType
+} from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 
 import urlEncoder from '../../encodings/url'
@@ -10,6 +15,9 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  //new
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -20,7 +28,12 @@ export default async (args: {
       throw new Error(`Missing URL pattern for network '${network || ''}'`)
     const url = await urlEncoder.encoder(obj, {
       urlPattern,
-      encoding
+      encoding,
+      //new
+      routeToNetwork: args?.disableNetworkRouter
+        ? undefined
+        : args.network || DefaultNetwork,
+      refAddress: args?.refAddress
     })
 
     return url

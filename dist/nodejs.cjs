@@ -9186,19 +9186,24 @@ const projectName = packageJson.name;
 const repositoryUrl = packageJson.repository;
 const cliName = 'gamechanger-cli';
 const networks = ['mainnet', 'preprod'];
-const apiVersions = ['1', '2'];
+const apiVersions = [
+    // '1',
+    '2'
+];
 const apiEncodings = {
-    '1': ['json-url-lzw'],
+    //   '1': ['json-url-lzw'],
     '2': ['json-url-lzma', 'gzip', 'base64url']
 };
+const SingleDomainV2 = 'https://dev-wallet.gamechanger.finance/'
+    ;
 const GCDomains = {
-    '1': {
-        mainnet: 'https://wallet.gamechanger.finance/',
-        preprod: 'https://preprod-wallet.gamechanger.finance/'
-    },
+    //   '1': {
+    //     mainnet: 'https://wallet.gamechanger.finance/',
+    //     preprod: 'https://preprod-wallet.gamechanger.finance/'
+    //   },
     '2': {
-        mainnet: 'https://beta-wallet.gamechanger.finance/',
-        preprod: 'https://beta-preprod-wallet.gamechanger.finance/'
+        mainnet: SingleDomainV2,
+        preprod: SingleDomainV2
     }
 };
 const contact = {
@@ -9210,32 +9215,49 @@ const contact = {
     playgroundDiscord: 'https://discord.com/channels/912354788795109396/921687306241458207'
 };
 const GCDappConnUrls = {
-    '1': {
-        mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
-        preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
-    },
+    //   '1': {
+    //     mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
+    //     preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
+    //   },
     '2': {
-        mainnet: 'https://beta-wallet.gamechanger.finance/api/2/run/{gcscript}',
-        preprod: 'https://beta-preprod-wallet.gamechanger.finance/api/2/run/{gcscript}'
+        mainnet: `${SingleDomainV2}api/2/run/{gcscript}`,
+        preprod: `${SingleDomainV2}api/2/run/{gcscript}`
     }
 };
 const QRRenderTypes = ['png', 'svg'];
-const demoGCS = {
-    type: 'tx',
-    title: 'Demo',
-    description: 'created with ' + cliName,
-    metadata: {
-        '123': {
-            message: 'Hello World!'
-        }
-    }
-};
+// export const demoGCS = {
+//   type: 'tx',
+//   title: 'Demo',
+//   description: 'created with ' + cliName,
+//   metadata: {
+//     '123': {
+//       message: 'Hello World!'
+//     }
+//   }
+// }
+// export const demoPacked =
+//   'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
 const escapeShellArg = (arg) => 
 // eslint-disable-next-line quotes
 `'${arg.replace(/'/g, "'\\''")}'`;
+const demoGCS2 = {
+    gcscript: {
+        title: 'Get Address',
+        description: 'Do you authorize to share address to dapp?',
+        type: 'script',
+        exportAs: 'MyData',
+        run: {
+            address: {
+                type: 'getCurrentAddress'
+            }
+        }
+    },
+    gzipShort: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...',
+    gzip: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAAzWOQQrDMAwEvyJ07gt6KaGBnvoIUYvGECIhy1A3-O-VSXpbjZhld_TsK-MVH-wwpWRcCl4wcXlZVs-yxW8WaFKBqi9i-cvgAmUhY6DDGCCR6i1Ubzr6Dj9u_qiYTyXYs83kFMxq1O542iOe1pv9Xs148_-W3vsPri6B66UAAAA'
+};
 const usageMessage = `
-GameChanger Wallet CLI:
-	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)
+✨ GameChanger Wallet CLI:
+	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other related tasks (https://gamechanger.finance/)
 
 Usage
 	$ ${cliName} [network] [action] [subaction]
@@ -9273,46 +9295,45 @@ Options:
 
 Examples
 
-	URL and QR Code encodings:
-	URL APIv1:
-		$ ${cliName} preprod encode url -v 1 -a ${escapeShellArg(JSON.stringify(demoGCS))}
-		https://preprod-wallet.gamechanger.finance/api/1/tx/...
-
-		$ cat demo.gcscript | ${cliName} mainnet encode url -v 1
-		https://wallet.gamechanger.finance/api/1/tx/...
-
-	URL APIv2
+	⭐ URL encoding:
 		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
-		https://beta-wallet.gamechanger.finance/api/1/run/...
+		${demoGCS2.gzipShort}
 
-	QR APIv1:
-		$ ${cliName} preprod encode qr -v 1 -a ${escapeShellArg(JSON.stringify(demoGCS))} > qr_output.png
+		$ ${cliName} mainnet encode url -v 2 -a ${escapeShellArg(JSON.stringify(demoGCS2.gcscript))}
+		${demoGCS2.gzipShort}
 
-		$ ${cliName} mainnet encode qr -v 1 -o examples/qr_output.png -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	
-	QR APIv2:
+		$ cat examples/connect.gcscript | ${cliName} mainnet encode url -v 2
+		${demoGCS2.gzipShort}
+
+	⭐ QR encoding:
+		$ ${cliName} preprod encode qr -v 2 -a ${escapeShellArg(JSON.stringify(demoGCS2.gcscript))} > qr_output.png
+
+		$ ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png -a ${escapeShellArg(JSON.stringify(demoGCS2.gcscript))}
+		
+		$ cat examples/connect.gcscript | ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png
+
+
 		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
-	Code snippet generation and serve dapp (-S):
+	Code generation and serve dapp (-S):
 
-	HTML:
+	⭐ HTML code:
 		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-	ReactJS:
+	⭐ ReactJS code:
 		$ ${cliName} mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-	HTML Button snippet:
+	⭐ HTML Button snippet:
 		$ ${cliName} mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 		
-	Express Backend:
+	⭐ Express backend code:
 		$ ${cliName} mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
 		$ node examples/expressBackend.js
 		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
-
 
 `;
 
@@ -9406,7 +9427,7 @@ const validateBuildMsgArgs = (args) => {
 //   } catch (err) {}
 // }
 
-const handler$6 = {
+const handler$7 = {
     name: 'GZip',
     encoder: (obj, options) => new Promise(async (resolve, reject) => {
         try {
@@ -9445,7 +9466,7 @@ let JSONURLDeprecationError$1 = class JSONURLDeprecationError extends Error {
     }
 };
 //In-House:
-const handler$5 = {
+const handler$6 = {
     name: 'JSON-URL LZMA',
     encoder: async (_ /*,_options?:any*/) => {
         throw new JSONURLDeprecationError$1();
@@ -9455,7 +9476,7 @@ const handler$5 = {
     }
 };
 
-const handler$4 = {
+const handler$5 = {
     name: 'JSON-URL LZW',
     encoder: async (obj /*,_options?:any*/) => {
         const jsonUrl = await Promise.resolve().then(function () { return jsonUrl$1; }).then((d) => d.default());
@@ -9469,7 +9490,7 @@ const handler$4 = {
     }
 };
 
-const handler$3 = {
+const handler$4 = {
     name: 'URL Safe Base64',
     encoder: (obj /*,_options?:any*/) => {
         // const safeJSONStringify = require('json-stringify-safe')
@@ -9483,10 +9504,10 @@ const handler$3 = {
 
 //import { baseEncodings } from '.'
 const msgEncodings = {
-    gzip: handler$6,
-    'json-url-lzma': handler$5,
-    'json-url-lzw': handler$4,
-    base64url: handler$3
+    gzip: handler$7,
+    'json-url-lzma': handler$6,
+    'json-url-lzw': handler$5,
+    base64url: handler$4
 };
 /**
  * Map of encoders and their message headers. Headers are used to auto-detect which decoder needs to be used to decode the message
@@ -9513,7 +9534,7 @@ Object.fromEntries(Object.keys(HeadersByEncoders).map((encoder) => {
     const loader = () => import(`./${encoder}`).then((module) => module?.default);
     return [encoder, loader];
 }));
-const handler$2 = {
+const handler$3 = {
     name: 'Packed GCScript or data message with header',
     encoder: async (obj, options) => {
         const useEncoding = options?.encoding || DefaultAPIEncodings[DefaultAPIVersion]; // use an specific encoder or use the default one
@@ -9567,7 +9588,7 @@ const encoder = async (obj, options) => {
     if (!useMsgPlaceholder)
         throw new Error('Missing message placeholder for URL pattern');
     //console.log({ message })
-    const msg = await handler$2.encoder(obj, {
+    const msg = await handler$3.encoder(obj, {
         encoding: options?.encoding,
         encodingOptions: options?.encodingOptions
     });
@@ -9629,28 +9650,33 @@ const decoder = async (msg, options) => {
     const useMsg = foundMessages[0];
     if (!useMsg)
         throw new Error('Empty message found with the provided URL pattern and message placeholder');
-    const obj = await handler$2.decoder(useMsg, {
+    const obj = await handler$3.decoder(useMsg, {
         encoding: options?.encoding,
         encodingOptions: options?.encodingOptions
     });
     return obj;
 };
-const handler$1 = {
+const handler$2 = {
     name: 'GameChanger Wallet URL transport. Used as dapp connector to send and receive messages through URLs',
     encoder,
     decoder
 };
 
-var URLEncoder = async (args) => {
+var handler$1 = async (args) => {
     try {
         const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args);
         const obj = JSON.parse(input);
         const urlPattern = GCDappConnUrls[apiVersion][network];
         if (!urlPattern)
             throw new Error(`Missing URL pattern for network '${network || ''}'`);
-        const url = await handler$1.encoder(obj, {
+        const url = await handler$2.encoder(obj, {
             urlPattern,
-            encoding
+            encoding,
+            //new
+            routeToNetwork: args?.disableNetworkRouter
+                ? undefined
+                : args.network || DefaultNetwork,
+            refAddress: args?.refAddress
         });
         return url;
     }
@@ -9836,7 +9862,7 @@ const handler = {
     name: 'GameChanger Wallet QR transport. The URL transport encoded as QR code',
     encoder: async (obj, options) => {
         const { renderQRCode } = await qrLibLoader(); //If turns into async, must be moved inside
-        const url = await handler$1.encoder(obj, options);
+        const url = await handler$2.encoder(obj, options);
         const qrResultType = options?.qrResultType || 'png';
         const qrResult = await renderQRCode({
             text: url,
@@ -9955,6 +9981,8 @@ var QREncoder = async (args) => {
         }
         const dataURI = await handler.encoder(obj, {
             urlPattern,
+            apiVersion,
+            network,
             encoding,
             qrCodeStyle: style,
             qrResultType: args?.qrResultType
@@ -9970,19 +9998,19 @@ var QREncoder = async (args) => {
 };
 
 var encode = {
-    url: URLEncoder,
+    url: handler$1,
     qr: QREncoder
 };
 
 const baseTemplate$2 = async (args) => {
-    const urlPattern = GCDappConnUrls[args?.apiVersion][args?.network];
-    if (!urlPattern)
-        throw new Error(`Missing URL pattern for network '${args?.network || ''}'`);
-    const url = await handler$1.encoder(JSON.parse(args?.input), {
-        urlPattern,
-        encoding: args?.encoding
-    });
     //Generated with https://www.bestcssbuttongenerator.com/
+    const url = await handler$1({
+        apiVersion: args.apiVersion,
+        network: args.network,
+        encoding: args.encoding,
+        input: args.input,
+        debug: args.debug
+    });
     return `
 <!--GC BUTTON START-->
 <a href="${url}" class="gcConnectButton">Connect with GC</a>
@@ -10017,7 +10045,6 @@ var ButtonEncoder = async (args) => {
     }
 };
 
-// import { GCDappConnUrls } from '../../config'
 const AstonMaartenTemplate = (args) => {
     const isNode = typeof process === 'object' && typeof window !== 'object';
     const strProp = (str) => str === undefined ? 'undefined' : JSON.stringify(str);
@@ -10142,7 +10169,7 @@ const AstonMaartenTemplate = (args) => {
       async function buildActionUrl(args){
           //This is the GCScript code that GameChanger Wallet will execute
           //JSON code that will be encoded/compressed inside 'actionUrl'
-          var gcscript = ${args.input};
+          var gcscript = ${JSON.stringify(gcscript, null, 2)};
           //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
           //so this way executed scripts data exports can be captured back on dapp side
           gcscript.returnURLPattern  = window.location.origin +  window.location.pathname ;
@@ -10363,6 +10390,7 @@ var HtmlEncoder = async (args) => {
 };
 
 const baseTemplate$1 = async (args) => {
+    const gcscript = JSON.parse(args?.input);
     const strProp = (str) => str === undefined ? 'undefined' : JSON.stringify(str);
     return `
   //#!/usr/bin/env node
@@ -10383,7 +10411,7 @@ const baseTemplate$1 = async (args) => {
 
   import express from 'express';
   
-  const gcscript=${args.input};
+  const gcscript=${JSON.stringify(gcscript, null, 2)};
   
   export const serve = ({
       indexHtml,
@@ -10479,6 +10507,7 @@ var ExpressEncoder = async (args) => {
 const baseTemplate = (args) => {
     const isNode = typeof process === 'object' && typeof window !== 'object';
     const title = 'Cardano React Dapp Boilerplate';
+    const gcscript = JSON.parse(args.input);
     const strProp = (str) => str === undefined ? 'undefined' : JSON.stringify(str);
     return `
 <!DOCTYPE html>
@@ -10508,7 +10537,7 @@ const baseTemplate = (args) => {
       const {gc} = window;
 
       const App=()=>{
-        const _gcscript=${args.input};
+        const _gcscript=${JSON.stringify(gcscript, null, 2)};
         //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
         //so this way executed scripts data exports can be captured back on the hosted dapp
         _gcscript.returnURLPattern = \`\${window.location.origin + window.location.pathname}?result={result}\`;
@@ -10632,15 +10661,15 @@ var handlers = {
 //export const handlers: ActionHandlerType = {
 
 const baseEncodings = {
-    gzip: handler$6,
-    'json-url-lzma': handler$5,
-    'json-url-lzw': handler$4,
-    base64url: handler$3
+    gzip: handler$7,
+    'json-url-lzma': handler$6,
+    'json-url-lzw': handler$5,
+    base64url: handler$4
 };
 var encodings = {
     ...baseEncodings,
-    msg: handler$2,
-    url: handler$1,
+    msg: handler$3,
+    url: handler$2,
     qr: handler
 };
 

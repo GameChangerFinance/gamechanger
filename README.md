@@ -7,8 +7,8 @@
 Official GameChanger Wallet library and CLI for integrating with Cardano dapps
 and solve other related tasks (https://gamechanger.finance/)
 
-> Complete refactor for Node v24.x.x .
-> Supports all GameChanger Wallet V2.x.x flavors
+> Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
+> flavors
 
 ## Try it online:
 
@@ -239,6 +239,8 @@ and will log something like:
 ## CLI Usage
 
 ```
+✨ GameChanger Wallet CLI:
+        Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other related tasks (https://gamechanger.finance/)
 
 Usage
         $ gamechanger-cli [network] [action] [subaction]
@@ -267,7 +269,7 @@ Options:
 
         --encoding [see encodings below] | -v [see encodings below]:  Target GameChanger Wallet v1 or v2 messaging encodings
         Valid encodings by apiVersion:
-        {"1":["json-url-lzw"],"2":["json-url-lzma","gzip","base64url"]}
+        {"2":["json-url-lzma","gzip","base64url"]}
 
         --template [see templates below] | -t [see templates below]: QR code predefined styles
         Valid templates: default, boxed or printable
@@ -276,45 +278,46 @@ Options:
 
 Examples
 
-        URL and QR Code encodings:
-        URL APIv1:
-                $ gamechanger-cli preprod encode url -v 1 -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
-                https://preprod-wallet.gamechanger.finance/api/1/tx/...
-
-                $ cat demo.gcscript | gamechanger-cli mainnet encode url -v 1
-                https://wallet.gamechanger.finance/api/1/tx/...
-
-        URL APIv2
+        ⭐ URL encoding:
                 $ gamechanger-cli mainnet encode url -v 2 -f examples/connect.gcscript
-                https://beta-wallet.gamechanger.finance/api/1/run/...
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
 
-        QR APIv1:
-                $ gamechanger-cli preprod encode qr -v 1 -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}' > qr_output.png
+                $ gamechanger-cli mainnet encode url -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
 
-                $ gamechanger-cli mainnet encode qr -v 1 -o examples/qr_output.png -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
+                $ cat examples/connect.gcscript | gamechanger-cli mainnet encode url -v 2
+                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...
 
-        QR APIv2:
+        ⭐ QR encoding:
+                $ gamechanger-cli preprod encode qr -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}' > qr_output.png
+
+                $ gamechanger-cli mainnet encode qr -v 2 -o examples/qr_output.png -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
+
+                $ cat examples/connect.gcscript | gamechanger-cli mainnet encode qr -v 2 -o examples/qr_output.png
+
+
                 $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
-        Code snippet generation and serve dapp (-S):
+        Code generation and serve dapp (-S):
 
-        HTML:
+        ⭐ HTML code:
                 $ gamechanger-cli preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-        ReactJS:
+        ⭐ ReactJS code:
                 $ gamechanger-cli mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-        HTML Button snippet:
+        ⭐ HTML Button snippet:
                 $ gamechanger-cli mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-        Express Backend:
+        ⭐ Express backend code:
                 $ gamechanger-cli mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
                 $ node examples/expressBackend.js
                 🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
+
 
 ```
 
@@ -323,8 +326,8 @@ Examples
 - [Beta Release Notes](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/RELEASE.md)
 - [70+ open source example dapps](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/examples/README.md)
 - [Universal Dapp Connector documentation](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/DAPP_CONNECTOR.md)
-- [GCScript documentation](https://beta-wallet.gamechanger.finance/doc/api/v2/api.html)
-- [Playground IDE in GameChanger Wallet ](https://beta-wallet.gamechanger.finance/playground)
+- [GCScript documentation](https://wallet.gamechanger.finance/doc/api/v2/api.html)
+- [Playground IDE in GameChanger Wallet ](https://wallet.gamechanger.finance/playground)
 - [Youtube Tutorials](https://www.youtube.com/@gamechanger.finance)
 - [Discord Support](https://discord.gg/vpbfyRaDKG)
 - [Twitter News](https://twitter.com/GameChangerOk)

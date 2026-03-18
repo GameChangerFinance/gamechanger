@@ -1,4 +1,3 @@
-// import { GCDappConnUrls } from '../../config'
 import {
   APIEncoding,
   APIVersion,
@@ -22,6 +21,7 @@ const baseTemplate = (args: {
 }) => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
   const title = 'Cardano React Dapp Boilerplate'
+  const gcscript = JSON.parse(args.input)
   const strProp = (str?: string) =>
     str === undefined ? 'undefined' : JSON.stringify(str)
   return `
@@ -52,7 +52,7 @@ const baseTemplate = (args: {
       const {gc} = window;
 
       const App=()=>{
-        const _gcscript=${args.input};
+        const _gcscript=${JSON.stringify(gcscript, null, 2)};
         //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
         //so this way executed scripts data exports can be captured back on the hosted dapp
         _gcscript.returnURLPattern = \`\${window.location.origin + window.location.pathname}?result={result}\`;

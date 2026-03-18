@@ -2,6 +2,7 @@ import { GCDappConnUrls } from '../../config'
 import {
   APIEncoding,
   APIVersion,
+  DefaultNetwork,
   DefaultQRTemplate,
   NetworkType,
   QRTemplateType
@@ -21,6 +22,10 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+
+  //new
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -59,7 +64,16 @@ export default async (args: {
 
     const dataURI = await qrEncoder.encoder(obj, {
       urlPattern,
+      apiVersion,
+      network,
       encoding,
+      
+      //new
+      routeToNetwork: args?.disableNetworkRouter
+        ? undefined
+        : args.network || DefaultNetwork,
+      refAddress: args?.refAddress,
+
       qrCodeStyle: style,
       qrResultType: args?.qrResultType
     })

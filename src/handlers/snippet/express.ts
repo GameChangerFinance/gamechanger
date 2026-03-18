@@ -8,6 +8,7 @@ const baseTemplate = async (args: {
   input: string
   debug?: boolean
 }) => {
+  const gcscript = JSON.parse(args?.input)
   const strProp = (str?: string) =>
     str === undefined ? 'undefined' : JSON.stringify(str)
   return `
@@ -29,7 +30,7 @@ const baseTemplate = async (args: {
 
   import express from 'express';
   
-  const gcscript=${args.input};
+  const gcscript=${JSON.stringify(gcscript, null, 2)};
   
   export const serve = ({
       indexHtml,

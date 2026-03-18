@@ -69,7 +69,7 @@ describe('unit tests', () => {
       }`
       })
       const expectedUrl =
-        'https://beta-wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAA3WQQWoDMQxFryK8SQolB-gmlG4C3RTSC6i2Eovx2MbW0AzD3L3yTFsS0nplf-k_fXkyMmYyT6bawlnMoxGW0ISjx0IwpqFAHj4CW-hoBI6nVHoUTnGvzY5Wnz7V8u65gsOcwaYYyTYZPjkEwNqtqJopOo5nwOigCnbtfsX3WD1VJdMlpyLPVbEOBVUpJEPRMZPpk2sJA1YxsxaGRT2THBv9pZCjKIyhqd_r_RR13Nsy7ZXG5m26pqB_TWvEG8-JI4YwXjX2aEsyv0mWJVWeFLDdWLSedvfpdrq2Eg-68YEum4dZAe1H6A_nbcR756znC6FNzx7LAQAA'
+        'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAA3WQQWoDMQxFryK8SQolB-gmlG4C3RTSC6i2Eovx2MbW0AzD3L3yTFsS0nplf-k_fXkyMmYyT6bawlnMoxGW0ISjx0IwpqFAHj4CW-hoBI6nVHoUTnGvzY5Wnz7V8u65gsOcwaYYyTYZPjkEwNqtqJopOo5nwOigCnbtfsX3WD1VJdMlpyLPVbEOBVUpJEPRMZPpk2sJA1YxsxaGRT2THBv9pZCjKIyhqd_r_RR13Nsy7ZXG5m26pqB_TWvEG8-JI4YwXjX2aEsyv0mWJVWeFLDdWLSedvfpdrq2Eg-68YEum4dZAe1H6A_nbcR756znC6FNzx7LAQAA'
       console.dir({ expectedUrl, url })
       expect(url).to.equal(expectedUrl)
     })
@@ -105,7 +105,7 @@ describe('unit tests', () => {
       }`
       })
       const expectedUrl =
-        'https://beta-wallet.gamechanger.finance/api/2/run/XQAAAAKVAQAAAAAAAABDKQqHk62WwfAiBV3_OkZJTid7YCcCmNLQij10bXq5AHYAodLZe51SeOhNCrZ3RwTE1fNhSfJ2etHQV5Qp9Gk3BJpBKaBTTSgqhjP6iOHRK8eKIDPOdmvynt3Yc4FXY2jcOAT75E02R1iPKgU41UCXUTCBD_DR0LNj-TCfO4Z3L2GCkjdONhnYS4LPDiys_XCu6EUhut5aL8JmgmOpgT6w1QrktIbpRKuJTz9989sHkxOxuFjo33TjCrDV0E-IFhxUOh7sJUTPhGTaz88gMx3fGhLvyNl_spcoTDaAhCJQqGyAHcBTFkeU9z5792DlwAb-ah9JDSyPBHX9mrzB'
+        'https://wallet.gamechanger.finance/api/2/run/XQAAAAKVAQAAAAAAAABDKQqHk62WwfAiBV3_OkZJTid7YCcCmNLQij10bXq5AHYAodLZe51SeOhNCrZ3RwTE1fNhSfJ2etHQV5Qp9Gk3BJpBKaBTTSgqhjP6iOHRK8eKIDPOdmvynt3Yc4FXY2jcOAT75E02R1iPKgU41UCXUTCBD_DR0LNj-TCfO4Z3L2GCkjdONhnYS4LPDiys_XCu6EUhut5aL8JmgmOpgT6w1QrktIbpRKuJTz9989sHkxOxuFjo33TjCrDV0E-IFhxUOh7sJUTPhGTaz88gMx3fGhLvyNl_spcoTDaAhCJQqGyAHcBTFkeU9z5792DlwAb-ah9JDSyPBHX9mrzB'
       console.dir({ expectedUrl, url })
       expect(url).to.equal(expectedUrl)
     })
