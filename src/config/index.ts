@@ -7,19 +7,28 @@ export const repositoryUrl = packageJson.repository
 
 export const cliName = 'gamechanger-cli'
 export const networks: NetworkType[] = ['mainnet', 'preprod']
-export const apiVersions: APIVersion[] = ['1', '2']
+export const apiVersions: APIVersion[] = [
+  // '1',
+  '2'
+]
 export const apiEncodings: { [apiVer: string]: APIEncoding[] } = {
-  '1': ['json-url-lzw'],
+  //   '1': ['json-url-lzw'],
   '2': ['json-url-lzma', 'gzip', 'base64url']
 }
+
+const isDevelopment = false
+const SingleDomainV2 = isDevelopment
+  ? ''
+  : 'https://wallet.gamechanger.finance/'
+
 export const GCDomains = {
-  '1': {
-    mainnet: 'https://wallet.gamechanger.finance/',
-    preprod: 'https://preprod-wallet.gamechanger.finance/'
-  },
+  //   '1': {
+  //     mainnet: 'https://wallet.gamechanger.finance/',
+  //     preprod: 'https://preprod-wallet.gamechanger.finance/'
+  //   },
   '2': {
-    mainnet: 'https://beta-wallet.gamechanger.finance/',
-    preprod: 'https://beta-preprod-wallet.gamechanger.finance/'
+    mainnet: SingleDomainV2,
+    preprod: SingleDomainV2
   }
 }
 
@@ -34,36 +43,51 @@ export const contact = {
 }
 
 export const GCDappConnUrls = {
-  '1': {
-    mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
-    preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
-  },
+  //   '1': {
+  //     mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
+  //     preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
+  //   },
   '2': {
-    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/run/{gcscript}',
-    preprod:
-      'https://beta-preprod-wallet.gamechanger.finance/api/2/run/{gcscript}'
+    mainnet: `${SingleDomainV2}api/2/run/{gcscript}`,
+    preprod: `${SingleDomainV2}api/2/run/{gcscript}`
   }
 }
 export const QRRenderTypes = ['png', 'svg']
-export const demoGCS = {
-  type: 'tx',
-  title: 'Demo',
-  description: 'created with ' + cliName,
-  metadata: {
-    '123': {
-      message: 'Hello World!'
-    }
-  }
-}
-export const demoPacked =
-  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
+// export const demoGCS = {
+//   type: 'tx',
+//   title: 'Demo',
+//   description: 'created with ' + cliName,
+//   metadata: {
+//     '123': {
+//       message: 'Hello World!'
+//     }
+//   }
+// }
+// export const demoPacked =
+//   'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
 export const escapeShellArg = (arg: string) =>
   // eslint-disable-next-line quotes
   `'${arg.replace(/'/g, "'\\''")}'`
+export const demoGCS2 = {
+  gcscript: {
+    title: 'Get Address',
+    description: 'Do you authorize to share address to dapp?',
+    type: 'script',
+    exportAs: 'MyData',
+    run: {
+      address: {
+        type: 'getCurrentAddress'
+      }
+    }
+  },
+  gzipShort:
+    'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet',
+  gzip: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAAzWOQQrDMAwEvyJ07gt6KaGBnvoIUYvGECIhy1A3-O-VSXpbjZhld_TsK-MVH-wwpWRcCl4wcXlZVs-yxW8WaFKBqi9i-cvgAmUhY6DDGCCR6i1Ubzr6Dj9u_qiYTyXYs83kFMxq1O542iOe1pv9Xs148_-W3vsPri6B66UAAAA?networkTag=mainnet'
+}
 
 export const usageMessage = `
-GameChanger Wallet CLI:
-	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)
+✨ GameChanger Wallet CLI:
+	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other related tasks (https://gamechanger.finance/)
 
 Usage
 	$ ${cliName} [network] [action] [subaction]
@@ -99,53 +123,59 @@ Options:
 
 	--serve | -S : Serve code snippet outputs on http://localhost:3000
 
+	--refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
+
+	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
 Examples
 
-	URL and QR Code encodings:
-	URL APIv1:
-		$ ${cliName} preprod encode url -v 1 -a ${escapeShellArg(
-  JSON.stringify(demoGCS)
-)}
-		https://preprod-wallet.gamechanger.finance/api/1/tx/...
-
-		$ cat demo.gcscript | ${cliName} mainnet encode url -v 1
-		https://wallet.gamechanger.finance/api/1/tx/...
-
-	URL APIv2
+	⭐ URL encoding:
 		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
-		https://beta-wallet.gamechanger.finance/api/1/run/...
+		${demoGCS2.gzipShort}
 
-	QR APIv1:
-		$ ${cliName} preprod encode qr -v 1 -a ${escapeShellArg(
-  JSON.stringify(demoGCS)
+		$ ${cliName} mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
+		${demoGCS2.gzipShort}&ref=addr1...
+
+		$ ${cliName} mainnet encode url -v 2 -a ${escapeShellArg(
+  JSON.stringify(demoGCS2.gcscript)
+)}
+		${demoGCS2.gzipShort}
+
+		$ cat examples/connect.gcscript | ${cliName} mainnet encode url -v 2
+		${demoGCS2.gzipShort}
+
+	⭐ QR encoding:
+		$ ${cliName} preprod encode qr -v 2 -a ${escapeShellArg(
+  JSON.stringify(demoGCS2.gcscript)
 )} > qr_output.png
 
-		$ ${cliName} mainnet encode qr -v 1 -o examples/qr_output.png -a ${escapeShellArg(
-  JSON.stringify(demoGCS)
+		$ ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png -a ${escapeShellArg(
+  JSON.stringify(demoGCS2.gcscript)
 )}
-	
-	QR APIv2:
+		
+		$ cat examples/connect.gcscript | ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png
+
+
 		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
 
 
-	Code snippet generation and serve dapp (-S):
+	Code generation and serve dapp (-S):
 
-	HTML:
+	⭐ HTML code:
 		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-	ReactJS:
+	⭐ ReactJS code:
 		$ ${cliName} mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-	HTML Button snippet:
+	⭐ HTML Button snippet:
 		$ ${cliName} mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 		
-	Express Backend:
+	⭐ Express backend code:
 		$ ${cliName} mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
 		$ node examples/expressBackend.js
 		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
-
 
 `

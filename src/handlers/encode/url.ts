@@ -3,6 +3,7 @@ import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 
 import urlEncoder from '../../encodings/url'
+import buildWalletQueryParams from './urlQueryParams'
 
 export default async (args: {
   apiVersion: APIVersion
@@ -10,6 +11,9 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  //new
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -20,7 +24,12 @@ export default async (args: {
       throw new Error(`Missing URL pattern for network '${network || ''}'`)
     const url = await urlEncoder.encoder(obj, {
       urlPattern,
-      encoding
+      encoding,
+      queryParams: buildWalletQueryParams({
+        network,
+        refAddress: args?.refAddress,
+        disableNetworkRouter: args?.disableNetworkRouter
+      })
     })
 
     return url

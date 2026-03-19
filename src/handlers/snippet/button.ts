@@ -1,4 +1,4 @@
-import { GCDappConnUrls } from '../../config'
+import handler from 'src/handlers/encode/url'
 import {
   APIEncoding,
   APIVersion,
@@ -6,27 +6,34 @@ import {
   QRTemplateType
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
-import urlEncoder from '../../encodings/url'
+// import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 const baseTemplate = async (args: {
   apiVersion: APIVersion
   network: NetworkType
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
   template?: QRTemplateType | string
   styles?: string //JSON
 }) => {
-  const urlPattern = GCDappConnUrls[args?.apiVersion][args?.network]
-  if (!urlPattern)
-    throw new Error(`Missing URL pattern for network '${args?.network || ''}'`)
-  const url = await urlEncoder.encoder(JSON.parse(args?.input), {
-    urlPattern,
-    encoding: args?.encoding
-  })
   //Generated with https://www.bestcssbuttongenerator.com/
+
+  const url = await handler({
+    apiVersion: args.apiVersion,
+    network: args.network,
+    encoding: args.encoding,
+    input: args.input,
+    debug: args.debug,
+    refAddress: args?.refAddress,
+    disableNetworkRouter: args?.disableNetworkRouter
+  })
+
   return `
 <!--GC BUTTON START-->
 <a href="${url}" class="gcConnectButton">Connect with GC</a>
@@ -45,6 +52,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -59,6 +68,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,

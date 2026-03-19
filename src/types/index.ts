@@ -39,6 +39,18 @@ export type CLIHandlerContext = {
   encoding: APIEncoding
   input: string
 
+  /**
+   * Optional wallet referral address appended by the handlers as
+   * the URL query string parameter `ref`.
+   */
+  refAddress?: string
+
+  /**
+   * When true, handlers skip appending the default `networkTag` query string
+   * parameter to generated wallet URLs.
+   */
+  disableNetworkRouter?: boolean
+
   outputFile?: string
   template?: string //for QR 'default' | 'boxed' | 'printable'
   styles?: string //JSON

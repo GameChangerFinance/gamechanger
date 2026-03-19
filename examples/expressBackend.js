@@ -9,59 +9,59 @@
   //Run this file
   //  $ node <FILENAME>.js
 
-  //Import if testing the library:
-  import gc from '../dist/nodejs.cjs'
+  //Import if testing the library from this repository:
+  //import gc from '../dist/nodejs.js'
   // or
   //Import normally:
-  //import gc from '@gamechanger-finance/gc/dist/nodejs.cjs'
+  import gc from '@gamechanger-finance/gc'
 
   import express from 'express';
   
   const gcscript={
-    "type": "script",
-    "title":"🚀 Connect with dapp?",
-    "description":"About to share your public wallet information and a CIP-8 signature to verify this data",
-    "exportAs": "connect",
-    "run": {
-        "data": {
-            "type": "script",
-            "run": {
-                "name": {
-                    "type": "getName"
-                },
-                "address": {
-                    "type": "getCurrentAddress"
-                },
-                "spendPubKey": {
-                    "type": "getSpendingPublicKey"
-                },
-                "stakePubKey": {
-                    "type": "getStakingPublicKey"
-                },
-                "addressInfo": {
-                    "type": "macro",
-                    "run": "{getAddressInfo(get('cache.data.address'))}"
-                },
-                "agreement": {
-                    "type": "macro",
-                    "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
-                },
-                "salt": {
-                    "type": "macro",
-                    "run": "{uuid()}"
-                }
-            }
+  "type": "script",
+  "title": "🚀 Connect with dapp?",
+  "description": "About to share your public wallet information and a CIP-8 signature to verify this data",
+  "exportAs": "connect",
+  "run": {
+    "data": {
+      "type": "script",
+      "run": {
+        "name": {
+          "type": "getName"
         },
-        "hash": {
-            "type": "macro",
-            "run": "{sha512(objToJson(get('cache.data')))}"
+        "address": {
+          "type": "getCurrentAddress"
         },
-        "sign": {
-            "type": "signDataWithAddress",
-            "address": "{get('cache.data.address')}",
-            "dataHex": "{get('cache.hash')}"
+        "spendPubKey": {
+          "type": "getSpendingPublicKey"
+        },
+        "stakePubKey": {
+          "type": "getStakingPublicKey"
+        },
+        "addressInfo": {
+          "type": "macro",
+          "run": "{getAddressInfo(get('cache.data.address'))}"
+        },
+        "agreement": {
+          "type": "macro",
+          "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
+        },
+        "salt": {
+          "type": "macro",
+          "run": "{uuid()}"
         }
+      }
+    },
+    "hash": {
+      "type": "macro",
+      "run": "{sha512(objToJson(get('cache.data')))}"
+    },
+    "sign": {
+      "type": "signDataWithAddress",
+      "address": "{get('cache.data.address')}",
+      "dataHex": "{get('cache.hash')}"
     }
+  }
 };
   
   export const serve = ({
@@ -122,6 +122,8 @@
         apiVersion:"2",
         network:"mainnet",
         encoding:"gzip",
+        refAddress:undefined,
+        disableNetworkRouter:false,
         });
       const indexHtml=`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>`
       serve({

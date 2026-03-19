@@ -33,6 +33,7 @@ export default async function main() {
     process.on('uncaughtException', function (err) {
       console.error('Error: ' + err.message)
       console.error(usageMessage)
+      process.exit(1)
     })
     const cli = meow(usageMessage, {
       help: usageMessage,
@@ -77,6 +78,14 @@ export default async function main() {
         serve: {
           type: 'boolean',
           alias: 'S'
+        },
+        refAddress: {
+          type: 'string',
+          alias: 'r'
+        },
+        disableNetworkRouter: {
+          type: 'boolean',
+          alias: 'R'
         }
       }
     })
@@ -124,6 +133,8 @@ export default async function main() {
     const styles = cli.flags.styles
 
     const serve = !!cli.flags.serve
+    const refAddress = cli.flags.refAddress
+    const disableNetworkRouter = !!cli.flags.disableNetworkRouter
 
     let qrResultType = 'png'
     if (outputFile) {
@@ -147,7 +158,9 @@ export default async function main() {
       qrResultType,
       outputFile,
       template,
-      styles
+      styles,
+      refAddress,
+      disableNetworkRouter
     })
 
     if (output) {
@@ -156,14 +169,14 @@ export default async function main() {
         const parsedDataUri = dataURItoBuffer(dataURI)
 
         if (outputFile) {
-          const filePath = path.resolve(process.cwd(), `./${outputFile}`)
+          const filePath = path.resolve(process.cwd(), outputFile)
           if (debug)
             console.log(
               `Writing file ${filePath}...${String(
                 parsedDataUri?.typeFull || ''
               ).slice(0, 20)}`
             )
-          fs.writeFileSync(filePath, parsedDataUri, 'utf8')
+          fs.writeFileSync(filePath, Buffer.from(parsedDataUri))
         } else {
           process.stdout.write(parsedDataUri)
         }
@@ -198,7 +211,9 @@ export default async function main() {
 
               outputFile,
               template,
-              styles
+              styles,
+              refAddress,
+              disableNetworkRouter
             }
             //   config: {
             //     networks,

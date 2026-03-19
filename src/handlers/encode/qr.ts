@@ -10,6 +10,7 @@ import { validateBuildMsgArgs } from '../../utils'
 
 import qrEncoder from '../../encodings/qr'
 import qrLibLoader from '../../modules/easyqrcodejs'
+import buildWalletQueryParams from './urlQueryParams'
 
 //import path from 'path'
 import stylesLoader from '../../config/styles'
@@ -21,6 +22,10 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+
+  //new
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -59,7 +64,14 @@ export default async (args: {
 
     const dataURI = await qrEncoder.encoder(obj, {
       urlPattern,
+      apiVersion,
+      network,
       encoding,
+      queryParams: buildWalletQueryParams({
+        network,
+        refAddress: args?.refAddress,
+        disableNetworkRouter: args?.disableNetworkRouter
+      }),
       qrCodeStyle: style,
       qrResultType: args?.qrResultType
     })

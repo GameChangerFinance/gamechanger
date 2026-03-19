@@ -1,4 +1,3 @@
-// import { GCDappConnUrls } from '../../config'
 import { GCDomains, contact, apiEncodings } from '../../config'
 import {
   APIEncoding,
@@ -10,6 +9,7 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 // import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 
 const AstonMaartenTemplate = (args: {
   apiVersion: APIVersion
@@ -17,6 +17,8 @@ const AstonMaartenTemplate = (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -62,8 +64,8 @@ const AstonMaartenTemplate = (args: {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#6d41a1" />
 
-<script src='dist/browser.min.js'></script>
-<!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+<!--<script src='res/browser.min.js'></script>-->
+<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>
 
 <script>
   let handleSetEncoder;
@@ -72,7 +74,7 @@ const AstonMaartenTemplate = (args: {
   ////    Dapp Logic    /////
   ///////////////////////////
   async function main() {
-      // import gc from '@gamechanger-finance/gc'
+      // Loaded from res/browser.min.js or CDN
       const {gc} = window;
 
       //Dapp <--> GameChanger Wallet connections can use URL redirections
@@ -156,7 +158,7 @@ const AstonMaartenTemplate = (args: {
       async function buildActionUrl(args){
           //This is the GCScript code that GameChanger Wallet will execute
           //JSON code that will be encoded/compressed inside 'actionUrl'
-          var gcscript = ${args.input};
+          var gcscript = ${JSON.stringify(gcscript, null, 2)};
           //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
           //so this way executed scripts data exports can be captured back on dapp side
           gcscript.returnURLPattern  = window.location.origin +  window.location.pathname ;
@@ -165,6 +167,10 @@ const AstonMaartenTemplate = (args: {
             apiVersion:${strProp(args?.apiVersion)},
             network:${strProp(args?.network)},
             encoding:useCodec,
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           });
           return url;
       }
@@ -370,6 +376,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -384,6 +392,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,

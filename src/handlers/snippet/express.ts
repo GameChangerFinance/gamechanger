@@ -1,12 +1,16 @@
 import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
+import { Buffer } from 'buffer'
 const baseTemplate = async (args: {
   apiVersion: APIVersion
   network: NetworkType
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
+  const gcscript = JSON.parse(args?.input)
   const strProp = (str?: string) =>
     str === undefined ? 'undefined' : JSON.stringify(str)
   return `
@@ -20,15 +24,15 @@ const baseTemplate = async (args: {
   //Run this file
   //  $ node <FILENAME>.js
 
-  //Import if testing the library:
-  //import gc from '../dist/nodejs.cjs'
+  //Import if testing the library from this repository:
+  //import gc from '../dist/nodejs.js'
   // or
   //Import normally:
-  import gc from '@gamechanger-finance/gc/dist/nodejs.cjs'
+  import gc from '@gamechanger-finance/gc'
 
   import express from 'express';
   
-  const gcscript=${args.input};
+  const gcscript=${JSON.stringify(gcscript, null, 2)};
   
   export const serve = ({
       indexHtml,
@@ -88,6 +92,8 @@ const baseTemplate = async (args: {
         apiVersion:${strProp(args?.apiVersion)},
         network:${strProp(args?.network)},
         encoding:${strProp(args?.encoding)},
+        refAddress:${strProp(args?.refAddress)},
+        disableNetworkRouter:${args?.disableNetworkRouter ? 'true' : 'false'},
         });
       const indexHtml=\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`
       serve({
@@ -109,6 +115,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 }) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -117,7 +125,9 @@ export default async (args: {
       apiVersion,
       network,
       encoding,
-      input
+      input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter
     })
     return `data:application/javascript;base64,${Buffer.from(text).toString(
       'base64'

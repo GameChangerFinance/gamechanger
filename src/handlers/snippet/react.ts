@@ -1,4 +1,3 @@
-// import { GCDappConnUrls } from '../../config'
 import {
   APIEncoding,
   APIVersion,
@@ -7,12 +6,15 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 // import urlEncoder from '../../encodings/url'
+import { Buffer } from 'buffer'
 const baseTemplate = (args: {
   apiVersion: APIVersion
   network: NetworkType
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -21,6 +23,7 @@ const baseTemplate = (args: {
 }) => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
   const title = 'Cardano React Dapp Boilerplate'
+  const gcscript = JSON.parse(args.input)
   const strProp = (str?: string) =>
     str === undefined ? 'undefined' : JSON.stringify(str)
   return `
@@ -32,8 +35,8 @@ const baseTemplate = (args: {
     <script src='https://unpkg.com/react@18.2.0/umd/react.production.min.js'></script>
     <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js'></script>
     <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
-    <script src='dist/browser.min.js'></script>
-    <!--<script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>-->
+    <!--<script src='res/browser.min.js'></script>-->
+    <script src='https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc/dist/browser.min.js'></script>
 
     <style>
     * { margin: 0; background: #334d56; color: #fff; }
@@ -47,11 +50,11 @@ const baseTemplate = (args: {
     <div id='root'></div>
 
     <script type='text/babel'>
-      // import gc from '@gamechanger-finance/gc'
+      // Loaded from res/browser.min.js or CDN
       const {gc} = window;
 
       const App=()=>{
-        const _gcscript=${args.input};
+        const _gcscript=${JSON.stringify(gcscript, null, 2)};
         //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
         //so this way executed scripts data exports can be captured back on the hosted dapp
         _gcscript.returnURLPattern = \`\${window.location.origin + window.location.pathname}?result={result}\`;
@@ -79,6 +82,10 @@ const baseTemplate = (args: {
             apiVersion:${strProp(args?.apiVersion)},
             network:${strProp(args?.network)},
             encoding:${strProp(args?.encoding)},
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           })
             .then(newUrl=>setUrl(newUrl))
             .catch(console.error)
@@ -93,6 +100,10 @@ const baseTemplate = (args: {
             outputFile:${strProp(args?.outputFile)},
             template:${strProp(args?.template)},
             styles:${strProp(args?.styles)},                        
+            refAddress:${strProp(args?.refAddress)},
+            disableNetworkRouter:${
+              args?.disableNetworkRouter ? 'true' : 'false'
+            },
           })
             .then(newQr=>setQr(newQr))
             .catch(console.error)
@@ -134,6 +145,8 @@ export default async (args: {
   encoding: APIEncoding
   input: string
   debug?: boolean
+  refAddress?: string
+  disableNetworkRouter?: boolean
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -148,6 +161,8 @@ export default async (args: {
       network,
       encoding,
       input,
+      refAddress: args?.refAddress,
+      disableNetworkRouter: args?.disableNetworkRouter,
 
       qrResultType: args?.qrResultType,
       outputFile: args?.outputFile,
