@@ -35,11 +35,13 @@ $ npm run examples:express
 
 - [Kitchen Sink - all outputs in one example](examples/index.html)
 
-`html` and `react` outputs are richer shared-state app boilerplates with local storage persistence that can
-host multiple actions (intent scripts coded in GCScript DSL) in one dapp and auto-render end-user UI from the intent
-code itself. `html-zero` is the minimal zero-dependency flavor aimed at highly
-resilient, offline-ready, small-footprint frontends for long term reliability that can be stored on-chain with GCFS 
-and work without any dependencies or centralized points of failure.
+`html` and `react` outputs are richer shared-state app boilerplates with local
+storage persistence that can host multiple actions (intent scripts coded in
+GCScript DSL) in one dapp and auto-render end-user UI from the intent code
+itself. `html-zero` is the minimal zero-dependency flavor aimed at highly
+resilient, offline-ready, small-footprint frontends for long term reliability
+that can be stored on-chain with GCFS and work without any dependencies or
+centralized points of failure.
 
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
@@ -49,7 +51,6 @@ and work without any dependencies or centralized points of failure.
 - [HTML Zero Dapp](examples/htmlZeroDapp.html)
 - [ReactJs Dapp](examples/reactDapp.html)
 - [ExpressJs Backend](examples/expressBackend.js)
-
 
 ## Install CLI
 
@@ -256,14 +257,18 @@ and will log something like:
 ```
 
 ### Important:
-  - "Connection intents" that share basic wallet information to dapps are the default sample script used in all examples here
-  - Connection intents like these are not mandatory: Intent-based dapps may not require to pre-connect in order to work!
-  - For simplicity sake these conection examples does not address: 
-    - signature validation
-    - challenge validation 
-    - HTTP origin validation 
-    - nor encrypts comms beyond SSL against MITM attacks 
-  - A highly secure connection intent could be added in the future (let us know your needs!) 
+
+- "Connection intents" that share basic wallet information to dapps are the
+  default sample script used in all examples here
+- Connection intents like these are not mandatory: Intent-based dapps may not
+  require to pre-connect in order to work!
+- For simplicity sake these conection examples does not address:
+  - signature validation
+  - challenge validation
+  - HTTP origin validation
+  - nor encrypts comms beyond SSL against MITM attacks
+- A highly secure connection intent could be added in the future (let us know
+  your needs!)
 
 ## CLI Usage
 
@@ -362,10 +367,14 @@ Examples
 
 
 ```
+
 ## Breaking Changes Notice
 
-Generated code outputs are now much richer and complex than the ones produced over the last years.
-For improvements and maintainance these may require more internal breaking changes in their internal design, decoupling from the versioning strategy of the actual library. If you need special treatment on outputs let us know or consider forking for your use case. 
+Generated code outputs are now much richer and complex than the ones produced
+over the last years. For improvements and maintainance these may require more
+internal breaking changes in their internal design, decoupling from the
+versioning strategy of the actual library. If you need special treatment on
+outputs let us know or consider forking for your use case.
 
 ## Resources
 

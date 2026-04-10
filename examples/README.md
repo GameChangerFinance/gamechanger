@@ -70,18 +70,21 @@ generic.
 
 ## Files
 
-- `connect.gcscript`: a simple intent to showcase GCScript DSL in order to connect a user wallet. This is the default sample script used by all the examples  
+- `connect.gcscript`: a simple intent to showcase GCScript DSL in order to
+  connect a user wallet. This is the default sample script used by all the
+  examples
 - `index.html`: Kitchen Sink dapp> 100% in-browser playground for testing ALL
   the library outputs, including html, html-zero, react, button, URL, QR, and
   express
 - `htmlDapp.html`: multi-intent HTML example with shared app state and
   auto-rendered intent argument UI
 - `htmlZeroDapp.html`: zero-dependency resilient HTML example for offline-ready
-  and small-footprint deployments. 
+  and small-footprint deployments.
 - `reactDapp.html`: multi-intent React example with shared app state and
   auto-rendered intent argument UI
 - `expressBackend.js`: minimal Node/Express backend example
-- `button.html`: minimal button HTML fragment redirecting users to the intent URL 
+- `button.html`: minimal button HTML fragment redirecting users to the intent
+  URL
 - `QR.png`: Intent URL encoded as a QR code
 - `QR.svg`: Intent URL encoded as a QR code
 - `URL.txt`: Intent URL in plain text
@@ -89,8 +92,8 @@ generic.
 ## Snippet flavors
 
 - `html-zero`: highly resilient, offline-ready, small-footprint frontend
-  intended for on-chain storage, and mission-critical use
-  cases with no external runtime imports
+  intended for on-chain storage, and mission-critical use cases with no external
+  runtime imports
 - `html`: richer HTML boilerplate with shared app state, multiple actions, and
   dynamic UI generation from intent code
 - `react`: richer React boilerplate with shared app state, multiple actions, and
