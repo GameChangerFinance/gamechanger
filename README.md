@@ -35,11 +35,11 @@ $ npm run examples:express
 
 - [Kitchen Sink - all outputs in one example](examples/index.html)
 
-`html` and `react` outputs are richer shared-state app boilerplates that can
-host multiple actions in one dapp and auto-render end-user UI from the intent
+`html` and `react` outputs are richer shared-state app boilerplates with local storage persistence that can
+host multiple actions (intent scripts coded in GCScript DSL) in one dapp and auto-render end-user UI from the intent
 code itself. `html-zero` is the minimal zero-dependency flavor aimed at highly
-resilient, offline-ready, small-footprint frontends that can be mirrored or
-stored on-chain with GCFS without any dependencies or centralized points of failure.
+resilient, offline-ready, small-footprint frontends for long term reliability that can be stored on-chain with GCFS 
+and work without any dependencies or centralized points of failure.
 
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
@@ -49,6 +49,7 @@ stored on-chain with GCFS without any dependencies or centralized points of fail
 - [HTML Zero Dapp](examples/htmlZeroDapp.html)
 - [ReactJs Dapp](examples/reactDapp.html)
 - [ExpressJs Backend](examples/expressBackend.js)
+
 
 ## Install CLI
 
@@ -361,6 +362,10 @@ Examples
 
 
 ```
+## Breaking Changes Notice
+
+Generated code outputs are now much richer and complex than the ones produced over the last years.
+For improvements and maintainance these may require more internal breaking changes in their internal design, decoupling from the versioning strategy of the actual library. If you need special treatment on outputs let us know or consider forking for your use case. 
 
 ## Resources
 
@@ -385,7 +390,3 @@ npm install
 npm run build
 npm test
 ```
-
-The repository intentionally does not ship a stale lockfile after the Node 24
-distribution redesign. Generate a fresh one with the current dependency graph on
-install.

@@ -70,13 +70,7 @@ generic.
 
 ## Files
 
-- `connect.gcscript`: a simple intent to showcase GCScript DSL in order to connect a user wallet.
-
-      Important: 
-      - This is the default sample script used by all the examples
-      - Connection intents like this are not mandatory: Intent-based dapps may not require to pre-connect in order to work.
-      - For simplicity sake this example does not address challenge validation, HTTP origin validation nor encrypts response against MITM attacks. 
-      - A production ready and highly secure connection intent could be added in the future (let us know your needs)   
+- `connect.gcscript`: a simple intent to showcase GCScript DSL in order to connect a user wallet. This is the default sample script used by all the examples  
 - `index.html`: Kitchen Sink dapp> 100% in-browser playground for testing ALL
   the library outputs, including html, html-zero, react, button, URL, QR, and
   express
