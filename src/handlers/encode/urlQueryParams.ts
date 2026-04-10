@@ -1,6 +1,5 @@
 import { DefaultNetwork, NetworkType } from '../../types'
 
-
 export const buildWalletQueryParams = (args: {
   network?: NetworkType
   refAddress?: string

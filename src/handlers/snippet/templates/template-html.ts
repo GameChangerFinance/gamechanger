@@ -1,12 +1,12 @@
-<!doctype html>
+export default String.raw`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080b17">
-<title>Cardano Dapp</title>
-<meta name="title" content="Cardano Dapp">
-<meta name="description" content="Review the action details below and continue in GameChanger Wallet.">
+<title>$#___TITLE___#$</title>
+<meta name="title" content="$#___TITLE___#$">
+<meta name="description" content="$#___DESCRIPTION___#$">
 <script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc@latest/dist/browser.min.js"></script>
 <style>
 :root{--bg:#070b16;--bg2:#0d1330;--fg:#eef7ff;--muted:#93a6d8;--line:#2ad4ff33;--cyan:#29d7ff;--blue:#4a7cff;--violet:#8a5cff;--magenta:#ff4fd8;--panel:#0c1226cc;--panel2:#0a1022f2;--glass:#09112480;--glass2:#ffffffa8;--info:#63d5ff;--success:#7dffb0;--warn:#ffbd59;--danger:#ff7198;--mute:#93a6d8;--infoLine:#63d5ff55;--successLine:#7dffb055;--warnLine:#ffbd5955;--dangerLine:#ff719855;--muteLine:#93a6d855;--infoBg:#63d5ff14;--successBg:#7dffb014;--warnBg:#ffbd5914;--dangerBg:#ff719814;--muteBg:#93a6d814;--r:18px;--grad:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet),var(--magenta));--glow:0 0 0 1px #2ad4ff2e,0 0 18px #4a7cff1f,0 0 34px #8a5cff14}
@@ -33,8 +33,8 @@
 <section class="hero">
 <div class="hero__top">
 <div>
-<h1 id="app-title">Cardano Dapp</h1>
-<p id="app-copy">Review the action details below and continue in GameChanger Wallet.</p>
+<h1 id="app-title">$#___TITLE___#$</h1>
+<p id="app-copy">$#___DESCRIPTION___#$</p>
 </div>
 <div class="hero__tools">
 <div id="connect-widget" class="connect-widget hidden">
@@ -115,7 +115,7 @@
 <div class="app-footer__library">
 <span class="app-footer__text"> HTML - Auto-generated using  </span>
 <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM Library</a>
-<span class="app-footer__text"> - 2026</span>
+<span class="app-footer__text"> - $#___APP_YEAR___#$</span>
 </div>
 </footer>
 </div>
@@ -147,10 +147,10 @@
    */
   const app = createApp({
     config: {
-      id: 'gc-dapp-connect-with-dapp',
-      version: '0.0.1',
-      title: 'Cardano Dapp',
-      description: 'Review the action details below and continue in GameChanger Wallet.',
+      id: '$#___APP_ID___#$',
+      version: '$#___APP_VERSION___#$',
+      title: '$#___TITLE___#$',
+      description: '$#___DESCRIPTION___#$',
 
       /**
        * Default runtime values before persisted overrides are applied.
@@ -265,89 +265,7 @@
        * Change only app.defaultIntents and the runtime will rebuild the live
        * editable intents automatically.
        */
-      defaultIntents: {
-        // Uncomment the connect intent below to enable the most common wallet connection UX out of the box.
-        // Intent-based Cardano dapps do not require a mandatory wallet connection to work.
-        // connect: {
-        //   "label": "Connect wallet",
-        //   "description": "Share public wallet information with this dapp.",
-        //   "code": {
-        //     "type": "script",
-        //     "title": "Connect with this dapp?",
-        //     "description": "About to share public wallet information with the dapp.",
-        //     "exportAs": "connect",
-        //     "run": {
-        //       "name": {
-        //         "type": "getName"
-        //       },
-        //       "address": {
-        //         "type": "getCurrentAddress"
-        //       },
-        //       "addressInfo": {
-        //         "type": "macro",
-        //         "run": "{getAddressInfo(get('cache.address'))}"
-        //       }
-        //     }
-        //   }
-        // },
-        userIntent: {
-          "label": "🚀 Connect with dapp?",
-          "description": "About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
-          "code": {
-            "type": "script",
-            "title": "🚀 Connect with dapp?",
-            "description": "About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
-            "exportAs": "connect",
-            "return": {
-              "mode": "last"
-            },
-            "run": {
-              "data": {
-                "type": "script",
-                "run": {
-                  "name": {
-                    "type": "getName"
-                  },
-                  "address": {
-                    "type": "getCurrentAddress"
-                  },
-                  "addressInfo": {
-                    "type": "macro",
-                    "run": "{getAddressInfo(get('cache.data.address'))}"
-                  },
-                  "agreement": {
-                    "type": "macro",
-                    "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
-                  },
-                  "salt": {
-                    "type": "macro",
-                    "run": "{uuid()}"
-                  }
-                }
-              },
-              "hash": {
-                "type": "macro",
-                "run": "{sha512(objToJson(get('cache.data')))}"
-              },
-              "sign": {
-                "type": "signDataWithAddress",
-                "address": "{get('cache.data.address')}",
-                "dataHex": "{get('cache.hash')}"
-              },
-              "finally": {
-                "type": "macro",
-                "run": {
-                  "name": "{get('cache.data.name')}",
-                  "address": "{get('cache.data.address')}",
-                  "addressInfo": "{get('cache.data.addressInfo')}",
-                  "signature": "{get('cache.sign')}",
-                  "hash": "{get('cache.hash')}"
-                }
-              }
-            }
-          }
-        }
-      },
+      defaultIntents: $#___DEFAULT_INTENTS_BLOCK___#$,
 
       /**
        * Example connected wallet normalizer.
@@ -376,7 +294,7 @@
        * This hook runs exactly when a wallet result is captured from the URL
        * or manually decoded from the options panel.
        *
-       * Any intent result carrying a `connect` export can hydrate the
+       * Any intent result carrying a \`connect\` export can hydrate the
        * connected wallet widget, regardless of which intent produced it.
        * This keeps widget hydration based on transient results instead of
        * using merged exports as a permanent source of truth.
@@ -405,7 +323,7 @@
         if (next.exportAs || next.return) next.returnURLPattern = buildReturnUrl();
 
         if (intentKey === 'connect' && app.custom.connectedWallet?.name) {
-          next.title = `Reconnect ${app.custom.connectedWallet.name}?`;
+          next.title = \`Reconnect \${app.custom.connectedWallet.name}?\`;
         }
           
         // Examples:
@@ -415,15 +333,15 @@
         //     args['return-URL'] = 'https://preprod.cardanoscan.io/transaction/{txHash}';
         //   }
         //   if (connectedName && !text(args.message).includes(connectedName)) {
-        //     args.message = `${text(args.message)}\nRequested by ${connectedName}`.trim();
+        //     args.message = \`\${text(args.message)}\nRequested by \${connectedName}\`.trim();
         //   }
-        //   next.title = `Payment request: ${args.title || 'Untitled'}`;
-        //   if (next.run?.build) next.run.build.title = `✅ ${args.title || 'Payment request'}`;
+        //   next.title = \`Payment request: \${args.title || 'Untitled'}\`;
+        //   if (next.run?.build) next.run.build.title = \`✅ \${args.title || 'Payment request'}\`;
         // }
 
         // if (intentKey === 'stakeDelegation') {
-        //   next.title = `Delegating to ${args.ticker || 'a stake pool'}`;
-        //   if (next.run?.build) next.run.build.title = `✅ Delegate to ${args.ticker || 'a stake pool'}`;
+        //   next.title = \`Delegating to \${args.ticker || 'a stake pool'}\`;
+        //   if (next.run?.build) next.run.build.title = \`✅ Delegate to \${args.ticker || 'a stake pool'}\`;
         // }
 
         return next;
@@ -482,7 +400,7 @@
         //   if (!(quantity > 0)) validations.push({ level: 'err', blocking: true, message: 'Quantity must be greater than 0.' });
         //   if (address) {
         //     const expectedPrefix = app.options.network === 'mainnet' ? 'addr1' : 'addr_test1';
-        //     if (!address.startsWith(expectedPrefix)) validations.push({ level: 'err', blocking: true, message: `Destination address must start with "${expectedPrefix}" for ${app.options.network}.` });
+        //     if (!address.startsWith(expectedPrefix)) validations.push({ level: 'err', blocking: true, message: \`Destination address must start with "\${expectedPrefix}" for \${app.options.network}.\` });
         //   }
         //   if (returnUrl && !/^https:\/\//.test(returnUrl)) validations.push({ level: 'warn', blocking: false, message: 'Return URL should usually use HTTPS.' });
         // }
@@ -508,11 +426,11 @@
        * customization example.
        *
        * When enabled, the widget renders whenever a connected wallet exists
-       * or a default `connect` intent is available:
+       * or a default \`connect\` intent is available:
        * - connected wallet present: show wallet chip even without a default
-       *   `connect` intent
+       *   \`connect\` intent
        * - no connected wallet: only show the connect button when a default
-       *   `connect` intent is available
+       *   \`connect\` intent is available
        */
       render(app) {
         const widget = $('connect-widget');
@@ -625,7 +543,7 @@
   /** Truncates any text value for compact UI display. */
   function truncate({ value, start = 12, end = 10 }) {
     const next = text(value);
-    return next.length > start + end ? `${next.slice(0, start)}…${next.slice(-end)}` : next;
+    return next.length > start + end ? \`\${next.slice(0, start)}…\${next.slice(-end)}\` : next;
   }
 
   /** Loads persisted app state from localStorage. */
@@ -727,7 +645,7 @@
         changed = true;
       }
     });
-    if (changed) window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+    if (changed) window.history.replaceState({}, document.title, \`\${url.pathname}\${url.search}\${url.hash}\`);
   }
 
   /** Detects the default control kind for a value when no field override exists. */
@@ -837,7 +755,7 @@
       row.className = 'checkbox';
       const input = document.createElement('input');
       input.type = 'checkbox';
-      input.id = `${formId}-${kebab(field.name)}-input`;
+      input.id = \`\${formId}-\${kebab(field.name)}-input\`;
       input.checked = !!field.value;
       input.onchange = (event) => write({ raw: event.target.checked, eventName: 'onChange' });
       row.appendChild(input);
@@ -855,7 +773,7 @@
           : 'input'
     );
 
-    input.id = `${formId}-${kebab(field.name)}-input`;
+    input.id = \`\${formId}-\${kebab(field.name)}-input\`;
     input.className = 'control';
     if (field.placeholder) input.placeholder = field.placeholder;
 
@@ -899,11 +817,11 @@
     fields.forEach((field) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'field' + (field.full ? ' field--full' : '');
-      wrapper.id = `${formId}-${kebab(field.name)}-field`;
+      wrapper.id = \`\${formId}-\${kebab(field.name)}-field\`;
 
       if (!['button', 'html'].includes(field.kind)) {
         const title = document.createElement('label');
-        title.setAttribute('for', `${formId}-${kebab(field.name)}-input`);
+        title.setAttribute('for', \`\${formId}-\${kebab(field.name)}-input\`);
         title.textContent = field.label;
         wrapper.appendChild(title);
       }
@@ -928,7 +846,7 @@
   /** Builds the clean return URL pattern used by wallet intents. */
   function buildReturnUrl() {
     const url = new URL(window.location.href);
-    return `${url.origin}${url.pathname}${url.hash}`;
+    return \`\${url.origin}\${url.pathname}\${url.hash}\`;
   }
 
   /** Encodes one intent into a GameChanger wallet URL. */
@@ -1018,7 +936,7 @@
 
     await decodeWalletResultValue({ app, resultValue });
 
-    window.history.replaceState({}, document.title, `${url.pathname}${url.hash}`);
+    window.history.replaceState({}, document.title, \`\${url.pathname}\${url.hash}\`);
     savePersisted({ app });
 
     try {
@@ -1229,10 +1147,10 @@
     }
 
     $('intent-meta').innerHTML = [
-      `<h2 class="intent-meta__title">${app.ui.intentSummary.title}</h2>`,
-      `<p class="intent-meta__lead">${app.ui.intentSummary.lead}</p>`,
-      app.ui.intentSummary.sub ? `<div class="intent-meta__sub">${app.ui.intentSummary.sub}</div>` : '',
-      app.ui.showDebug ? `<div class="intent-meta__sub">Intent key: <code>${app.ui.currentIntentKey}</code></div>` : ''
+      \`<h2 class="intent-meta__title">\${app.ui.intentSummary.title}</h2>\`,
+      \`<p class="intent-meta__lead">\${app.ui.intentSummary.lead}</p>\`,
+      app.ui.intentSummary.sub ? \`<div class="intent-meta__sub">\${app.ui.intentSummary.sub}</div>\` : '',
+      app.ui.showDebug ? \`<div class="intent-meta__sub">Intent key: <code>\${app.ui.currentIntentKey}</code></div>\` : ''
     ].join('');
 
     $('args-section').classList.toggle('hidden', !app.ui.hasArgs);
@@ -1291,7 +1209,7 @@
     }
 
     $('action-status').textContent = app.status || '';
-    $('action-status').className = 'status' + (app.status ? ` status--${app.ui.actionStatusLevel || (app.ui.actionUrl ? 'ok' : 'err')}` : '');
+    $('action-status').className = 'status' + (app.status ? \` status--\${app.ui.actionStatusLevel || (app.ui.actionUrl ? 'ok' : 'err')}\` : '');
     $('field-status').textContent = app.ui.fieldStatus || '';
     $('field-status').className = 'status' + (app.ui.fieldStatus ? (app.ui.fieldStatusLevel === 'warn' ? ' status--warn' : ' status--err') : '');
 
@@ -1425,3 +1343,4 @@
 </script>
 </body>
 </html>
+`

@@ -29,6 +29,7 @@ Then open:
 
 - `http://127.0.0.1:3000/examples/index.html` (kitchen sink dapp)
 - `http://127.0.0.1:3000/examples/htmlDapp.html`
+- `http://127.0.0.1:3000/examples/htmlZeroDapp.html`
 - `http://127.0.0.1:3000/examples/reactDapp.html`
 
 ## What is `examples/res/`?
@@ -64,14 +65,40 @@ The kitchen sink example also exposes the handler-only URL options:
 - `disableNetworkRouter`: when enabled, skips the default `networkTag=<network>`
   query string
 
-Those options are applied by the handlers. The lower-level encoders
-remain generic.
+Those options are applied by the handlers. The lower-level encoders remain
+generic.
 
 ## Files
 
+- `connect.gcscript`: a simple intent to showcase GCScript DSL in order to connect a user wallet.
+
+      Important: 
+      - This is the default sample script used by all the examples
+      - Connection intents like this are not mandatory: Intent-based dapps may not require to pre-connect in order to work.
+      - For simplicity sake this example does not address challenge validation, HTTP origin validation nor encrypts response against MITM attacks. 
+      - A production ready and highly secure connection intent could be added in the future (let us know your needs)   
 - `index.html`: Kitchen Sink dapp> 100% in-browser playground for testing ALL
-  the library outputs
-- `htmlDapp.html`: minimal HTML integration example
-- `reactDapp.html`: minimal React integration example
+  the library outputs, including html, html-zero, react, button, URL, QR, and
+  express
+- `htmlDapp.html`: multi-intent HTML example with shared app state and
+  auto-rendered intent argument UI
+- `htmlZeroDapp.html`: zero-dependency resilient HTML example for offline-ready
+  and small-footprint deployments. 
+- `reactDapp.html`: multi-intent React example with shared app state and
+  auto-rendered intent argument UI
 - `expressBackend.js`: minimal Node/Express backend example
-- `connect.gcscript`: default sample script used by the kitchen sink example
+- `button.html`: minimal button HTML fragment redirecting users to the intent URL 
+- `QR.png`: Intent URL encoded as a QR code
+- `QR.svg`: Intent URL encoded as a QR code
+- `URL.txt`: Intent URL in plain text
+
+## Snippet flavors
+
+- `html-zero`: highly resilient, offline-ready, small-footprint frontend
+  intended for on-chain storage, and mission-critical use
+  cases with no external runtime imports
+- `html`: richer HTML boilerplate with shared app state, multiple actions, and
+  dynamic UI generation from intent code
+- `react`: richer React boilerplate with shared app state, multiple actions, and
+  dynamic UI generation from intent code
+- `express`: minimal Node/Express backend example

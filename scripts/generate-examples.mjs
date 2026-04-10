@@ -69,6 +69,10 @@ const buildExampleOutputs = async ({ gc, input }) => {
       value: parseDataUri(await gc.snippet.html(sharedArgs))
     },
     {
+      filename: 'htmlZeroDapp.html',
+      value: parseDataUri(await gc.snippet['html-zero'](sharedArgs))
+    },
+    {
       filename: 'reactDapp.html',
       value: parseDataUri(await gc.snippet.react(sharedArgs))
     },

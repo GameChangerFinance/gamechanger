@@ -210,50 +210,57 @@
       const { gc } = window
 
       const fallbackScript = `{
-  "type": "script",
-  "title": "🚀 Connect with dapp?",
-  "description": "About to share your public wallet information and a CIP-8 signature to verify this data",
-  "exportAs": "connect",
-  "run": {
-    "data": {
-      "type": "script",
-      "run": {
-        "name": {
-          "type": "getName"
+    "type": "script",
+    "title":"🚀 Connect with dapp?",
+    "description":"About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
+    "exportAs": "connect",
+    "return":{
+        "mode":"last"
+    },
+    "run": {
+        "data": {
+            "type": "script",
+            "run": {
+                "name": {
+                    "type": "getName"
+                },
+                "address": {
+                    "type": "getCurrentAddress"
+                },
+                "addressInfo": {
+                    "type": "macro",
+                    "run": "{getAddressInfo(get('cache.data.address'))}"
+                },
+                "agreement": {
+                    "type": "macro",
+                    "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
+                },
+                "salt": {
+                    "type": "macro",
+                    "run": "{uuid()}"
+                }
+            }
         },
-        "address": {
-          "type": "getCurrentAddress"
+        "hash": {
+            "type": "macro",
+            "run": "{sha512(objToJson(get('cache.data')))}"
         },
-        "spendPubKey": {
-          "type": "getSpendingPublicKey"
+        "sign": {
+            "type": "signDataWithAddress",
+            "address": "{get('cache.data.address')}",
+            "dataHex": "{get('cache.hash')}"
         },
-        "stakePubKey": {
-          "type": "getStakingPublicKey"
-        },
-        "addressInfo": {
-          "type": "macro",
-          "run": "{getAddressInfo(get('cache.data.address'))}"
-        },
-        "agreement": {
-          "type": "macro",
-          "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
-        },
-        "salt": {
-          "type": "macro",
-          "run": "{uuid()}"
+        "finally":{
+            "type": "macro",
+            "run": {
+                "name":        "{get('cache.data.name')}",
+                "address":     "{get('cache.data.address')}",
+                "addressInfo": "{get('cache.data.addressInfo')}",
+                "signature":   "{get('cache.sign')}",
+                "hash":        "{get('cache.hash')}"
+            }
         }
-      }
-    },
-    "hash": {
-      "type": "macro",
-      "run": "{sha512(objToJson(get('cache.data')))}"
-    },
-    "sign": {
-      "type": "signDataWithAddress",
-      "address": "{get('cache.data.address')}",
-      "dataHex": "{get('cache.hash')}"
     }
-  }
 }`
 
       const encodingsByApi = {
@@ -285,7 +292,12 @@
         {
           value: 'html',
           label: 'HTML snippet',
-          help: 'Preview and inspect the HTML dapp example.'
+          help: 'Preview and inspect the HTML multi-intent dapp example.'
+        },
+        {
+          value: 'html-zero',
+          label: 'HTML Zero snippet',
+          help: 'Preview and inspect the resilient zero-dependency HTML dapp example.'
         },
         {
           value: 'react',
@@ -310,6 +322,7 @@
         qrSvg: 'QR SVG',
         button: 'Button snippet',
         html: 'HTML snippet',
+        'html-zero': 'HTML Zero snippet',
         react: 'React snippet',
         express: 'Express snippet',
         result: 'Decoded result'
@@ -321,30 +334,49 @@
         qrSvg: { state: 'idle', error: '' },
         button: { state: 'idle', error: '' },
         html: { state: 'idle', error: '' },
+        'html-zero': { state: 'idle', error: '' },
         react: { state: 'idle', error: '' },
         express: { state: 'idle', error: '' },
         result: { state: 'idle', error: '' }
       }
 
       const viewToKeys = {
-        all: ['url', 'qrPng', 'qrSvg', 'button', 'html', 'react', 'express'],
+        all: [
+          'url',
+          'qrPng',
+          'qrSvg',
+          'button',
+          'html',
+          'html-zero',
+          'react',
+          'express'
+        ],
         url: ['url'],
         qr: ['qrPng', 'qrSvg'],
         button: ['button'],
         html: ['html'],
+        'html-zero': ['html-zero'],
         react: ['react'],
         express: ['express'],
         result: ['result']
+      }
+
+      const decodeBase64Utf8 = (body) => {
+        const binary = atob(body)
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+        return new TextDecoder('utf-8').decode(bytes)
       }
 
       const decodeDataUri = (value) => {
         if (!value || typeof value !== 'string') return ''
         const commaIndex = value.indexOf(',')
         if (commaIndex === -1) return value
+
         const header = value.slice(0, commaIndex)
         const body = value.slice(commaIndex + 1)
+
         return header.includes(';base64')
-          ? atob(body)
+          ? decodeBase64Utf8(body)
           : decodeURIComponent(body)
       }
 
@@ -440,10 +472,12 @@
         qrSvg: '',
         buttonDataUri: '',
         htmlDataUri: '',
+        htmlZeroDataUri: '',
         reactDataUri: '',
         expressDataUri: '',
         buttonCode: '',
         htmlCode: '',
+        htmlZeroCode: '',
         reactCode: '',
         expressCode: '',
         svgText: ''
@@ -472,6 +506,10 @@
         if (selectedKeys.indexOf('html') !== -1) {
           next.htmlDataUri = ''
           next.htmlCode = ''
+        }
+        if (selectedKeys.indexOf('html-zero') !== -1) {
+          next.htmlZeroDataUri = ''
+          next.htmlZeroCode = ''
         }
         if (selectedKeys.indexOf('react') !== -1) {
           next.reactDataUri = ''
@@ -777,6 +815,13 @@
                 htmlCode: decodeDataUri(dataUri)
               }
             },
+            'html-zero': async () => {
+              const dataUri = await gc.snippet['html-zero'](sharedArgs)
+              return {
+                htmlZeroDataUri: dataUri,
+                htmlZeroCode: decodeDataUri(dataUri)
+              }
+            },
             react: async () => {
               const dataUri = await gc.snippet.react({
                 ...sharedArgs,
@@ -1027,6 +1072,7 @@
                   <span className="pill">encode.qr svg</span>
                   <span className="pill">snippet.button</span>
                   <span className="pill">snippet.html</span>
+                  <span className="pill">snippet['html-zero']</span>
                   <span className="pill">snippet.react</span>
                   <span className="pill">snippet.express</span>
                 </div>
@@ -1179,6 +1225,30 @@
                     <CodeBlock
                       title="HTML dapp snippet source"
                       code={outputs.htmlCode}
+                    />
+                  </React.Fragment>
+                )}
+
+              {shouldShow(outputMode, 'html-zero') &&
+                statuses['html-zero'].state !== 'ready' && (
+                  <OutputStatusCard statusKey="html-zero" statuses={statuses} />
+                )}
+              {shouldShow(outputMode, 'html-zero') &&
+                statuses['html-zero'].state === 'ready' && (
+                  <React.Fragment>
+                    <div className="card full">
+                      <h3>HTML Zero dapp snippet preview</h3>
+                      <iframe
+                        className="previewFrame"
+                        title="HTML Zero dapp snippet preview"
+                        sandbox="allow-scripts allow-popups allow-same-origin"
+                        srcDoc={outputs.htmlZeroCode}
+                      />
+                      <PreviewNotice />
+                    </div>
+                    <CodeBlock
+                      title="HTML Zero dapp snippet source"
+                      code={outputs.htmlZeroCode}
                     />
                   </React.Fragment>
                 )}

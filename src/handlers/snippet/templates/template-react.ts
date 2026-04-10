@@ -1,12 +1,12 @@
-<!doctype html>
+export default String.raw`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080b17">
-<title>Cardano Dapp</title>
-<meta name="title" content="Cardano Dapp">
-<meta name="description" content="Review the action details below and continue in GameChanger Wallet.">
+<title>$#___TITLE___#$</title>
+<meta name="title" content="$#___TITLE___#$">
+<meta name="description" content="$#___DESCRIPTION___#$">
 <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
@@ -64,10 +64,10 @@ function ConnectedWalletWidget({ enabled, wallet, onConnect, onDisconnect }) {
 }
 
 const config = {
-  id: 'gc-dapp-connect-with-dapp',
-  version: '0.0.1',
-  title: 'Cardano Dapp',
-  description: 'Review the action details below and continue in GameChanger Wallet.',
+  id: '$#___APP_ID___#$',
+  version: '$#___APP_VERSION___#$',
+  title: '$#___TITLE___#$',
+  description: '$#___DESCRIPTION___#$',
 
   defaults: {
     options: {
@@ -134,89 +134,7 @@ const config = {
     }
   },
 
-  defaultIntents: {
-        // Uncomment the connect intent below to enable the most common wallet connection UX out of the box.
-        // Intent-based Cardano dapps do not require a mandatory wallet connection to work.
-        // connect: {
-        //   "label": "Connect wallet",
-        //   "description": "Share public wallet information with this dapp.",
-        //   "code": {
-        //     "type": "script",
-        //     "title": "Connect with this dapp?",
-        //     "description": "About to share public wallet information with the dapp.",
-        //     "exportAs": "connect",
-        //     "run": {
-        //       "name": {
-        //         "type": "getName"
-        //       },
-        //       "address": {
-        //         "type": "getCurrentAddress"
-        //       },
-        //       "addressInfo": {
-        //         "type": "macro",
-        //         "run": "{getAddressInfo(get('cache.address'))}"
-        //       }
-        //     }
-        //   }
-        // },
-        userIntent: {
-          "label": "🚀 Connect with dapp?",
-          "description": "About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
-          "code": {
-            "type": "script",
-            "title": "🚀 Connect with dapp?",
-            "description": "About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
-            "exportAs": "connect",
-            "return": {
-              "mode": "last"
-            },
-            "run": {
-              "data": {
-                "type": "script",
-                "run": {
-                  "name": {
-                    "type": "getName"
-                  },
-                  "address": {
-                    "type": "getCurrentAddress"
-                  },
-                  "addressInfo": {
-                    "type": "macro",
-                    "run": "{getAddressInfo(get('cache.data.address'))}"
-                  },
-                  "agreement": {
-                    "type": "macro",
-                    "run": "{replaceAll('Myself, the user of wallet ADDRESS accepts to share all this information in order to connect with the dapp','ADDRESS',get('cache.data.address'))}"
-                  },
-                  "salt": {
-                    "type": "macro",
-                    "run": "{uuid()}"
-                  }
-                }
-              },
-              "hash": {
-                "type": "macro",
-                "run": "{sha512(objToJson(get('cache.data')))}"
-              },
-              "sign": {
-                "type": "signDataWithAddress",
-                "address": "{get('cache.data.address')}",
-                "dataHex": "{get('cache.hash')}"
-              },
-              "finally": {
-                "type": "macro",
-                "run": {
-                  "name": "{get('cache.data.name')}",
-                  "address": "{get('cache.data.address')}",
-                  "addressInfo": "{get('cache.data.addressInfo')}",
-                  "signature": "{get('cache.sign')}",
-                  "hash": "{get('cache.hash')}"
-                }
-              }
-            }
-          }
-        }
-      },
+  defaultIntents: $#___DEFAULT_INTENTS_BLOCK___#$,
 
   components: {
     ConnectedWalletWidget
@@ -248,8 +166,8 @@ const config = {
   },
 
   /**
-   * Any intent may return a `connect` export to hydrate the connected wallet
-   * widget. The dedicated `connect` intent still works, but it is no longer
+   * Any intent may return a \`connect\` export to hydrate the connected wallet
+   * widget. The dedicated \`connect\` intent still works, but it is no longer
    * the only supported source of wallet identity data.
    */
   normalizeConnectedWallet({ decoded, value }) {
@@ -296,7 +214,7 @@ const config = {
     if (next.exportAs || next.return) next.returnURLPattern = helpers.buildReturnUrl();
 
     if (intentKey === 'connect' && state.custom.connectedWallet?.name) {
-      next.title = `Reconnect ${state.custom.connectedWallet.name}?`;
+      next.title = \`Reconnect \${state.custom.connectedWallet.name}?\`;
     }
 
     // Examples:
@@ -306,15 +224,15 @@ const config = {
     //     args['return-URL'] = 'https://preprod.cardanoscan.io/transaction/{txHash}';
     //   }
     //   if (connectedName && !asText(args.message).includes(connectedName)) {
-    //     args.message = `${asText(args.message)}\nRequested by ${connectedName}`.trim();
+    //     args.message = \`\${asText(args.message)}\nRequested by \${connectedName}\`.trim();
     //   }
-    //   next.title = `Payment request: ${args.title || 'Untitled'}`;
-    //   if (next.run?.build) next.run.build.title = `✅ ${args.title || 'Payment request'}`;
+    //   next.title = \`Payment request: \${args.title || 'Untitled'}\`;
+    //   if (next.run?.build) next.run.build.title = \`✅ \${args.title || 'Payment request'}\`;
     // }
 
     // if (intentKey === 'stakeDelegation') {
-    //   next.title = `Delegating to ${args.ticker || 'a stake pool'}`;
-    //   if (next.run?.build) next.run.build.title = `✅ Delegate to ${args.ticker || 'a stake pool'}`;
+    //   next.title = \`Delegating to \${args.ticker || 'a stake pool'}\`;
+    //   if (next.run?.build) next.run.build.title = \`✅ Delegate to \${args.ticker || 'a stake pool'}\`;
     // }
 
     return next;
@@ -337,7 +255,7 @@ const config = {
     //   if (address) {
     //     const expectedPrefix = state.options.network === 'mainnet' ? 'addr1' : 'addr_test1';
     //     if (!address.startsWith(expectedPrefix)) {
-    //       validations.push({ level: 'err', blocking: true, message: `Destination address must start with "${expectedPrefix}" for ${state.options.network}.` });
+    //       validations.push({ level: 'err', blocking: true, message: \`Destination address must start with "\${expectedPrefix}" for \${state.options.network}.\` });
     //     }
     //   }
     //   if (returnUrl && !/^https:\/\//.test(returnUrl)) {
@@ -439,7 +357,7 @@ function writePathCopy(root, path, value) {
 
 function truncateText(value, start = 12, end = 10) {
   const next = asText(value);
-  return next.length > start + end ? `${next.slice(0, start)}…${next.slice(-end)}` : next;
+  return next.length > start + end ? \`\${next.slice(0, start)}…\${next.slice(-end)}\` : next;
 }
 
 function replaceUrlBase(url, urlBase) {
@@ -454,7 +372,7 @@ function replaceUrlBase(url, urlBase) {
 
 function buildReturnUrl() {
   const url = new URL(window.location.href);
-  return `${url.origin}${url.pathname}${url.hash}`;
+  return \`\${url.origin}\${url.pathname}\${url.hash}\`;
 }
 
 function removeSearchParams(names) {
@@ -466,7 +384,7 @@ function removeSearchParams(names) {
       changed = true;
     }
   });
-  if (changed) window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
+  if (changed) window.history.replaceState({}, document.title, \`\${url.pathname}\${url.search}\${url.hash}\`);
 }
 
 function loadStoredJson(key) {
@@ -594,11 +512,11 @@ function buildFields({ json = {}, fieldConfig = {}, pathPrefix = [] }) {
 }
 
 function StatusLine({ id, message, level }) {
-  return <div id={id} className={`status${message ? ` status--${level || 'mute'}` : ''}`}>{message || ''}</div>;
+  return <div id={id} className={\`status\${message ? \` status--\${level || 'mute'}\` : ''}\`}>{message || ''}</div>;
 }
 
 function FieldControl({ field, formId, onWrite, onAction }) {
-  const controlId = `${formId}-${toKebab(field.name)}-input`;
+  const controlId = \`\${formId}-\${toKebab(field.name)}-input\`;
 
   if (field.kind === 'button') {
     return (
@@ -625,7 +543,7 @@ function FieldControl({ field, formId, onWrite, onAction }) {
     return (
       <select id={controlId} className="control" value={asText(field.value)} onChange={(event) => onWrite(field, event.target.value, 'onChange')}>
         {field.options.map((item) => (
-          <option key={`${field.name}-${item.value}`} value={item.value}>{item.label}</option>
+          <option key={\`\${field.name}-\${item.value}\`} value={item.value}>{item.label}</option>
         ))}
       </select>
     );
@@ -661,9 +579,9 @@ function FieldList({ fields, formId, onWrite, onAction }) {
   return (
     <>
       {fields.map((field) => {
-        const controlId = `${formId}-${toKebab(field.name)}-input`;
+        const controlId = \`\${formId}-\${toKebab(field.name)}-input\`;
         return (
-          <div key={`${formId}-${field.name}`} className={`field${field.full ? ' field--full' : ''}`} id={`${formId}-${toKebab(field.name)}-field`}>
+          <div key={\`\${formId}-\${field.name}\`} className={\`field\${field.full ? ' field--full' : ''}\`} id={\`\${formId}-\${toKebab(field.name)}-field\`}>
             {!['button', 'html'].includes(field.kind) && <label htmlFor={controlId}>{field.label}</label>}
             <FieldControl field={field} formId={formId} onWrite={onWrite} onAction={onAction} />
           </div>
@@ -687,7 +605,7 @@ function Footer() {
         <span className="app-footer__text"> React - Auto-generated using </span>
         <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM Library</a>
         <span className="app-footer__text"> - </span>
-        <span className="app-footer__text">2026</span>
+        <span className="app-footer__text">$#___APP_YEAR___#$</span>
       </div>
     </footer>
   );
@@ -955,7 +873,7 @@ function App() {
       try {
         await applyWalletResult(resultValue);
         if (cancelled) return;
-        window.history.replaceState({}, document.title, `${url.pathname}${url.hash}`);
+        window.history.replaceState({}, document.title, \`\${url.pathname}\${url.hash}\`);
 
         try {
           window.close();
@@ -1122,7 +1040,7 @@ function App() {
             <p id="app-copy">{config.description}</p>
           </div>
           <div className="hero__tools">
-            <div id="connect-widget" className={`connect-widget${connectWidgetEnabled ? '' : ' hidden'}`}>
+            <div id="connect-widget" className={\`connect-widget\${connectWidgetEnabled ? '' : ' hidden'}\`}>
               {ConnectedWallet && (
                 <ConnectedWallet
                   enabled={connectWidgetEnabled}
@@ -1134,7 +1052,7 @@ function App() {
             </div>
             <select
               id="theme-select"
-              className={`theme-select${viewModel.showThemeSelect ? '' : ' hidden'}`}
+              className={\`theme-select\${viewModel.showThemeSelect ? '' : ' hidden'}\`}
               aria-label="Theme"
               value={state.options.theme}
               onChange={(event) => patchOptions({ theme: event.target.value })}
@@ -1146,8 +1064,8 @@ function App() {
         </div>
       </section>
 
-      <main id="layout" className={`layout${viewModel.showDebug ? '' : ' layout--single'}`}>
-        <section id="migration-banner" className={`card stack card--warn${state.migrationNeeded ? '' : ' hidden'}`}>
+      <main id="layout" className={\`layout\${viewModel.showDebug ? '' : ' layout--single'}\`}>
+        <section id="migration-banner" className={\`card stack card--warn\${state.migrationNeeded ? '' : ' hidden'}\`}>
           <div>
             <h2 className="section-title">Stored data update available</h2>
             <p className="section-copy status--warn">This dapp version differs from previously saved local data.</p>
@@ -1160,7 +1078,7 @@ function App() {
 
         <section className="card stack">
           <div className="form-grid">
-            <div id="intent-select-field" className={`field${viewModel.showIntentSelect ? '' : ' hidden'}`}>
+            <div id="intent-select-field" className={\`field\${viewModel.showIntentSelect ? '' : ' hidden'}\`}>
               <label htmlFor="intent-select">Action</label>
               <select
                 id="intent-select"
@@ -1182,19 +1100,19 @@ function App() {
             {viewModel.showDebug && !viewModel.noIntentConfigured && <div className="intent-meta__sub">Intent key: <code>{state.currentIntentKey}</code></div>}
           </div>
 
-          <section id="args-section" className={`stack${viewModel.hasArgs ? '' : ' hidden'}`}>
+          <section id="args-section" className={\`stack\${viewModel.hasArgs ? '' : ' hidden'}\`}>
             <div><h2 className="section-title">Details</h2></div>
             <div id="args-form" className="form-grid">
               <FieldList fields={viewModel.currentFields} formId="intent-args" onWrite={writeField} onAction={runFieldAction} />
             </div>
           </section>
 
-          <div id="actions-section" className={`actions${viewModel.actionSectionDisabled ? ' hidden' : ''}`}>
-            <button id="reset-args-btn" className={`btn btn--ghost${viewModel.hasArgs ? '' : ' hidden'}`} type="button" onClick={() => resetIntent()}>Reset</button>
-            <button id="toggle-options-btn" className={`btn btn--ghost${viewModel.showOptionsToggle ? '' : ' hidden'}`} type="button" onClick={() => setState((current) => ({ ...current, showOptions: !current.showOptions }))}>Options</button>
+          <div id="actions-section" className={\`actions\${viewModel.actionSectionDisabled ? ' hidden' : ''}\`}>
+            <button id="reset-args-btn" className={\`btn btn--ghost\${viewModel.hasArgs ? '' : ' hidden'}\`} type="button" onClick={() => resetIntent()}>Reset</button>
+            <button id="toggle-options-btn" className={\`btn btn--ghost\${viewModel.showOptionsToggle ? '' : ' hidden'}\`} type="button" onClick={() => setState((current) => ({ ...current, showOptions: !current.showOptions }))}>Options</button>
             <button
               id="copy-url-btn"
-              className={`btn btn--ghost${viewModel.showAction && !viewModel.actionSectionDisabled ? '' : ' hidden'}`}
+              className={\`btn btn--ghost\${viewModel.showAction && !viewModel.actionSectionDisabled ? '' : ' hidden'}\`}
               type="button"
               disabled={viewModel.actionDisabled || !actionData.url}
               onClick={async () => {
@@ -1211,7 +1129,7 @@ function App() {
             </button>
             <a
               id="qr-link"
-              className={`btn btn--ghost${viewModel.showAction && viewModel.showQR && !viewModel.actionSectionDisabled && !viewModel.actionDisabled && actionData.url ? '' : ' hidden'}`}
+              className={\`btn btn--ghost\${viewModel.showAction && viewModel.showQR && !viewModel.actionSectionDisabled && !viewModel.actionDisabled && actionData.url ? '' : ' hidden'}\`}
               href={actionData.qr || '#'}
               target="_blank"
               rel="noopener noreferrer"
@@ -1237,7 +1155,7 @@ function App() {
             </a>
             <a
               id="connect-link"
-              className={`btn btn--primary${viewModel.showAction && !viewModel.actionSectionDisabled ? '' : ' hidden'}`}
+              className={\`btn btn--primary\${viewModel.showAction && !viewModel.actionSectionDisabled ? '' : ' hidden'}\`}
               href={actionData.url || '#'}
               target={state.options.usePopup ? 'gc_udc_popup' : '_self'}
               rel="noopener noreferrer"
@@ -1260,7 +1178,7 @@ function App() {
           <StatusLine id="action-status" message={viewModel.actionSectionDisabled ? '' : state.statusMessage} level={state.actionStatusLevel || (actionData.url ? 'ok' : 'err')} />
           <StatusLine id="field-status" message={viewModel.actionSectionDisabled ? '' : viewModel.fieldStatus} level={viewModel.fieldStatusLevel === 'warn' ? 'warn' : viewModel.fieldStatusLevel || ''} />
 
-          <div id="options-panel" className={`stack${state.showOptions && state.options.useOptions ? '' : ' hidden'}`}>
+          <div id="options-panel" className={\`stack\${state.showOptions && state.options.useOptions ? '' : ' hidden'}\`}>
             <div>
               <h2 className="section-title">Options</h2>
               <p className="section-copy">Advanced settings.</p>
@@ -1274,7 +1192,7 @@ function App() {
           </div>
         </section>
 
-        <aside id="debug-panel" className={`card stack${viewModel.showDebug ? '' : ' hidden'}`}>
+        <aside id="debug-panel" className={\`card stack\${viewModel.showDebug ? '' : ' hidden'}\`}>
           <div><h2 className="section-title">Persistent app state</h2></div>
           <div className="mini-grid">
             <div className="stat"><span>Selected intent</span><strong id="state-intent-key">{state.currentIntentKey || '-'}</strong></div>
@@ -1284,7 +1202,7 @@ function App() {
           </div>
           <div>
             <h3 className="section-title">Merged exports</h3>
-            <pre id="exports-box" className={`console${Object.keys(state.exportsMap || {}).length ? '' : ' empty'}`}>
+            <pre id="exports-box" className={\`console\${Object.keys(state.exportsMap || {}).length ? '' : ' empty'}\`}>
               {Object.keys(state.exportsMap || {}).length ? JSON.stringify(state.exportsMap, null, 2) : 'No wallet exports captured yet.'}
             </pre>
           </div>
@@ -1304,3 +1222,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 </body>
 </html>
+`

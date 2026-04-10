@@ -1,8 +1,11 @@
 {
     "type": "script",
     "title":"🚀 Connect with dapp?",
-    "description":"About to share your public wallet information and a CIP-8 signature to verify this data",
+    "description":"About to share to the dapp your public wallet information and a CIP-8 signature to verify ownership",
     "exportAs": "connect",
+    "return":{
+        "mode":"last"
+    },
     "run": {
         "data": {
             "type": "script",
@@ -12,12 +15,6 @@
                 },
                 "address": {
                     "type": "getCurrentAddress"
-                },
-                "spendPubKey": {
-                    "type": "getSpendingPublicKey"
-                },
-                "stakePubKey": {
-                    "type": "getStakingPublicKey"
                 },
                 "addressInfo": {
                     "type": "macro",
@@ -41,6 +38,16 @@
             "type": "signDataWithAddress",
             "address": "{get('cache.data.address')}",
             "dataHex": "{get('cache.hash')}"
+        },
+        "finally":{
+            "type": "macro",
+            "run": {
+                "name":        "{get('cache.data.name')}",
+                "address":     "{get('cache.data.address')}",
+                "addressInfo": "{get('cache.data.addressInfo')}",
+                "signature":   "{get('cache.sign')}",
+                "hash":        "{get('cache.hash')}"
+            }
         }
     }
 }

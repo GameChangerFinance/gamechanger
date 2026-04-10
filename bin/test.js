@@ -93,6 +93,7 @@ tests.push(
     assert.equal(typeof gc.encode.url, 'function')
     assert.equal(typeof gc.encode.qr, 'function')
     assert.equal(typeof gc.snippet.html, 'function')
+    assert.equal(typeof gc.snippet['html-zero'], 'function')
   })
 )
 
@@ -126,9 +127,9 @@ tests.push(
   run('package self require works', async () => {
     const result = execNode([
       '-e',
-      "const gc=require('@gamechanger-finance/gc'); console.log(typeof gc.encode.url + ':' + typeof gc.snippet.html)"
+      "const gc=require('@gamechanger-finance/gc'); console.log(typeof gc.encode.url + ':' + typeof gc.snippet.html + ':' + typeof gc.snippet['html-zero'])"
     ])
-    assert.match(result.stdout.trim(), /^function:function$/)
+    assert.match(result.stdout.trim(), /^function:function:function$/)
   })
 )
 
@@ -425,6 +426,7 @@ tests.push(
   run('CLI snippet outputs can be written to files', async () => {
     const buttonFile = path.resolve(tmpDir, 'button.html')
     const htmlFile = path.resolve(tmpDir, 'snippet.html')
+    const htmlZeroFile = path.resolve(tmpDir, 'snippet-zero.html')
     const reactFile = path.resolve(tmpDir, 'react.html')
     const expressFile = path.resolve(tmpDir, 'backend.js')
 
@@ -455,6 +457,20 @@ tests.push(
       'examples/connect.gcscript',
       '-o',
       htmlFile
+    ])
+    execNode([
+      'bin/cli.js',
+      'mainnet',
+      'snippet',
+      'html-zero',
+      '-v',
+      '2',
+      '-e',
+      'gzip',
+      '-f',
+      'examples/connect.gcscript',
+      '-o',
+      htmlZeroFile
     ])
     execNode([
       'bin/cli.js',
@@ -491,7 +507,11 @@ tests.push(
     )
     assert.match(
       (await fs.readFile(htmlFile, 'utf8')).toString(),
-      /dist\/browser\.min\.js/
+      /@gamechanger-finance\/gc/
+    )
+    assert.match(
+      (await fs.readFile(htmlZeroFile, 'utf8')).toString(),
+      /CompressionStream/
     )
     assert.match((await fs.readFile(reactFile, 'utf8')).toString(), /React/)
     assert.match(

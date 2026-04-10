@@ -6,45 +6,12 @@ import {
   QRTemplateType
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
-// import urlEncoder from '../../encodings/url'
-import { Buffer } from 'buffer'
-const baseTemplate = async (args: {
-  apiVersion: APIVersion
-  network: NetworkType
-  encoding: APIEncoding
-  input: string
-  debug?: boolean
-  refAddress?: string
-  disableNetworkRouter?: boolean
-
-  qrResultType?: 'png' | 'svg'
-  outputFile?: string
-  template?: QRTemplateType | string
-  styles?: string //JSON
-}) => {
-  //Generated with https://www.bestcssbuttongenerator.com/
-
-  const url = await handler({
-    apiVersion: args.apiVersion,
-    network: args.network,
-    encoding: args.encoding,
-    input: args.input,
-    debug: args.debug,
-    refAddress: args?.refAddress,
-    disableNetworkRouter: args?.disableNetworkRouter
-  })
-
-  return `
-<!--GC BUTTON START-->
-<a href="${url}" class="gcConnectButton">Connect with GC</a>
-<style>.gcConnectButton {box-shadow: 0px 0px 0px 2px #9fb4f2;
-background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);background-color:#7892c2;border-radius:25px;border:1px solid #4e6096;
-display:inline-block;cursor:pointer;color:#ffffff;font-family:Arial;font-size:16px;font-weight:bold;padding:12px 37px;text-decoration:none;
-text-shadow:0px 1px 0px #283966;}.gcConnectButton:hover {background:linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
-background-color:#476e9e;}.gcConnectButton:active {position:relative;top:1px;}</style>
-<!--GC BUTTON END-->
-`
-}
+import {
+  replaceSnippetPlaceholders,
+  snippetTokens,
+  toUtf8DataUri
+} from './helpers'
+import template from './templates/template-button'
 
 export default async (args: {
   apiVersion: APIVersion
@@ -54,32 +21,30 @@ export default async (args: {
   debug?: boolean
   refAddress?: string
   disableNetworkRouter?: boolean
-
   qrResultType?: 'png' | 'svg'
   outputFile?: string
   template?: QRTemplateType | string
-  styles?: string //JSON
+  styles?: string
 }) => {
   try {
-    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-
-    const text = await baseTemplate({
-      apiVersion,
-      network,
-      encoding,
-      input,
-      refAddress: args?.refAddress,
-      disableNetworkRouter: args?.disableNetworkRouter,
-
-      qrResultType: args?.qrResultType,
-      outputFile: args?.outputFile,
-      template: args?.template,
-      styles: args?.styles
+    const validated = validateBuildMsgArgs(args)
+    const url = await handler({
+      apiVersion: validated.apiVersion,
+      network: validated.network,
+      encoding: validated.encoding,
+      input: validated.input,
+      debug: args.debug,
+      refAddress: args.refAddress,
+      disableNetworkRouter: args.disableNetworkRouter
     })
-    return `data:text/html;base64,${Buffer.from(text).toString('base64')}`
+    const text = replaceSnippetPlaceholders(template, {
+      [snippetTokens.url]: url
+    })
+    return toUtf8DataUri('text/html', text)
   } catch (err) {
-    if (err instanceof Error)
-      throw new Error('URL generation failed. ' + err?.message)
-    else throw new Error('URL generation failed. ' + 'Unknown error')
+    if (err instanceof Error) {
+      throw new Error('URL generation failed. ' + err.message)
+    }
+    throw new Error('URL generation failed. Unknown error')
   }
 }
