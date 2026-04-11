@@ -119,16 +119,23 @@ Published artifacts kept for npm and CDN usage:
 - `dist/browser.min.js`
 - `dist/nodejs.cjs`
 - `dist/nodejs.js`
+- `dist/index.d.ts`
+- `dist/types/index.d.ts`
 
 Package entrypoints:
 
-- ESM / Node: `import gc from "@gamechanger-finance/gc"`
+- ESM / Node or bundlers: `import gc from "@gamechanger-finance/gc"`
 - CommonJS / Node: `const gc = require("@gamechanger-finance/gc")`
 - Browser global: `const {gc} = window`
+- Type-only subpath:
+  `import type { NetworkType } from "@gamechanger-finance/gc/types"`
 
-The Node and CLI QR path no longer depends on `canvas` / `easyqrcodejs-nodejs`
-at install time. Styled QR output is generated from EasyQRCodeJS SVG output and
-rasterized on Node only when PNG output is requested.
+The QR loader is now split per target. Browser bundles import only the browser
+QR runtime, while Node and CLI bundles import only the Node QR runtime. This
+keeps Node-only modules such as `@napi-rs/canvas` and the bundled Node QR shim
+out of browser bundle graphs, including Vite dependency optimization. Styled QR
+output is still generated from EasyQRCodeJS SVG output and rasterized on Node
+only when PNG output is requested.
 
 ## Library usage:
 

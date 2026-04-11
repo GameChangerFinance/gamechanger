@@ -404,6 +404,81 @@ tests.push(
 )
 
 tests.push(
+  run('browser runtime bundle excludes Node QR runtime imports', async () => {
+    const script = await fs.readFile(
+      path.resolve(rootDir, 'dist/browser.runtime.js'),
+      'utf8'
+    )
+    assert.doesNotMatch(script, /@napi-rs\/canvas/)
+    assert.doesNotMatch(script, /easyqrcodejs-node\.cjs/)
+    assert.doesNotMatch(script, /node:fs\/promises/)
+    assert.doesNotMatch(script, /node:util\/types/)
+    assert.doesNotMatch(script, /node:module/)
+  })
+)
+
+tests.push(
+  run(
+    'TypeScript declarations support default, named, and type-only imports',
+    async () => {
+      const typecheckDir = await fs.mkdtemp(path.join(rootDir, '.gc-types-'))
+      const sourceFile = path.resolve(typecheckDir, 'index.ts')
+      const configFile = path.resolve(typecheckDir, 'tsconfig.json')
+
+      await fs.writeFile(
+        sourceFile,
+        [
+          "import gc, { encode, snippet, gc as namedGc } from '@gamechanger-finance/gc'",
+          "import type { NetworkType, APIEncoding } from '@gamechanger-finance/gc/types'",
+          "const network: NetworkType = 'mainnet'",
+          "const encoding: APIEncoding = 'gzip'",
+          'void gc',
+          'void encode',
+          'void snippet',
+          'void namedGc',
+          'void network',
+          'void encoding'
+        ].join('\n'),
+        'utf8'
+      )
+
+      await fs.writeFile(
+        configFile,
+        JSON.stringify(
+          {
+            compilerOptions: {
+              strict: true,
+              module: 'ESNext',
+              moduleResolution: 'Bundler',
+              target: 'ES2022',
+              noEmit: true,
+              baseUrl: rootDir,
+              paths: {
+                '@gamechanger-finance/gc': ['.'],
+                '@gamechanger-finance/gc/types': ['./dist/types/index.d.ts']
+              }
+            },
+            include: [sourceFile]
+          },
+          null,
+          2
+        ),
+        'utf8'
+      )
+
+      execNode([
+        path.relative(
+          rootDir,
+          path.resolve(rootDir, 'node_modules/typescript/bin/tsc')
+        ),
+        '-p',
+        configFile
+      ])
+    }
+  )
+)
+
+tests.push(
   run('json-url-lzw throws a deprecation error', async () => {
     await assert.rejects(
       () => gc.encodings['json-url-lzw'].encoder({ foo: 'bar' }),

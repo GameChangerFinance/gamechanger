@@ -55,6 +55,7 @@ Node / bundlers:
 
 ```js
 import gc from '@gamechanger-finance/gc'
+import type { NetworkType } from '@gamechanger-finance/gc/types'
 ```
 
 ## Network Router and referral features

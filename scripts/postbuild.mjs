@@ -58,7 +58,7 @@ const ensureBrowserFacade = async () => {
     await fs.rename(browserBundle, path.resolve(distDir, 'browser.runtime.js'))
     await fs.writeFile(
       browserBundle,
-      "export { default } from './browser.runtime.js'\nexport { default as gc } from './browser.runtime.js'\n",
+      "import gc from './browser.runtime.js'\n\nexport const { encode, snippet, encodings, utils, config } = gc\nexport { gc }\nexport default gc\n",
       'utf8'
     )
   }

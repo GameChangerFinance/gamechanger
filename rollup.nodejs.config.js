@@ -5,6 +5,14 @@ import nodePolyfills from 'rollup-plugin-polyfill-node'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import json from '@rollup/plugin-json'
 
+const targetModuleAlias = (replacement) => ({
+  name: 'target-module-alias',
+  resolveId(source, importer) {
+    if (!importer || source !== './easyqrcodejs.browser') return null
+    return replacement
+  }
+})
+
 export default {
   input: 'src/index.ts',
   output: {
@@ -17,6 +25,9 @@ export default {
   },
   external: ['jsdom', 'xmldom'],
   plugins: [
+    targetModuleAlias(
+      new URL('./src/modules/easyqrcodejs.node.ts', import.meta.url).pathname
+    ),
     json(),
     filesAsDataURIs({
       include: [
