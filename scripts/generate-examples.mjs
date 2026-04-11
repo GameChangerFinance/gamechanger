@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { GCLibInSnippets } from './config.mjs'
 
 const exists = async (filepath) => {
   try {
@@ -66,7 +67,14 @@ const buildExampleOutputs = async ({ gc, input }) => {
     },
     {
       filename: 'htmlDapp.html',
-      value: parseDataUri(await gc.snippet.html(sharedArgs))
+      value: parseDataUri(
+        await gc.snippet.html({
+          ...sharedArgs,
+          snippetArgs: {
+            gcLibBrowserImports: GCLibInSnippets.browserExamples
+          }
+        })
+      )
     },
     {
       filename: 'htmlZeroDapp.html',
@@ -74,11 +82,25 @@ const buildExampleOutputs = async ({ gc, input }) => {
     },
     {
       filename: 'reactDapp.html',
-      value: parseDataUri(await gc.snippet.react(sharedArgs))
+      value: parseDataUri(
+        await gc.snippet.react({
+          ...sharedArgs,
+          snippetArgs: {
+            gcLibBrowserImports: GCLibInSnippets.browserExamples
+          }
+        })
+      )
     },
     {
       filename: 'expressBackend.js',
-      value: parseDataUri(await gc.snippet.express(sharedArgs))
+      value: parseDataUri(
+        await gc.snippet.express({
+          ...sharedArgs,
+          snippetArgs: {
+            gcLibNodeJsImports: GCLibInSnippets.nodeJsExamples
+          }
+        })
+      )
     }
   ]
 }

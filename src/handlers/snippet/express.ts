@@ -1,3 +1,4 @@
+import { GCLibInSnippets } from 'src/config'
 import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 import {
@@ -28,6 +29,7 @@ export default async (args: {
       template,
       applySnippetArgs(
         {
+          [snippetTokens.gcLibNodeJsImports]: GCLibInSnippets.nodeJsOutputs,
           [snippetTokens.gcScript]: JSON.stringify(script, null, 2),
           [snippetTokens.apiVersion]: toJSLiteral(validated.apiVersion),
           [snippetTokens.network]: toJSLiteral(validated.network),

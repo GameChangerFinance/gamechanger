@@ -1,6 +1,7 @@
 
 //#!/usr/bin/env node
 
+
 //Install on project:
 //  $ npm install -s @gamechanger-finance/gc
 // or
@@ -10,10 +11,11 @@
 //  $ node <FILENAME>.js
 
 //Import if testing the library from this repository:
-//import gc from './res/nodejs.js'
+import gc from './res/nodejs.js'
 // or
 //Import normally:
-import gc from '@gamechanger-finance/gc'
+//import gc from '@gamechanger-finance/gc'
+
 import express from 'express';
 
 const gcscript={

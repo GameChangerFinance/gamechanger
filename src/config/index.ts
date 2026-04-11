@@ -1,4 +1,5 @@
 import { APIEncoding, APIVersion, NetworkType } from '../types'
+
 //import packageJson from '../../package.json'
 const packageJson: any = {} //TODO: make this work with bundlers
 export const version = packageJson.version
@@ -40,6 +41,30 @@ export const contact = {
   youtube: 'https://www.youtube.com/@gamechanger.finance',
   playgroundDiscord:
     'https://discord.com/channels/912354788795109396/921687306241458207'
+}
+
+export const GCLibInSnippets = {
+  browserOutputs: `
+<!-- Use for local deployments or for testing the library: -->
+<!-- <script src="res/browser.min.js"></script> -->
+<!-- Use library from CDN: -->
+<script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc@latest/dist/browser.min.js"></script>
+`,
+  nodeJsOutputs: `
+//Install on project:
+//  $ npm install -s @gamechanger-finance/gc
+// or
+//Install globally:
+//  $ npm install -g @gamechanger-finance/gc
+//Run this file
+//  $ node <FILENAME>.js
+
+//Import if testing the library from this repository:
+//import gc from './res/nodejs.js'
+// or
+//Import normally:
+import gc from '@gamechanger-finance/gc'
+`
 }
 
 export const GCDappConnUrls = {

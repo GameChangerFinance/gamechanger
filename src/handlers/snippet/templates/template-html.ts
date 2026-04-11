@@ -7,10 +7,7 @@ export default String.raw`<!doctype html>
 <title>$#___TITLE___#$</title>
 <meta name="title" content="$#___TITLE___#$">
 <meta name="description" content="$#___DESCRIPTION___#$">
-<!-- Use for local deployments or for testing the library: -->
-<!-- <script src="res/browser.min.js"></script> -->
-<!-- Use library from CDN: -->
-<script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc@latest/dist/browser.min.js"></script>
+$#___GC_BROWSER_IMPORTS___#$
 <style>
 :root{--bg:#070b16;--bg2:#0d1330;--fg:#eef7ff;--muted:#93a6d8;--line:#2ad4ff33;--cyan:#29d7ff;--blue:#4a7cff;--violet:#8a5cff;--magenta:#ff4fd8;--panel:#0c1226cc;--panel2:#0a1022f2;--glass:#09112480;--glass2:#ffffffa8;--info:#63d5ff;--success:#7dffb0;--warn:#ffbd59;--danger:#ff7198;--mute:#93a6d8;--infoLine:#63d5ff55;--successLine:#7dffb055;--warnLine:#ffbd5955;--dangerLine:#ff719855;--muteLine:#93a6d855;--infoBg:#63d5ff14;--successBg:#7dffb014;--warnBg:#ffbd5914;--dangerBg:#ff719814;--muteBg:#93a6d814;--r:18px;--grad:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet),var(--magenta));--glow:0 0 0 1px #2ad4ff2e,0 0 18px #4a7cff1f,0 0 34px #8a5cff14}
 [data-theme="light"]{--bg:#eef6ff;--bg2:#dae7ff;--fg:#091126;--muted:#55648c;--line:#4a7cff2b;--panel:#ffffffcf;--panel2:#ffffffef;--info:#0a7db8;--success:#137a43;--warn:#9a6100;--danger:#b4234e;--mute:#55648c;--infoLine:#0a7db833;--successLine:#137a4333;--warnLine:#9a610033;--dangerLine:#b4234e33;--muteLine:#55648c33;--infoBg:#0a7db812;--successBg:#137a4312;--warnBg:#9a610012;--dangerBg:#b4234e12;--muteBg:#55648c12;--glow:0 0 0 1px #4a7cff26,0 14px 34px #4a7cff18}

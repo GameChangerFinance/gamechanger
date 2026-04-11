@@ -1,19 +1,7 @@
 export default String.raw`
 //#!/usr/bin/env node
 
-//Install on project:
-//  $ npm install -s @gamechanger-finance/gc
-// or
-//Install globally:
-//  $ npm install -g @gamechanger-finance/gc
-//Run this file
-//  $ node <FILENAME>.js
-
-//Import if testing the library from this repository:
-//import gc from './res/nodejs.js'
-// or
-//Import normally:
-import gc from '@gamechanger-finance/gc'
+$#___GC_NODEJS_IMPORTS___#$
 import express from 'express';
 
 const gcscript=$#___GC_SCRIPT___#$;
