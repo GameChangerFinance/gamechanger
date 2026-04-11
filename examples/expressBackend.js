@@ -10,7 +10,7 @@
 //  $ node <FILENAME>.js
 
 //Import if testing the library from this repository:
-//import gc from '../dist/nodejs.js'
+//import gc from './res/nodejs.js'
 // or
 //Import normally:
 import gc from '@gamechanger-finance/gc'

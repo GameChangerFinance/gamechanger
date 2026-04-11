@@ -23,8 +23,7 @@ export default {
       include: [
         './src/assets/images/*.png',
         './src/assets/images/*.jpg',
-        './src/assets/images/*.svg',
-        './src/assets/fonts/*.ttf'
+        './src/assets/images/*.svg'
       ]
     }),
     typescript({

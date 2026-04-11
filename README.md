@@ -1,11 +1,12 @@
 [![](https://data.jsdelivr.com/v1/package/npm/@gamechanger-finance/gc/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@gamechanger-finance/gc)
 
-![Build with us, a great future await us together](src/assets/images/dapp-cli-banner.png?raw=true)
+![Build with us, a great future await us together](src/assets/images/dapp-logo-bg.png?raw=true)
 
 # GameChanger Wallet Library and CLI
 
-Official GameChanger Wallet library and CLI for integrating with Cardano dapps
-and solve other related tasks (https://gamechanger.finance/)
+Official GameChanger Wallet library and CLI for integrating Cardano via intents
+in links, QRs, dapps, web, screens, social media and solve other related tasks
+(https://gamechanger.finance/)
 
 > Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
 > flavors
@@ -33,16 +34,7 @@ $ npm run examples:express
 
 ```
 
-- [Kitchen Sink - all outputs in one example](examples/index.html)
-
-`html` and `react` outputs are richer shared-state app boilerplates with local
-storage persistence that can host multiple actions (intent scripts coded in
-GCScript DSL) in one dapp and auto-render end-user UI from the intent code
-itself. `html-zero` is the minimal zero-dependency flavor aimed at highly
-resilient, offline-ready, small-footprint frontends for long term reliability
-that can be stored on-chain with GCFS and work without any dependencies or
-centralized points of failure.
-
+- [Kitchen Sink - all outputs in one example](examples/index.html):
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
 - [QR (svg)](examples/QR.svg)
@@ -51,6 +43,21 @@ centralized points of failure.
 - [HTML Zero Dapp](examples/htmlZeroDapp.html)
 - [ReactJs Dapp](examples/reactDapp.html)
 - [ExpressJs Backend](examples/expressBackend.js)
+
+`html` and `react` outputs are richer shared-state app boilerplates with local
+storage persistence that can host multiple actions (intent scripts coded in
+GCScript DSL) in one dapp and auto-render end-user UI from the intent code
+itself.
+
+`html-zero` is the minimal zero-dependency flavor aimed at highly resilient,
+offline-ready, small-footprint frontends for long term reliability that can be
+stored on-chain with GCFS and work without any dependencies or centralized
+points of failure.
+
+`express` is a minimal Node/Express backend example that redirects browser users
+to the wallet and then captures the response via "webhook" redirection.
+
+Read more about examples [here](examples/README.md):
 
 ## Install CLI
 
@@ -108,7 +115,6 @@ Local repository build targets:
 
 Published artifacts kept for npm and CDN usage:
 
-- `dist/5fda0823f200837.ttf`
 - `dist/browser.js`
 - `dist/browser.min.js`
 - `dist/nodejs.cjs`

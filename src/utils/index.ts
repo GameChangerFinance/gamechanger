@@ -71,27 +71,14 @@ export const validateBuildMsgArgs = (args: {
     input
   }
 }
-
-// export const getPlatform = () => {
-//   try {
-//     // Check if the environment is Node.js
-//     if (typeof process === 'object' && typeof require === 'function') {
-//       return 'nodejs'
-//     }
-//   } catch (err) {}
-
-//   // try {
-//   //   // Check if the environment is a
-//   //   // Service worker
-//   //   if (typeof importScripts === 'function') {
-//   //     return 'worker'
-//   //   }
-//   // } catch (err) {}
-
-//   try {
-//     // Check if the environment is a Browser
-//     if (typeof window === 'object') {
-//       return 'browser'
-//     }
-//   } catch (err) {}
-// }
+export const getBaseUrl = (value?: string): string | undefined => {
+  try {
+    return value?.trim()
+      ? ((u) => (u.host ? `${u.protocol}//${u.host}` : undefined))(
+          new URL(value.trim())
+        )
+      : undefined
+  } catch {
+    return undefined
+  }
+}

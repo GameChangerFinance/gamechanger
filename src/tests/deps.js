@@ -8,7 +8,6 @@ import template from 'string-placeholder'
 
 // import logoURL from '../assets/images/dapp-logo-bg.png'
 // import backgroundURL from '../assets/images/background.png'
-// import fontURL from '../assets/fonts/ABSTRACT.ttf'
 
 /**
  * It has been very hard to allow dual support for browser and nodejs due to dependencies conflicts.
@@ -80,7 +79,6 @@ export default async () => {
     )
     // logoURL, //: await import('./assets/images/dapp-logo-bg.png'),
     // backgroundURL, //: await import('./assets/images/background.png')
-    // fontURL
   })
 
   return 'OK'

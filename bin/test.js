@@ -7,6 +7,7 @@ import vm from 'node:vm'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { JSDOM } from 'jsdom'
+import { createCanvas, Image } from '@napi-rs/canvas'
 import gc from '../dist/nodejs.cjs'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -88,6 +89,38 @@ const decodeDataUri = (value) => {
 
 const parseUrl = (value) => new URL(String(value))
 
+const installCanvasShim = (dom) => {
+  const { HTMLCanvasElement } = dom.window
+  if (!HTMLCanvasElement?.prototype) return
+
+  const ensureCanvas = (element) => {
+    const width = Number(element.width) || 300
+    const height = Number(element.height) || 150
+    if (!element.__gcCanvas) {
+      element.__gcCanvas = createCanvas(width, height)
+    }
+    if (
+      element.__gcCanvas.width !== width ||
+      element.__gcCanvas.height !== height
+    ) {
+      element.__gcCanvas.width = width
+      element.__gcCanvas.height = height
+    }
+    return element.__gcCanvas
+  }
+
+  HTMLCanvasElement.prototype.getContext = function (type, options) {
+    return ensureCanvas(this).getContext(type, options)
+  }
+  HTMLCanvasElement.prototype.toDataURL = function (type) {
+    return ensureCanvas(this).toDataURL(type || 'image/png')
+  }
+  HTMLCanvasElement.prototype.toBuffer = function (type) {
+    return ensureCanvas(this).toBuffer(type)
+  }
+  dom.window.Image = Image
+}
+
 tests.push(
   run('dist/nodejs.cjs can be required', async () => {
     assert.equal(typeof gc.encode.url, 'function')
@@ -160,6 +193,7 @@ tests.push(
         pretendToBeVisual: true
       })
       dom.window.process = undefined
+      installCanvasShim(dom)
       const script = await fs.readFile(
         path.resolve(rootDir, 'dist/browser.min.js'),
         'utf8'
@@ -253,31 +287,40 @@ tests.push(
 )
 
 tests.push(
-  run('node library encode.qr returns PNG and SVG data', async () => {
-    const png = await gc.encode.qr({
-      input: exampleScript,
-      apiVersion: '2',
-      network: 'mainnet',
-      encoding: 'gzip',
-      qrResultType: 'png',
-      template: 'boxed'
-    })
-    const svg = await gc.encode.qr({
-      input: exampleScript,
-      apiVersion: '2',
-      network: 'mainnet',
-      encoding: 'gzip',
-      qrResultType: 'svg',
-      template: 'boxed'
-    })
-    assert.ok(isPng(decodeDataUri(png)))
-    assert.ok(isSvg(decodeDataUri(svg)))
-  })
+  run(
+    'node library encode.qr returns PNG and SVG data with footer text',
+    async () => {
+      const png = await gc.encode.qr({
+        input: exampleScript,
+        apiVersion: '2',
+        network: 'mainnet',
+        encoding: 'gzip',
+        qrResultType: 'png',
+        template: 'boxed'
+      })
+      const svg = await gc.encode.qr({
+        input: exampleScript,
+        apiVersion: '2',
+        network: 'mainnet',
+        encoding: 'gzip',
+        qrResultType: 'svg',
+        template: 'boxed'
+      })
+      const svgText = decodeDataUri(svg).toString('utf8')
+      assert.ok(isPng(decodeDataUri(png)))
+      assert.ok(isSvg(decodeDataUri(svg)))
+      assert.match(
+        svgText,
+        /Scan and review in https:\/\/wallet\.gamechanger\.finance\b/
+      )
+      assert.match(svgText, /Connect with dapp\?/)
+    }
+  )
 )
 
 tests.push(
   run(
-    'browser minified build exposes QR encoder on the global bundle',
+    'browser minified build exposes QR encoder and ships the footer defaults',
     async () => {
       const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
         url: 'https://example.test/',
@@ -285,12 +328,15 @@ tests.push(
         pretendToBeVisual: true
       })
       dom.window.process = undefined
+      installCanvasShim(dom)
       const script = await fs.readFile(
         path.resolve(rootDir, 'dist/browser.min.js'),
         'utf8'
       )
       vm.runInContext(script, dom.getInternalVMContext())
       assert.equal(typeof dom.window.gc.encode.qr, 'function')
+      assert.match(script, /Scan and review in\b/)
+      assert.match(script, /Segoe UI Variable/)
     }
   )
 )
@@ -423,6 +469,38 @@ tests.push(
 )
 
 tests.push(
+  run(
+    'CLI encode qr writes the requested SVG file with footer text',
+    async () => {
+      const svgFile = path.resolve(tmpDir, 'cli-qr.svg')
+
+      execNode([
+        'bin/cli.js',
+        'mainnet',
+        'encode',
+        'qr',
+        '-v',
+        '2',
+        '-e',
+        'gzip',
+        '-f',
+        'examples/connect.gcscript',
+        '-o',
+        svgFile,
+        '-t',
+        'boxed'
+      ])
+
+      assert.ok(isSvg(await fs.readFile(svgFile)))
+      assert.match(
+        (await fs.readFile(svgFile, 'utf8')).toString(),
+        /Scan and review in https:\/\/wallet\.gamechanger\.finance\b/
+      )
+    }
+  )
+)
+
+tests.push(
   run('CLI snippet outputs can be written to files', async () => {
     const buttonFile = path.resolve(tmpDir, 'button.html')
     const htmlFile = path.resolve(tmpDir, 'snippet.html')
@@ -534,11 +612,11 @@ const main = async () => {
     }
   }
 
-  await readFileIfExists(tmpDir)
-
   if (failures > 0) {
     process.exit(1)
   }
+
+  process.exit(0)
 }
 
 main().catch((err) => {

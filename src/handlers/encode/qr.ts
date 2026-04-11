@@ -6,14 +6,14 @@ import {
   NetworkType,
   QRTemplateType
 } from '../../types'
-import { validateBuildMsgArgs } from '../../utils'
+import { getBaseUrl, validateBuildMsgArgs } from '../../utils'
 
 import qrEncoder from '../../encodings/qr'
 import qrLibLoader from '../../modules/easyqrcodejs'
 import buildWalletQueryParams from './urlQueryParams'
 
 //import path from 'path'
-import stylesLoader from '../../config/styles'
+import stylesLoader, { resolveQRStyle } from '../../config/styles'
 //import { createReadStream, createWriteStream, } from 'fs'
 
 export default async (args: {
@@ -61,6 +61,12 @@ export default async (args: {
         throw new Error(`Error applying style layer over '${template}'. ${err}`)
       }
     }
+
+    // Let's enforce real URL base for this notice over user preferences
+    const walletUrl = getBaseUrl(urlPattern)
+    style.footer = walletUrl ? `Scan and review in ${walletUrl}` : style?.footer
+
+    style = resolveQRStyle(style, obj)
 
     const dataURI = await qrEncoder.encoder(obj, {
       urlPattern,
