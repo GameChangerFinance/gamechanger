@@ -20,6 +20,8 @@ export default async (args: {
   debug?: boolean
   refAddress?: string
   disableNetworkRouter?: boolean
+  urlPattern?: string
+  snippetArgs?: any
   qrResultType?: 'png' | 'svg'
   outputFile?: string
   template?: QRTemplateType | string
@@ -28,7 +30,17 @@ export default async (args: {
   try {
     const validated = validateBuildMsgArgs(args)
     const script = JSON.parse(validated.input)
-    const replacements = buildHtmlLikeReplacements(script)
+    const replacements = buildHtmlLikeReplacements(
+      {
+        ...validated,
+        refAddress: args.refAddress,
+        disableNetworkRouter: args.disableNetworkRouter,
+        urlPattern: args.urlPattern
+      },
+      script,
+      undefined,
+      args.snippetArgs
+    )
     const text = replaceSnippetPlaceholders(template, replacements)
     return toUtf8DataUri('text/html', text)
   } catch (err) {

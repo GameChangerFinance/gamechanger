@@ -19,6 +19,7 @@
             let error = '';
             let useCodec = "gzip";
             const gcApiUrl = "https://wallet.gamechanger.finance/" + 'api/' + "2" + '/run/';
+            const urlPattern = undefined;
             const currentUrl = window.location.href;
 
             const actionBtn = document.getElementById('connectBtn');
@@ -146,16 +147,18 @@
 };
                 gcscript.returnURLPattern = window.location.origin + window.location.pathname;
                 const encoded = await gcEncoder(gcscript, useCodec);
-                let nextUrl = gcApiUrl + encoded;
+                const solved = urlPattern
+                    ? String(urlPattern).replace('{gcscript}', encoded)
+                    : gcApiUrl + encoded;
+                const next = new URL(solved);
+
                 if (!false) {
-                    nextUrl += '?networkTag=' + encodeURIComponent("mainnet");
-                    if (undefined) {
-                        nextUrl += '&ref=' + encodeURIComponent(undefined);
-                    }
-                } else if (undefined) {
-                    nextUrl += '?ref=' + encodeURIComponent(undefined);
+                    next.searchParams.set('networkTag', String("mainnet"));
                 }
-                return nextUrl;
+                if (undefined) {
+                    next.searchParams.set('ref', String(undefined));
+                }
+                return next.toString();
             }
 
             updateUI();
@@ -406,8 +409,7 @@
         </h6>
         <div class="text-sm  app-footer__library">
             <span class="app-footer__text"> HTML Zero - Auto-generated using </span>
-            <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM
-                Library</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM Library</a>
             <span class="app-footer__text"> - 2026</span>
         </div>
     </footer>

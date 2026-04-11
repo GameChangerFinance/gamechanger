@@ -74,10 +74,10 @@ const config = {
 
   defaults: {
     options: {
-      network: 'mainnet',
-      encoding: 'gzip',
-      walletBaseUrl: '',
-      refAddress: '',
+      network: "mainnet",
+      encoding: "gzip",
+      walletBaseUrl: "",
+      refAddress: undefined,
       disableNetworkRouter: false,
       usePopup: true,
       useDebug: false,
@@ -802,11 +802,12 @@ function App() {
 
     let url = await window.gc.encode.url({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: "2",
       network: snapshot.options.network,
       encoding: snapshot.options.encoding,
       refAddress: snapshot.options.refAddress || undefined,
-      disableNetworkRouter: !!snapshot.options.disableNetworkRouter
+      disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
+      urlPattern: undefined
     });
 
     if (snapshot.options.walletBaseUrl) url = replaceUrlBase(url, snapshot.options.walletBaseUrl);
@@ -823,11 +824,12 @@ function App() {
 
     return window.gc.encode.qr({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: "2",
       network: snapshot.options.network,
       encoding: snapshot.options.encoding,
       refAddress: snapshot.options.refAddress || undefined,
       disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
+      urlPattern: undefined,
       qrResultType
     });
   }

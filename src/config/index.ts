@@ -128,6 +128,10 @@ Options:
 
 	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
 
+	--urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
+
+	--snippetArgs [json] | -A [json] : JSON map of snippet placeholder overrides (snippet actions only). Use {"defaultIntents": "..."} to override the whole defaultIntents block.
+
 Examples
 
 	⭐ URL encoding:

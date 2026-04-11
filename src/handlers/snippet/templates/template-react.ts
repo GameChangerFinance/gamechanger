@@ -74,11 +74,11 @@ const config = {
 
   defaults: {
     options: {
-      network: 'mainnet',
-      encoding: 'gzip',
-      walletBaseUrl: '',
-      refAddress: '',
-      disableNetworkRouter: false,
+      network: $#___NETWORK___#$,
+      encoding: $#___ENCODING___#$,
+      walletBaseUrl: $#___WALLET_BASE_URL___#$,
+      refAddress: $#___REF_ADDRESS___#$,
+      disableNetworkRouter: $#___DISABLE_NETWORK_ROUTER___#$,
       usePopup: true,
       useDebug: false,
       useConnect: true,
@@ -598,15 +598,15 @@ function Footer() {
   return (
     <footer className="app-footer" aria-label="Relevant links">
       <h6 className="app-footer__links">
-        <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/GameChangerOk">X</a>
-        <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/vpbfyRaDKG">Discord</a>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/@gamechanger.finance">Youtube</a>
-        <a target="_blank" rel="noopener noreferrer" href="https://github.com/GameChangerFinance/gamechanger.wallet/">Github</a>
-        <a target="_blank" rel="noopener noreferrer" href="https://gamechanger.finance">Website</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___TWITTER_URL___#$">X</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___DISCORD_URL___#$">Discord</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___YOUTUBE_URL___#$">Youtube</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___GITHUB_URL___#$">Github</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___WEBSITE_URL___#$">Website</a>
       </h6>
       <div className="app-footer__library">
         <span className="app-footer__text"> React - Auto-generated using </span>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM Library</a>
+        <a target="_blank" rel="noopener noreferrer" href="$#___AUTO_GENERATED_LINK_URL___#$">$#___AUTO_GENERATED_LINK_TEXT___#$</a>
         <span className="app-footer__text"> - </span>
         <span className="app-footer__text">$#___APP_YEAR___#$</span>
       </div>
@@ -720,11 +720,12 @@ function App() {
 
     let url = await window.gc.encode.url({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: $#___API_VERSION___#$,
       network: snapshot.options.network,
       encoding: snapshot.options.encoding,
       refAddress: snapshot.options.refAddress || undefined,
-      disableNetworkRouter: !!snapshot.options.disableNetworkRouter
+      disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
+      urlPattern: $#___URL_PATTERN___#$
     });
 
     if (snapshot.options.walletBaseUrl) url = replaceUrlBase(url, snapshot.options.walletBaseUrl);
@@ -741,11 +742,12 @@ function App() {
 
     return window.gc.encode.qr({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: $#___API_VERSION___#$,
       network: snapshot.options.network,
       encoding: snapshot.options.encoding,
       refAddress: snapshot.options.refAddress || undefined,
       disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
+      urlPattern: $#___URL_PATTERN___#$,
       qrResultType
     });
   }

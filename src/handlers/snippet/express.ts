@@ -1,6 +1,7 @@
 import { APIEncoding, APIVersion, NetworkType } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 import {
+  applySnippetArgs,
   replaceSnippetPlaceholders,
   snippetTokens,
   toBooleanLiteral,
@@ -17,21 +18,30 @@ export default async (args: {
   debug?: boolean
   refAddress?: string
   disableNetworkRouter?: boolean
+  urlPattern?: string
+  snippetArgs?: any
 }) => {
   try {
     const validated = validateBuildMsgArgs(args)
     const script = JSON.parse(validated.input)
-    const text = replaceSnippetPlaceholders(template, {
-      [snippetTokens.gcScript]: JSON.stringify(script, null, 2),
-      [snippetTokens.apiVersion]: toJSLiteral(validated.apiVersion),
-      [snippetTokens.network]: toJSLiteral(validated.network),
-      [snippetTokens.encoding]: toJSLiteral(validated.encoding),
-      [snippetTokens.refAddress]: toJSLiteral(args.refAddress),
-      [snippetTokens.disableNetworkRouter]: toBooleanLiteral(
-        args.disableNetworkRouter
+    const finalText = replaceSnippetPlaceholders(
+      template,
+      applySnippetArgs(
+        {
+          [snippetTokens.gcScript]: JSON.stringify(script, null, 2),
+          [snippetTokens.apiVersion]: toJSLiteral(validated.apiVersion),
+          [snippetTokens.network]: toJSLiteral(validated.network),
+          [snippetTokens.encoding]: toJSLiteral(validated.encoding),
+          [snippetTokens.refAddress]: toJSLiteral(args.refAddress),
+          [snippetTokens.disableNetworkRouter]: toBooleanLiteral(
+            args.disableNetworkRouter
+          ),
+          [snippetTokens.urlPattern]: toJSLiteral(args.urlPattern)
+        },
+        args?.snippetArgs
       )
-    })
-    return toUtf8DataUri('application/javascript', text)
+    )
+    return toUtf8DataUri('application/javascript', finalText)
   } catch (err) {
     if (err instanceof Error) {
       throw new Error('URL generation failed. ' + err.message)

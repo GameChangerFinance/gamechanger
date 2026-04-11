@@ -109,15 +109,15 @@ export default String.raw`<!doctype html>
 
 <footer class="app-footer" aria-label="Relevant links">
 <h6 class="app-footer__links">
-<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/GameChangerOk">X</a>
-<a target="_blank" rel="noopener noreferrer" href="https://discord.gg/vpbfyRaDKG">Discord</a>
-<a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/@gamechanger.finance">Youtube</a>
-<a target="_blank" rel="noopener noreferrer" href="https://github.com/GameChangerFinance/gamechanger.wallet/">Github</a>
-<a target="_blank" rel="noopener noreferrer" href="https://gamechanger.finance">Website</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___TWITTER_URL___#$">X</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___DISCORD_URL___#$">Discord</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___YOUTUBE_URL___#$">Youtube</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___GITHUB_URL___#$">Github</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___WEBSITE_URL___#$">Website</a>
 </h6>
 <div class="app-footer__library">
 <span class="app-footer__text"> HTML - Auto-generated using  </span>
-<a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM Library</a>
+<a target="_blank" rel="noopener noreferrer" href="$#___AUTO_GENERATED_LINK_URL___#$">$#___AUTO_GENERATED_LINK_TEXT___#$</a>
 <span class="app-footer__text"> - $#___APP_YEAR___#$</span>
 </div>
 </footer>
@@ -165,11 +165,11 @@ export default String.raw`<!doctype html>
        */
       defaults: {
         options: {
-          network: 'mainnet',
-          encoding: 'gzip',
-          walletBaseUrl: '',
-          refAddress: '',
-          disableNetworkRouter: false,
+          network: $#___NETWORK___#$,
+          encoding: $#___ENCODING___#$,
+          walletBaseUrl: $#___WALLET_BASE_URL___#$,
+          refAddress: $#___REF_ADDRESS___#$,
+          disableNetworkRouter: $#___DISABLE_NETWORK_ROUTER___#$,
           usePopup: true,
           useDebug: false,
           useConnect: true,
@@ -862,11 +862,12 @@ export default String.raw`<!doctype html>
 
     let url = await window.gc.encode.url({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: $#___API_VERSION___#$,
       network: app.options.network,
       encoding: app.options.encoding,
       refAddress: app.options.refAddress || undefined,
-      disableNetworkRouter: !!app.options.disableNetworkRouter
+      disableNetworkRouter: !!app.options.disableNetworkRouter,
+      urlPattern: $#___URL_PATTERN___#$
     });
 
     if (app.options.walletBaseUrl) {
@@ -885,11 +886,12 @@ export default String.raw`<!doctype html>
 
     return window.gc.encode.qr({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: $#___API_VERSION___#$,
       network: app.options.network,
       encoding: app.options.encoding,
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
+      urlPattern: $#___URL_PATTERN___#$,
       qrResultType: qrResultType || 'png'
     });
   }

@@ -19,6 +19,7 @@ export default String.raw`<!DOCTYPE html>
             let error = '';
             let useCodec = $#___SELECTED_ENCODING___#$;
             const gcApiUrl = $#___ORIGIN___#$ + 'api/' + $#___API_VERSION___#$ + '/run/';
+            const urlPattern = $#___URL_PATTERN___#$;
             const currentUrl = window.location.href;
 
             const actionBtn = document.getElementById('connectBtn');
@@ -94,16 +95,18 @@ export default String.raw`<!DOCTYPE html>
                 var gcscript = $#___GC_SCRIPT___#$;
                 gcscript.returnURLPattern = window.location.origin + window.location.pathname;
                 const encoded = await gcEncoder(gcscript, useCodec);
-                let nextUrl = gcApiUrl + encoded;
+                const solved = urlPattern
+                    ? String(urlPattern).replace('{gcscript}', encoded)
+                    : gcApiUrl + encoded;
+                const next = new URL(solved);
+
                 if (!$#___DISABLE_NETWORK_ROUTER___#$) {
-                    nextUrl += '?networkTag=' + encodeURIComponent($#___NETWORK___#$);
-                    if ($#___REF_ADDRESS___#$) {
-                        nextUrl += '&ref=' + encodeURIComponent($#___REF_ADDRESS___#$);
-                    }
-                } else if ($#___REF_ADDRESS___#$) {
-                    nextUrl += '?ref=' + encodeURIComponent($#___REF_ADDRESS___#$);
+                    next.searchParams.set('networkTag', String($#___NETWORK___#$));
                 }
-                return nextUrl;
+                if ($#___REF_ADDRESS___#$) {
+                    next.searchParams.set('ref', String($#___REF_ADDRESS___#$));
+                }
+                return next.toString();
             }
 
             updateUI();
@@ -345,17 +348,16 @@ export default String.raw`<!DOCTYPE html>
     </div>
     <footer class="app-footer" aria-label="Relevant links">
         <h6 class="app-footer__links">
-            <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/GameChangerOk">X</a>
-            <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/vpbfyRaDKG">Discord</a>
-            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/@gamechanger.finance">Youtube</a>
+            <a target="_blank" rel="noopener noreferrer" href="$#___TWITTER_URL___#$">X</a>
+            <a target="_blank" rel="noopener noreferrer" href="$#___DISCORD_URL___#$">Discord</a>
+            <a target="_blank" rel="noopener noreferrer" href="$#___YOUTUBE_URL___#$">Youtube</a>
             <a target="_blank" rel="noopener noreferrer"
-                href="https://github.com/GameChangerFinance/gamechanger.wallet/">Github</a>
-            <a target="_blank" rel="noopener noreferrer" href="https://gamechanger.finance">Website</a>
+                href="$#___GITHUB_URL___#$">Github</a>
+            <a target="_blank" rel="noopener noreferrer" href="$#___WEBSITE_URL___#$">Website</a>
         </h6>
         <div class="text-sm  app-footer__library">
             <span class="app-footer__text"> HTML Zero - Auto-generated using </span>
-            <a target="_blank" rel="noopener noreferrer" href="https://www.npmjs.com/package/@gamechanger-finance/gc">GC NPM
-                Library</a>
+            <a target="_blank" rel="noopener noreferrer" href="$#___AUTO_GENERATED_LINK_URL___#$">$#___AUTO_GENERATED_LINK_TEXT___#$</a>
             <span class="app-footer__text"> - $#___APP_YEAR___#$</span>
         </div>
     </footer>

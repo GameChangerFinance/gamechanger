@@ -165,10 +165,10 @@
        */
       defaults: {
         options: {
-          network: 'mainnet',
-          encoding: 'gzip',
-          walletBaseUrl: '',
-          refAddress: '',
+          network: "mainnet",
+          encoding: "gzip",
+          walletBaseUrl: "",
+          refAddress: undefined,
           disableNetworkRouter: false,
           usePopup: true,
           useDebug: false,
@@ -944,11 +944,12 @@
 
     let url = await window.gc.encode.url({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: "2",
       network: app.options.network,
       encoding: app.options.encoding,
       refAddress: app.options.refAddress || undefined,
-      disableNetworkRouter: !!app.options.disableNetworkRouter
+      disableNetworkRouter: !!app.options.disableNetworkRouter,
+      urlPattern: undefined
     });
 
     if (app.options.walletBaseUrl) {
@@ -967,11 +968,12 @@
 
     return window.gc.encode.qr({
       input: JSON.stringify(code),
-      apiVersion: '2',
+      apiVersion: "2",
       network: app.options.network,
       encoding: app.options.encoding,
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
+      urlPattern: undefined,
       qrResultType: qrResultType || 'png'
     });
   }

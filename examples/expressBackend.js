@@ -126,7 +126,8 @@ export const main = async function () {
     network: "mainnet",
     encoding: "gzip",
     refAddress: undefined,
-    disableNetworkRouter: false
+    disableNetworkRouter: false,
+    urlPattern: undefined
   });
   const indexHtml = '<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>';
   serve({

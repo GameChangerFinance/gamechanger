@@ -74,7 +74,8 @@ export const main = async function () {
     network: $#___NETWORK___#$,
     encoding: $#___ENCODING___#$,
     refAddress: $#___REF_ADDRESS___#$,
-    disableNetworkRouter: $#___DISABLE_NETWORK_ROUTER___#$
+    disableNetworkRouter: $#___DISABLE_NETWORK_ROUTER___#$,
+    urlPattern: $#___URL_PATTERN___#$
   });
   const indexHtml = '<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>';
   serve({

@@ -7,6 +7,7 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 import {
+  applySnippetArgs,
   replaceSnippetPlaceholders,
   snippetTokens,
   toUtf8DataUri
@@ -21,6 +22,8 @@ export default async (args: {
   debug?: boolean
   refAddress?: string
   disableNetworkRouter?: boolean
+  urlPattern?: string
+  snippetArgs?: any
   qrResultType?: 'png' | 'svg'
   outputFile?: string
   template?: QRTemplateType | string
@@ -35,11 +38,19 @@ export default async (args: {
       input: validated.input,
       debug: args.debug,
       refAddress: args.refAddress,
-      disableNetworkRouter: args.disableNetworkRouter
+      disableNetworkRouter: args.disableNetworkRouter,
+      urlPattern: args.urlPattern
     })
-    const text = replaceSnippetPlaceholders(template, {
-      [snippetTokens.url]: url
-    })
+    const text = replaceSnippetPlaceholders(
+      template,
+      applySnippetArgs(
+        {
+          [snippetTokens.url]: url,
+          [snippetTokens.buttonText]: 'Connect with GC'
+        },
+        args?.snippetArgs
+      )
+    )
     return toUtf8DataUri('text/html', text)
   } catch (err) {
     if (err instanceof Error) {

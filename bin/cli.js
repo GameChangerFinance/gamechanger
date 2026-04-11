@@ -86,6 +86,14 @@ export default async function main() {
         disableNetworkRouter: {
           type: 'boolean',
           alias: 'R'
+        },
+        urlPattern: {
+          type: 'string',
+          alias: 'u'
+        },
+        snippetArgs: {
+          type: 'string',
+          alias: 'A'
         }
       }
     })
@@ -135,6 +143,17 @@ export default async function main() {
     const serve = !!cli.flags.serve
     const refAddress = cli.flags.refAddress
     const disableNetworkRouter = !!cli.flags.disableNetworkRouter
+    const urlPattern = cli.flags.urlPattern
+    const snippetArgsRaw = cli.flags.snippetArgs
+
+    let snippetArgs = undefined
+    if (typeof snippetArgsRaw === 'string' && snippetArgsRaw.trim()) {
+      try {
+        snippetArgs = JSON.parse(snippetArgsRaw)
+      } catch (err) {
+        throw new Error(`Invalid --snippetArgs JSON. ${err}`)
+      }
+    }
 
     let qrResultType = 'png'
     if (outputFile) {
@@ -160,7 +179,9 @@ export default async function main() {
       template,
       styles,
       refAddress,
-      disableNetworkRouter
+      disableNetworkRouter,
+      urlPattern,
+      snippetArgs
     })
 
     if (output) {
@@ -213,7 +234,9 @@ export default async function main() {
               template,
               styles,
               refAddress,
-              disableNetworkRouter
+              disableNetworkRouter,
+              urlPattern,
+              snippetArgs
             }
             //   config: {
             //     networks,

@@ -6,7 +6,11 @@ import {
   NetworkType,
   QRTemplateType
 } from '../../types'
-import { getBaseUrl, validateBuildMsgArgs } from '../../utils'
+import {
+  getBaseUrl,
+  validateBuildMsgArgs,
+  validateUrlPattern
+} from '../../utils'
 
 import qrEncoder from '../../encodings/qr'
 import qrLibLoader from '../../modules/easyqrcodejs'
@@ -26,6 +30,7 @@ export default async (args: {
   //new
   refAddress?: string
   disableNetworkRouter?: boolean
+  urlPattern?: string
 
   qrResultType?: 'png' | 'svg'
   outputFile?: string
@@ -36,9 +41,9 @@ export default async (args: {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
 
     const obj = JSON.parse(input)
-    const urlPattern = GCDappConnUrls[apiVersion][network]
-    if (!urlPattern)
-      throw new Error(`Missing URL pattern for network '${network || ''}'`)
+    const urlPattern = validateUrlPattern(
+      args?.urlPattern ? args?.urlPattern : GCDappConnUrls[apiVersion][network]
+    )
 
     const { styles, fonts } = stylesLoader()
     const { registerFonts } = await qrLibLoader()
@@ -76,7 +81,8 @@ export default async (args: {
       queryParams: buildWalletQueryParams({
         network,
         refAddress: args?.refAddress,
-        disableNetworkRouter: args?.disableNetworkRouter
+        disableNetworkRouter: args?.disableNetworkRouter,
+        urlPattern
       }),
       qrCodeStyle: style,
       qrResultType: args?.qrResultType

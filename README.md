@@ -168,7 +168,8 @@ const url = await gc.encode.url({
   network: 'mainnet', // mainnet or preprod
   encoding: 'gzip', //suggested, default message encoding/compression
   refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
-  disableNetworkRouter: false // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in
+  disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Set true to avoid prompting a network switch.
+  urlPattern: 'http://localhost:3000/api/2/run/{gcscript}' // optional - override the default wallet URL pattern (must include {gcscript})
 })
 ```
 
@@ -188,6 +189,7 @@ const pngDataURI = gc.encode.qr({
   encoding: 'gzip',
   refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
   disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in `network` tag
+  urlPattern: 'http://localhost:3000/api/2/run/{gcscript}', // optional - override the default wallet URL pattern (must include {gcscript})
   qrResultType: 'png'
 })
 ```
@@ -203,6 +205,20 @@ By default, `gc.encode.url(...)` and `gc.encode.qr(...)` handlers append
 `disableNetworkRouter: true` to skip that query string. When `refAddress` is
 provided, handlers also append `ref=<address>` while preserving any query string
 data already present in the base URL pattern.
+
+### Snippet customization (html / html-zero / react / button / express)
+
+All snippet handlers support:
+
+- `urlPattern` (string): override the wallet URL pattern used by
+  snippet-generated code and defaults (must be an absolute URL and contain
+  `{gcscript}`).
+- `snippetArgs` (object): per-placeholder overrides for snippet templates.
+  Values are injected as-is.
+
+Special `snippetArgs.defaultIntents` can override the entire `defaultIntents` JS
+object literal (comments allowed). This override has priority over the single
+intent injected from the provided input script.
 
 ### Decode intent execution results (wallet -> dapp message):
 
@@ -320,6 +336,10 @@ Options:
         --refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
 
         --disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
+        --urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
+
+        --snippetArgs [json] | -A [json] : JSON map of snippet template overrides (snippet actions only)
 
 Examples
 

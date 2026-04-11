@@ -1,5 +1,5 @@
 export default String.raw`<!--GC BUTTON START-->
-<a href="$#___URL___#$" class="gcConnectButton">Connect with GC</a>
+<a href="$#___URL___#$" class="gcConnectButton">$#___BUTTON_TEXT___#$</a>
 <style>.gcConnectButton {box-shadow: 0px 0px 0px 2px #9fb4f2;
 background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);background-color:#7892c2;border-radius:25px;border:1px solid #4e6096;
 display:inline-block;cursor:pointer;color:#ffffff;font-family:Arial;font-size:16px;font-weight:bold;padding:12px 37px;text-decoration:none;
