@@ -37,7 +37,7 @@
     "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
     "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min",
     "size": "node ./scripts/size.mjs",
-    "test": "npm run build && node ./test/test.js",
+    "test": "npm run build && node ./bin/test.js",
     "examples:express": "node ./examples/expressBackend.js",
     "examples:serve": "serve -p 7000 ./examples/",
     "examples": "npm run build && npm run examples:serve",
