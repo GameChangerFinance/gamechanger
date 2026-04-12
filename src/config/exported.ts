@@ -1,4 +1,6 @@
 import { snippetTokens } from 'src/handlers/snippet/helpers'
+import { QRCodeCorrectLevel } from './styles'
+
 import {
   usageMessage,
   QRRenderTypes,
@@ -31,5 +33,6 @@ export default {
   DefaultQRTitle,
   DefaultQRSubTitle,
   GCLibInSnippets,
-  snippetTokens
+  snippetTokens,
+  QRCodeCorrectLevel
 }

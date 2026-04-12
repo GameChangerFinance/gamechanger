@@ -865,7 +865,8 @@ $#___GC_BROWSER_IMPORTS___#$
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$
-    }).catch(err=>{alert(err)});
+    })
+      //.catch(err=>{console.error(err)});
 
     if (app.options.walletBaseUrl) {
       url = replaceBaseUrl({ url, urlBase: app.options.walletBaseUrl });
@@ -890,7 +891,7 @@ $#___GC_BROWSER_IMPORTS___#$
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$,
       qrResultType: qrResultType || 'png'
-    }).catch(err=>{alert(err)});
+    }).catch(err=>{console.error(err)});
   }
 
   /** Opens an encoded intent in a popup or in the current tab. */

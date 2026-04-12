@@ -952,7 +952,8 @@
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: undefined
-    }).catch(err=>{alert(err)});
+    })
+      //.catch(err=>{console.error(err)});
 
     if (app.options.walletBaseUrl) {
       url = replaceBaseUrl({ url, urlBase: app.options.walletBaseUrl });
@@ -977,7 +978,7 @@
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: undefined,
       qrResultType: qrResultType || 'png'
-    }).catch(err=>{alert(err)});
+    }).catch(err=>{console.error(err)});
   }
 
   /** Opens an encoded intent in a popup or in the current tab. */
