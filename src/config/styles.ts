@@ -4,6 +4,13 @@ import { DefaultQRSubTitle, DefaultQRTitle } from '../config'
 import logoURL from '../assets/images/dapp-logo.png'
 import backgroundURL from '../assets/images/dapp-bg.png'
 
+export const QRCodeCorrectLevel = {
+  L: 1,
+  M: 0,
+  Q: 3,
+  H: 2
+} as const
+
 export const size = 1024
 
 export const QR_FOOTER_TEXT = `Review details in wallet`
@@ -114,6 +121,7 @@ export const resolveQRStyle = (
     typeof style?.footerColor === 'string' ? style.footerColor : '#222222'
 
   return {
+    correctLevel: QRCodeCorrectLevel.Q,
     ...(style || {}),
     width,
     height,
