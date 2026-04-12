@@ -1,16 +1,16 @@
 import {
+  APIEncoding,
   APIVersion,
   NetworkType,
-  APIEncoding,
   QRTemplateType
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 import {
-  buildHtmlLikeReplacements,
+  buildHtmlZeroReplacements,
   replaceSnippetPlaceholders,
   toUtf8DataUri
 } from './helpers'
-import template from './templates/template-html'
+import template from './templates/template-html-zero'
 
 export default async (args: {
   apiVersion: APIVersion
@@ -30,7 +30,7 @@ export default async (args: {
   try {
     const validated = validateBuildMsgArgs(args)
     const script = JSON.parse(validated.input)
-    const replacements = buildHtmlLikeReplacements(
+    const replacements = buildHtmlZeroReplacements(
       {
         ...validated,
         refAddress: args.refAddress,
@@ -38,7 +38,6 @@ export default async (args: {
         urlPattern: args.urlPattern
       },
       script,
-      undefined,
       args.snippetArgs
     )
     const text = replaceSnippetPlaceholders(template, replacements)

@@ -35,13 +35,15 @@
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && npm run bundle-deps",
     "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run bundle-deps && npm run size",
     "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
-    "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min",
+    "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min && npm run build-types",
     "size": "node ./scripts/size.mjs",
     "test": "npm run build && node ./bin/test.js",
     "examples:express": "node ./examples/expressBackend.js",
     "examples:serve": "serve -p 7000 ./examples/",
     "examples": "npm run build && npm run examples:serve",
-    "npm-publish": "npm publish --access public"
+    "npm-publish": "npm publish --access public",
+    "build-types": "tsc -p tsconfig.types.json && node ./scripts/build-types.mjs",
+    "pack:local": "npm run build && pnpm pack --out dist/%s-%v.tgz"
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.96",
@@ -61,7 +63,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.1.0",
-    "@rollup/plugin-terser": "0.4.3",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^11.1.5",
     "@rollup/plugin-url": "^8.0.2",
     "@types/jsdom": "^28.0.0",
@@ -70,7 +72,7 @@
     "eslint-config-prettier": "8.8.0",
     "express": "^5.2.1",
     "prettier": "2.8.8",
-    "rollup": "3.26.0",
+    "rollup": "^3.30.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "serve": "^14.2.6",
     "tslib": "^2.6.2",
@@ -89,7 +91,10 @@
     "./dist/browser.js": "./dist/browser.js",
     "./dist/nodejs.js": "./dist/nodejs.js",
     "./dist/nodejs.cjs": "./dist/nodejs.cjs",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./types": {
+      "types": "./dist/types/index.d.ts"
+    }
   },
   "bin": {
     "gamechanger-cli": "./bin/cli.js"

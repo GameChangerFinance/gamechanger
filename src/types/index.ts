@@ -51,10 +51,42 @@ export type CLIHandlerContext = {
    */
   disableNetworkRouter?: boolean
 
+  /**
+   * Optional wallet URL pattern override.
+   *
+   * When provided, handlers will use this URL pattern instead of the built-in
+   * network default, as long as it is a valid absolute URL and contains the
+   * required `{gcscript}` placeholder.
+   */
+  urlPattern?: string
+
+  /**
+   * Optional per-token overrides for generated code snippets.
+   *
+   * Keys can match snippet token keys (e.g. `title`, `twitterUrl`) or raw
+   * placeholder strings (advanced usage). Values are injected as-is.
+   */
+  snippetArgs?: SnippetArgs
+
   outputFile?: string
   template?: string //for QR 'default' | 'boxed' | 'printable'
   styles?: string //JSON
   debug?: boolean
+}
+
+/**
+ * Snippet template customization map.
+ *
+ * Values are injected as-is into snippet templates. For JS-literal placeholders
+ * (such as apiVersion/network/encoding/urlPattern) provide a valid JS literal.
+ *
+ * Special key:
+ * - `defaultIntents`: overrides the whole default intents object literal and
+ *   allows comments.
+ */
+export type SnippetArgs = {
+  [key: string]: string | undefined
+  defaultIntents?: string
 }
 
 export type SourceType = {

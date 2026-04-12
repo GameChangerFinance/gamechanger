@@ -27,11 +27,16 @@ const handler: EncodingHandler = {
           qrResultType === 'svg' ? 'svg' : (options?.qrCodeStyle || {})?.drawer
       }
     })
+    const svgText =
+      qrResult?.SVGText ||
+      qrResult?.qr?._oDrawing?._oContext?.getSerializedSvg?.(true) ||
+      ''
+
     const handlers = {
       png: async () => qrResult?.dataURL, //qr.toDataURL(),
       svg: async () =>
         `data:image/svg+xml;base64,${Buffer.from(
-          qrResult?.SVGText /*await qr.toSVGText()*/
+          svgText /*await qr.toSVGText()*/
         ).toString('base64')}`
     }
     const res = await handlers[qrResultType]()

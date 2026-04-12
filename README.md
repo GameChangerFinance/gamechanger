@@ -1,11 +1,12 @@
 [![](https://data.jsdelivr.com/v1/package/npm/@gamechanger-finance/gc/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@gamechanger-finance/gc)
 
-![Build with us, a great future await us together](src/assets/images/dapp-cli-banner.png?raw=true)
+![Build with us, a great future await us together](src/assets/images/dapp-logo-bg.png?raw=true)
 
 # GameChanger Wallet Library and CLI
 
-Official GameChanger Wallet library and CLI for integrating with Cardano dapps
-and solve other related tasks (https://gamechanger.finance/)
+Official GameChanger Wallet library and CLI for integrating Cardano via intents
+in links, QRs, dapps, web, screens, social media and solve other related tasks
+(https://gamechanger.finance/)
 
 > Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
 > flavors
@@ -33,14 +34,30 @@ $ npm run examples:express
 
 ```
 
-- [Kitchen Sink - all outputs in one example](examples/index.html)
+- [Kitchen Sink - all outputs in one example](examples/index.html):
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
 - [QR (svg)](examples/QR.svg)
 - [Button](examples/button.html)
 - [HTML5 Dapp](examples/htmlDapp.html)
+- [HTML Zero Dapp](examples/htmlZeroDapp.html)
 - [ReactJs Dapp](examples/reactDapp.html)
 - [ExpressJs Backend](examples/expressBackend.js)
+
+`html` and `react` outputs are richer shared-state app boilerplates with local
+storage persistence that can host multiple actions (intent scripts coded in
+GCScript DSL) in one dapp and auto-render end-user UI from the intent code
+itself.
+
+`html-zero` is the minimal zero-dependency flavor aimed at highly resilient,
+offline-ready, small-footprint frontends for long term reliability that can be
+stored on-chain with GCFS and work without any dependencies or centralized
+points of failure.
+
+`express` is a minimal Node/Express backend example that redirects browser users
+to the wallet and then captures the response via "webhook" redirection.
+
+Read more about examples [here](examples/README.md):
 
 ## Install CLI
 
@@ -98,25 +115,31 @@ Local repository build targets:
 
 Published artifacts kept for npm and CDN usage:
 
-- `dist/5fda0823f200837.ttf`
 - `dist/browser.js`
 - `dist/browser.min.js`
 - `dist/nodejs.cjs`
 - `dist/nodejs.js`
+- `dist/index.d.ts`
+- `dist/types/index.d.ts`
 
 Package entrypoints:
 
-- ESM / Node: `import gc from "@gamechanger-finance/gc"`
+- ESM / Node or bundlers: `import gc from "@gamechanger-finance/gc"`
 - CommonJS / Node: `const gc = require("@gamechanger-finance/gc")`
 - Browser global: `const {gc} = window`
+- Type-only subpath:
+  `import type { NetworkType } from "@gamechanger-finance/gc/types"`
 
-The Node and CLI QR path no longer depends on `canvas` / `easyqrcodejs-nodejs`
-at install time. Styled QR output is generated from EasyQRCodeJS SVG output and
-rasterized on Node only when PNG output is requested.
+The QR loader is now split per target. Browser bundles import only the browser
+QR runtime, while Node and CLI bundles import only the Node QR runtime. This
+keeps Node-only modules such as `@napi-rs/canvas` and the bundled Node QR shim
+out of browser bundle graphs, including Vite dependency optimization. Styled QR
+output is still generated from EasyQRCodeJS SVG output and rasterized on Node
+only when PNG output is requested.
 
 ## Library usage:
 
-### Encode dapp connection (dapp -> wallet message):
+### Encode dapp intent (dapp -> wallet message):
 
 ```javascript
 //GCScript: the DSL scripting language to interact with GameChanger Wallet
@@ -152,7 +175,8 @@ const url = await gc.encode.url({
   network: 'mainnet', // mainnet or preprod
   encoding: 'gzip', //suggested, default message encoding/compression
   refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
-  disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in
+  disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Set true to avoid prompting a network switch.
+  urlPattern: 'http://localhost:3000/api/2/run/{gcscript}' // optional - override the default wallet URL pattern (must include {gcscript})
 })
 ```
 
@@ -172,6 +196,7 @@ const pngDataURI = gc.encode.qr({
   encoding: 'gzip',
   refAddress: 'addr1...', // optional - appends ref=<address>. For referral programs, a valid Cardano address under the same `network`
   disableNetworkRouter: false, // optional - by default appends networkTag=<network>. Allows to stop requesting the user to switch to the network specified in `network` tag
+  urlPattern: 'http://localhost:3000/api/2/run/{gcscript}', // optional - override the default wallet URL pattern (must include {gcscript})
   qrResultType: 'png'
 })
 ```
@@ -182,16 +207,30 @@ then redirect users with the QR code like:
 <image src="${pngDataURI}">Scan QR code to connect</image>
 ```
 
-By default, `gc.encode.url(...)` and `gc.encode.qr(...)`
-handlers append `networkTag=<network>` to generated wallet URLs. Set
+By default, `gc.encode.url(...)` and `gc.encode.qr(...)` handlers append
+`networkTag=<network>` to generated wallet URLs. Set
 `disableNetworkRouter: true` to skip that query string. When `refAddress` is
 provided, handlers also append `ref=<address>` while preserving any query string
 data already present in the base URL pattern.
 
-### Decode dapp connection results (wallet -> dapp message):
+### Snippet customization (html / html-zero / react / button / express)
+
+All snippet handlers support:
+
+- `urlPattern` (string): override the wallet URL pattern used by
+  snippet-generated code and defaults (must be an absolute URL and contain
+  `{gcscript}`).
+- `snippetArgs` (object): per-placeholder overrides for snippet templates.
+  Values are injected as-is.
+
+Special `snippetArgs.defaultIntents` can override the entire `defaultIntents` JS
+object literal (comments allowed). This override has priority over the single
+intent injected from the provided input script.
+
+### Decode intent execution results (wallet -> dapp message):
 
 ```javascript
-//GCWallet dapp connections can return arbirary JSON data you exported from the DSL code
+//Once GC Wallet executes an intent script, it can return arbirary JSON data to be exported back to the dapp
 const resultObj = await gc.encodings.msg.decoder(resultRaw)
 console.log(resultObj)
 ```
@@ -246,6 +285,20 @@ and will log something like:
 }
 ```
 
+### Important:
+
+- "Connection intents" that share basic wallet information to dapps are the
+  default sample script used in all examples here
+- Connection intents like these are not mandatory: Intent-based dapps may not
+  require to pre-connect in order to work!
+- For simplicity sake these conection examples does not address:
+  - signature validation
+  - challenge validation
+  - HTTP origin validation
+  - nor encrypts comms beyond SSL against MITM attacks
+- A highly secure connection intent could be added in the future (let us know
+  your needs!)
+
 ## CLI Usage
 
 ```
@@ -262,18 +315,19 @@ Actions:
                 'url'     : generates a ready to use URL dApp connector from a valid GCScript
                 'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
         'snippet':
-                'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
-                'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-                'express' : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
-                'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
+                'html'      : generates a ready to use HTML dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
+                'html-zero' : generates a highly resilient offline-ready zero-dependency HTML dApp for mission-critical and on-chain hosted frontends from a valid GCScript
+                'button'    : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
+                'express'   : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
+                'react'     : generates a ready to use React dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
 Options:
         --args [gcscript] | -a [gcscript]:  Load GCScript from arguments
 
         --file [filename] | -a [filename]:  Load GCScript from file
         without --args or --file         :  Load GCScript from stdin
 
-        --outputFile [filename] -o [filename]:  The QR Code, HTML, button, nodejs, or react output filename
-        without --outputFile                 :  Sends the QR Code, HTML, button, nodejs, or react output file to stdin
+        --outputFile [filename] -o [filename]:  The QR Code, HTML, html-zero, button, nodejs, or react output filename
+        without --outputFile                 :  Sends the QR Code, HTML, html-zero, button, nodejs, or react output file to stdin
 
         --apiVersion [1 | 2] | -v [1 | 2]:  Target GameChanger Wallet v1 or v2
 
@@ -289,6 +343,10 @@ Options:
         --refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
 
         --disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
+        --urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
+
+        --snippetArgs [json] | -A [json] : JSON map of snippet template overrides (snippet actions only)
 
 Examples
 
@@ -322,6 +380,10 @@ Examples
                 $ gamechanger-cli preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
+        ⭐ HTML Zero code:
+                $ gamechanger-cli mainnet snippet html-zero -v 2 -S -o examples/htmlZeroDapp.html -f examples/connect.gcscript
+                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
         ⭐ ReactJS code:
                 $ gamechanger-cli mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
                 🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
@@ -338,6 +400,14 @@ Examples
 
 
 ```
+
+## Breaking Changes Notice
+
+Generated code outputs are now much richer and complex than the ones produced
+over the last years. For improvements and maintainance these may require more
+internal breaking changes in their internal design, decoupling from the
+versioning strategy of the actual library. If you need special treatment on
+outputs let us know or consider forking for your use case.
 
 ## Resources
 
@@ -362,7 +432,3 @@ npm install
 npm run build
 npm test
 ```
-
-The repository intentionally does not ship a stale lockfile after the Node 24
-distribution redesign. Generate a fresh one with the current dependency graph on
-install.

@@ -1,4 +1,5 @@
 import { APIEncoding, APIVersion, NetworkType } from '../types'
+
 //import packageJson from '../../package.json'
 const packageJson: any = {} //TODO: make this work with bundlers
 export const version = packageJson.version
@@ -40,6 +41,30 @@ export const contact = {
   youtube: 'https://www.youtube.com/@gamechanger.finance',
   playgroundDiscord:
     'https://discord.com/channels/912354788795109396/921687306241458207'
+}
+
+export const GCLibInSnippets = {
+  browserOutputs: `
+<!-- Use for local deployments or for testing the library: -->
+<!-- <script src="res/browser.min.js"></script> -->
+<!-- Use library from CDN: -->
+<script src="https://cdn.jsdelivr.net/npm/@gamechanger-finance/gc@latest/dist/browser.min.js"></script>
+`,
+  nodeJsOutputs: `
+//Install on project:
+//  $ npm install -s @gamechanger-finance/gc
+// or
+//Install globally:
+//  $ npm install -g @gamechanger-finance/gc
+//Run this file
+//  $ node <FILENAME>.js
+
+//Import if testing the library from this repository:
+//import gc from './res/nodejs.js'
+// or
+//Import normally:
+import gc from '@gamechanger-finance/gc'
+`
 }
 
 export const GCDappConnUrls = {
@@ -99,18 +124,19 @@ Actions:
 		'url'     : generates a ready to use URL dApp connector from a valid GCScript
 		'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
 	'snippet':
-		'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
-		'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-		'express' : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
-		'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
+		'html'      : generates a ready to use HTML dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
+		'html-zero' : generates a highly resilient offline-ready zero-dependency HTML dApp for mission-critical and on-chain hosted frontends from a valid GCScript
+		'button'    : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
+		'express'   : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
+		'react'     : generates a ready to use React dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
 Options:
 	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
 
 	--file [filename] | -a [filename]:  Load GCScript from file
 	without --args or --file         :  Load GCScript from stdin
 
-	--outputFile [filename] -o [filename]:  The QR Code, HTML, button, nodejs, or react output filename
-	without --outputFile                 :  Sends the QR Code, HTML, button, nodejs, or react output file to stdin
+	--outputFile [filename] -o [filename]:  The QR Code, HTML, html-zero, button, nodejs, or react output filename
+	without --outputFile                 :  Sends the QR Code, HTML, html-zero, button, nodejs, or react output file to stdin
 
 	--apiVersion [1 | 2] | -v [1 | 2]:  Target GameChanger Wallet v1 or v2
 
@@ -126,6 +152,10 @@ Options:
 	--refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
 
 	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+
+	--urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
+
+	--snippetArgs [json] | -A [json] : JSON map of snippet placeholder overrides (snippet actions only). Use {"defaultIntents": "..."} to override the whole defaultIntents block.
 
 Examples
 
@@ -163,6 +193,10 @@ Examples
 
 	⭐ HTML code:
 		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	⭐ HTML Zero code:
+		$ ${cliName} mainnet snippet html-zero -v 2 -S -o examples/htmlZeroDapp.html -f examples/connect.gcscript
 		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
 	⭐ ReactJS code:

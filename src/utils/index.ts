@@ -71,27 +71,50 @@ export const validateBuildMsgArgs = (args: {
     input
   }
 }
+export const getBaseUrl = (value?: string): string | undefined => {
+  try {
+    return value?.trim()
+      ? ((u) => (u.host ? `${u.protocol}//${u.host}` : undefined))(
+          new URL(value.trim())
+        )
+      : undefined
+  } catch {
+    return undefined
+  }
+}
 
-// export const getPlatform = () => {
-//   try {
-//     // Check if the environment is Node.js
-//     if (typeof process === 'object' && typeof require === 'function') {
-//       return 'nodejs'
-//     }
-//   } catch (err) {}
+/**
+ * Validates a GameChanger wallet URL pattern.
+ *
+ * Requirements:
+ * - Must be a valid absolute URL.
+ * - Must contain the `{gcscript}` placeholder token.
+ *
+ * The `{gcscript}` placeholder is embedded by the URL encoding transport.
+ *
+ * @throws Error when the pattern is invalid.
+ */
+export const validateUrlPattern = (url: string): string => {
+  const trimmed = (url || '').trim()
+  if (!trimmed) throw new Error('Missing URL pattern')
 
-//   // try {
-//   //   // Check if the environment is a
-//   //   // Service worker
-//   //   if (typeof importScripts === 'function') {
-//   //     return 'worker'
-//   //   }
-//   // } catch (err) {}
+  // URL() accepts `{}` characters in the path; we use it only to validate
+  // the URL shape (scheme + host) and normalize formatting.
+  let parsed: URL
+  try {
+    parsed = new URL(trimmed)
+  } catch {
+    throw new Error('Invalid URL pattern provided')
+  }
 
-//   try {
-//     // Check if the environment is a Browser
-//     if (typeof window === 'object') {
-//       return 'browser'
-//     }
-//   } catch (err) {}
-// }
+  if (!parsed?.origin || !parsed?.host)
+    throw new Error('Invalid URL pattern provided')
+
+  if (!trimmed.includes('{gcscript}')) {
+    throw new Error(
+      "Invalid URL pattern provided. Missing required '{gcscript}' placeholder."
+    )
+  }
+
+  return trimmed
+}

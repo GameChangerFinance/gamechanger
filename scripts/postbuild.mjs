@@ -9,12 +9,10 @@ const rootDir = path.resolve(__dirname, '..')
 const distDir = path.resolve(rootDir, 'dist')
 const examplesDir = path.resolve(rootDir, 'examples')
 const examplesDistDir = path.resolve(examplesDir, 'res')
-const srcFont = path.resolve(rootDir, 'src/assets/fonts/ABSTRACT.ttf')
 const browserBundle = path.resolve(distDir, 'browser.js')
 const browserMinBundle = path.resolve(distDir, 'browser.min.js')
 const nodeCjsBundle = path.resolve(distDir, 'nodejs.cjs')
 const nodeEsmBundle = path.resolve(distDir, 'nodejs.js')
-const publicFont = path.resolve(distDir, '5fda0823f200837.ttf')
 const srcNodeQrRuntime = path.resolve(
   rootDir,
   'src/modules/easyqrcodejs-node.cjs'
@@ -60,7 +58,7 @@ const ensureBrowserFacade = async () => {
     await fs.rename(browserBundle, path.resolve(distDir, 'browser.runtime.js'))
     await fs.writeFile(
       browserBundle,
-      "export { default } from './browser.runtime.js'\nexport { default as gc } from './browser.runtime.js'\n",
+      "import gc from './browser.runtime.js'\n\nexport const { encode, snippet, encodings, utils, config } = gc\nexport { gc }\nexport default gc\n",
       'utf8'
     )
   }
@@ -76,14 +74,6 @@ const copyNodeQrRuntimeFiles = async () => {
     } catch {
       // ignore
     }
-  }
-}
-
-const ensureFontAlias = async () => {
-  try {
-    await fs.copyFile(srcFont, publicFont)
-  } catch {
-    // ignore
   }
 }
 
@@ -115,7 +105,6 @@ await ensureExamplesDist()
 await writeNodeEsmWrapper()
 await ensureBrowserFacade()
 await copyNodeQrRuntimeFiles()
-await ensureFontAlias()
 await removeDanglingLegacyArtifacts()
 await copyDir(distDir, examplesDistDir)
 await generateExamplesFromBuild({
