@@ -1,50 +1,7 @@
-import typescript from '@rollup/plugin-typescript'
-import CommonJS from '@rollup/plugin-commonjs'
-import filesAsDataURIs from '@rollup/plugin-url'
-import nodePolyfills from 'rollup-plugin-polyfill-node'
-import nodeResolve from '@rollup/plugin-node-resolve'
-import json from '@rollup/plugin-json'
+import { createRollupConfig } from './rollup.shared.config.mjs'
 
-const targetModuleAlias = (replacement) => ({
-  name: 'target-module-alias',
-  resolveId(source, importer) {
-    if (!importer || source !== './easyqrcodejs.browser') return null
-    return replacement
-  }
+export default createRollupConfig({
+  browser: false,
+  outputFile: 'dist/nodejs.cjs',
+  format: 'cjs'
 })
-
-export default {
-  input: 'src/index.ts',
-  output: {
-    file: 'dist/nodejs.cjs',
-    format: 'cjs',
-    name: 'gc',
-    exports: 'default',
-    extend: true,
-    inlineDynamicImports: true //Solves: Invalid value "umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
-  },
-  external: ['jsdom', 'xmldom'],
-  plugins: [
-    targetModuleAlias(
-      new URL('./src/modules/easyqrcodejs.node.ts', import.meta.url).pathname
-    ),
-    json(),
-    filesAsDataURIs({
-      include: [
-        './src/assets/images/*.png',
-        './src/assets/images/*.jpg',
-        './src/assets/images/*.svg'
-      ]
-    }),
-    typescript({
-      sourceMap: true,
-      tsconfig: './tsconfig.json',
-      exclude: ['./src/assets/*', './bin/*']
-    }),
-    CommonJS({}),
-    nodeResolve({
-      preferBuiltins: true
-    }),
-    nodePolyfills()
-  ]
-}

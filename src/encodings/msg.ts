@@ -1,10 +1,6 @@
 //import { baseEncodings } from '.'
-import {
-  APIEncoding,
-  DefaultAPIEncodings,
-  DefaultAPIVersion,
-  EncodingHandler
-} from '../types'
+import { APIEncoding, EncodingHandler } from '../types'
+import { DefaultAPIEncodings, DefaultAPIVersion } from '../config'
 
 import gzipEncoding from './gzip'
 import jsonUrlLzmaEncoding from './json-url-lzma'
@@ -41,17 +37,13 @@ export const HeadersByEncoders: { [encoding: string]: string } =
     ])
   )
 
-/**
- * Async loaders for the required encoding handlers, as a map.
- */
 export const EncodingHandlers: {
   [name: string]: () => Promise<EncodingHandler>
 } = Object.fromEntries(
-  Object.keys(HeadersByEncoders).map((encoder) => {
-    const loader = () =>
-      import(`./${encoder}`).then((module) => module?.default)
-    return [encoder, loader]
-  })
+  Object.entries(msgEncodings).map(([name, codec]) => [
+    name,
+    async () => codec as EncodingHandler
+  ])
 )
 
 const handler: EncodingHandler = {

@@ -1,11 +1,11 @@
-import { ObjectType } from '../types'
+import type { ObjectType } from '../types'
 import {
   appendFooterToSVG,
   getFooterOptions,
-  QRLoaderResult
+  toHandledQRError,
+  type FontRegistryItem,
+  type QRLoaderResult
 } from './easyqrcodejs.shared'
-
-type FontRegistryItem = { file: string; def: any }
 
 const runtimeImport = async (pathStr: string) =>
   Function('pathStr', 'return import(pathStr)')(pathStr) as Promise<any>
@@ -153,23 +153,30 @@ export default async (): Promise<QRLoaderResult> => {
     })
   }
 
-  const renderQRCode = async (args: { text: string; style: any }) => {
-    const qr = createQRCode({
-      ...(args.style || {}),
-      text: args.text
-    })
+  const renderQRCode = async (args: {
+    text: string
+    style: any
+  }): Promise<any> => {
+    try {
+      const qr = createQRCode({
+        ...(args.style || {}),
+        text: args.text
+      })
 
-    let dataURL = await qr.toDataURL()
-    dataURL = await addFooterToPNGDataURL(dataURL, args.style, runtime)
+      let dataURL = await qr.toDataURL()
+      dataURL = await addFooterToPNGDataURL(dataURL, args.style, runtime)
 
-    let SVGText = await qr.toSVGText()
-    SVGText = appendFooterToSVG(SVGText, args.style, qr?._htOption)
+      let SVGText = await qr.toSVGText()
+      SVGText = appendFooterToSVG(SVGText, args.style, qr?._htOption)
 
-    return {
-      qr,
-      qrCodeOptions: qr?._htOption,
-      dataURL,
-      SVGText
+      return {
+        qr,
+        qrCodeOptions: qr?._htOption,
+        dataURL,
+        SVGText
+      }
+    } catch (error) {
+      throw toHandledQRError(error)
     }
   }
 

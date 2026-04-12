@@ -865,7 +865,7 @@ $#___GC_BROWSER_IMPORTS___#$
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$
-    });
+    }).catch(err=>{alert(err)});
 
     if (app.options.walletBaseUrl) {
       url = replaceBaseUrl({ url, urlBase: app.options.walletBaseUrl });
@@ -881,7 +881,7 @@ $#___GC_BROWSER_IMPORTS___#$
       ? app.config.getIntentCode({ app, intentKey, code: source })
       : source;
 
-    return window.gc.encode.qr({
+    return await window.gc.encode.qr({
       input: JSON.stringify(code),
       apiVersion: $#___API_VERSION___#$,
       network: app.options.network,
@@ -890,7 +890,7 @@ $#___GC_BROWSER_IMPORTS___#$
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$,
       qrResultType: qrResultType || 'png'
-    });
+    }).catch(err=>{alert(err)});
   }
 
   /** Opens an encoded intent in a popup or in the current tab. */

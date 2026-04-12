@@ -50,6 +50,9 @@ const buildExampleOutputs = async ({ gc, input }) => {
           ...sharedArgs,
           qrResultType: 'png'
         })
+        // .catch((err) => {
+        //   console.error(`QR Error: ${err | 'Unknown error'}`)
+        // })
       )
     },
     {
@@ -59,6 +62,9 @@ const buildExampleOutputs = async ({ gc, input }) => {
           ...sharedArgs,
           qrResultType: 'svg'
         })
+        // .catch((err) => {
+        //   console.error(`QR Error: ${err | 'Unknown error'}`)
+        // })
       )
     },
     {
@@ -111,6 +117,8 @@ export const generateExamplesFromBuild = async ({ distDir, examplesDir }) => {
   const browserBundle = path.resolve(distDir, 'browser.js')
   const browserMinBundle = path.resolve(distDir, 'browser.min.js')
   const connectScriptFile = path.resolve(examplesDir, 'connect.gcscript')
+  // For testing with script that will break QR generation
+  // const bigScriptFile = path.resolve(examplesDir, '../test/big.gcscript')
 
   const isReady = await Promise.all([
     exists(nodeEsmBundle),
@@ -118,6 +126,8 @@ export const generateExamplesFromBuild = async ({ distDir, examplesDir }) => {
     exists(browserBundle),
     exists(browserMinBundle),
     exists(connectScriptFile)
+    // For testing with script that will break QR generation
+    // exists(bigScriptFile)
   ])
 
   if (isReady.includes(false)) return false
@@ -125,7 +135,10 @@ export const generateExamplesFromBuild = async ({ distDir, examplesDir }) => {
   const gc = await import(pathToFileURL(nodeEsmBundle).href).then(
     (mod) => mod.default || mod.gc || mod
   )
+
   const input = await fs.readFile(connectScriptFile, 'utf8')
+  // For testing with script that will break QR generation
+  // const input = await fs.readFile(bigScriptFile, 'utf8')
   const outputs = await buildExampleOutputs({ gc, input })
 
   for (const output of outputs) {

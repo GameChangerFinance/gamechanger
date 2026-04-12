@@ -28,21 +28,21 @@
     "no code"
   ],
   "scripts": {
-    "format": "prettier --write --ignore-path .gitignore .",
-    "lint": "npm run format && eslint --ignore-path .gitignore .",
+    "format": "node ./node_modules/prettier/bin-prettier.js --write --ignore-path .gitignore .",
+    "lint": "npm run format && node ./node_modules/eslint/bin/eslint.js --ignore-path .gitignore .",
     "clean": "rm -rf dist/",
     "bundle-deps": "node ./scripts/postbuild.mjs",
-    "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && npm run bundle-deps",
-    "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run bundle-deps && npm run size",
-    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
-    "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min && npm run build-types",
+    "build-nodejs": "node ./node_modules/rollup/dist/bin/rollup -c rollup.nodejs.config.js",
+    "build-browser-min": "node ./node_modules/rollup/dist/bin/rollup -c rollup.browser-min.config.js",
+    "build-browser": "node ./node_modules/rollup/dist/bin/rollup -c rollup.browser.config.js",
+    "build": "npm run clean && npm run lint && npm run build-types && npm run build-nodejs && npm run build-browser && npm run build-browser-min && npm run bundle-deps && npm run size",
     "size": "node ./scripts/size.mjs",
     "test": "npm run build && node ./bin/test.js",
     "examples:express": "node ./examples/expressBackend.js",
     "examples:serve": "serve -p 7000 ./examples/",
     "examples": "npm run build && npm run examples:serve",
     "npm-publish": "npm publish --access public",
-    "build-types": "tsc -p tsconfig.types.json && node ./scripts/build-types.mjs",
+    "build-types": "node ./node_modules/typescript/bin/tsc -p tsconfig.types.json",
     "pack:local": "npm run build && pnpm pack --out dist/%s-%v.tgz"
   },
   "dependencies": {
@@ -91,10 +91,7 @@
     "./dist/browser.js": "./dist/browser.js",
     "./dist/nodejs.js": "./dist/nodejs.js",
     "./dist/nodejs.cjs": "./dist/nodejs.cjs",
-    "./package.json": "./package.json",
-    "./types": {
-      "types": "./dist/types/index.d.ts"
-    }
+    "./package.json": "./package.json"
   },
   "bin": {
     "gamechanger-cli": "./bin/cli.js"

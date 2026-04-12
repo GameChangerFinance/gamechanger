@@ -1,8 +1,7 @@
-import { GCDappConnUrls } from '../../config'
+import { GCDappConnUrls, DefaultQRTemplate } from '../../config'
 import {
   APIEncoding,
   APIVersion,
-  DefaultQRTemplate,
   NetworkType,
   QRTemplateType
 } from '../../types'

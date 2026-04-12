@@ -952,7 +952,7 @@
       refAddress: app.options.refAddress || undefined,
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: undefined
-    });
+    }).catch(err=>{alert(err)});
 
     if (app.options.walletBaseUrl) {
       url = replaceBaseUrl({ url, urlBase: app.options.walletBaseUrl });
@@ -968,7 +968,7 @@
       ? app.config.getIntentCode({ app, intentKey, code: source })
       : source;
 
-    return window.gc.encode.qr({
+    return await window.gc.encode.qr({
       input: JSON.stringify(code),
       apiVersion: "2",
       network: app.options.network,
@@ -977,7 +977,7 @@
       disableNetworkRouter: !!app.options.disableNetworkRouter,
       urlPattern: undefined,
       qrResultType: qrResultType || 'png'
-    });
+    }).catch(err=>{alert(err)});
   }
 
   /** Opens an encoded intent in a popup or in the current tab. */

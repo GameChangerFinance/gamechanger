@@ -1,10 +1,14 @@
 import { Buffer } from 'buffer'
-import { GCDomains, GCLibInSnippets, contact } from '../../config'
+import {
+  GCDomains,
+  GCLibInSnippets,
+  contact,
+  DefaultAPIVersion,
+  DefaultNetwork
+} from '../../config'
 import {
   APIEncoding,
   APIVersion,
-  DefaultAPIVersion,
-  DefaultNetwork,
   NetworkType,
   QRTemplateType
 } from '../../types'

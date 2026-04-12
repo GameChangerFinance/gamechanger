@@ -1,12 +1,22 @@
-import { APIEncoding, APIVersion, NetworkType } from '../types'
+import { APIEncoding, APIVersion, NetworkType, QRTemplateType } from '../types'
 
 //import packageJson from '../../package.json'
 const packageJson: any = {} //TODO: make this work with bundlers
 export const version = packageJson.version
 export const projectName = packageJson.name
 export const repositoryUrl = packageJson.repository
-
 export const cliName = 'gamechanger-cli'
+
+export const DefaultNetwork: NetworkType = 'mainnet'
+export const DefaultAPIVersion: APIVersion = '2'
+export const DefaultAPIEncodings: { [apiVer: string]: APIEncoding } = {
+  '1': 'json-url-lzw',
+  '2': 'gzip'
+}
+export const DefaultQRTemplate: QRTemplateType = 'boxed'
+export const DefaultQRTitle = 'Dapp Action'
+export const DefaultQRSubTitle = 'scan to execute | escanear para ejecutar'
+
 export const networks: NetworkType[] = ['mainnet', 'preprod']
 export const apiVersions: APIVersion[] = [
   // '1',
@@ -38,9 +48,7 @@ export const contact = {
   github: 'https://github.com/GameChangerFinance/gamechanger.wallet/',
   twitter: 'https://twitter.com/GameChangerOk',
   discord: 'https://discord.gg/vpbfyRaDKG',
-  youtube: 'https://www.youtube.com/@gamechanger.finance',
-  playgroundDiscord:
-    'https://discord.com/channels/912354788795109396/921687306241458207'
+  youtube: 'https://www.youtube.com/@gamechanger.finance'
 }
 
 export const GCLibInSnippets = {
