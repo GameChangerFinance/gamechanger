@@ -1,4 +1,4 @@
-import { ObjectType } from '../types'
+import type { ObjectType } from '../types'
 
 export type QRLoaderResult = {
   _QRCode: any
@@ -9,12 +9,53 @@ export type QRLoaderResult = {
   registerFonts: (items: Array<{ file: string; def: any }>) => void
 }
 
-type FooterOptions = {
+export type FontRegistryItem = { file: string; def: any }
+
+export type FooterOptions = {
   text: string
   font: string
   color: string
   bottom: number
   textPadding: number
+}
+
+export type HandledQRError = Error & {
+  handled: true
+  isHandled: true
+  originalError?: unknown
+}
+
+export const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+  if (error == null) return 'Unknown error'
+
+  try {
+    return String(error)
+  } catch {
+    return 'Unknown error'
+  }
+}
+
+export const toHandledQRError = (error: unknown): HandledQRError => {
+  if (
+    error instanceof Error &&
+    ((error as any).handled === true || (error as any).isHandled === true)
+  ) {
+    return error as HandledQRError
+  }
+
+  const sourceError =
+    error instanceof Error ? error : new Error(getErrorMessage(error))
+  const handledError = new Error(sourceError.message) as HandledQRError
+
+  handledError.name = sourceError.name || 'Error'
+  handledError.stack = sourceError.stack
+  handledError.handled = true
+  handledError.isHandled = true
+  handledError.originalError = error
+
+  return handledError
 }
 
 export const getSVGDimensions = (svgText: string, fallback?: any) => {
@@ -84,7 +125,7 @@ export const drawFooterOnCanvas = (canvas: any, context: any, style: any) => {
   }
 }
 
-const escapeXml = (value: string) =>
+export const escapeXml = (value: string) =>
   value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

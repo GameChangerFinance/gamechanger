@@ -1,15 +1,14 @@
 //import path from 'node:path'
 //import * as path from 'path'
-
-import { apiEncodings, apiVersions, networks } from '../config'
 import {
-  APIEncoding,
-  APIVersion,
+  apiEncodings,
+  apiVersions,
+  networks,
   DefaultAPIEncodings,
-  DefaultAPIVersion,
   DefaultNetwork,
-  NetworkType
-} from '../types'
+  DefaultAPIVersion
+} from '../config'
+import { APIEncoding, APIVersion, NetworkType } from '../types'
 
 // export const resolveGlobal = async (file) => {
 //   //const path = await import('path').then(d=>d.default);

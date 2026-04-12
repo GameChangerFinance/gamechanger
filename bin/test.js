@@ -8,6 +8,9 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { JSDOM } from 'jsdom'
 import { createCanvas, Image } from '@napi-rs/canvas'
+import { rollup } from 'rollup'
+import CommonJS from '@rollup/plugin-commonjs'
+import nodeResolve from '@rollup/plugin-node-resolve'
 import gc from '../dist/nodejs.cjs'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -18,7 +21,14 @@ const exampleScript = await fs.readFile(
   path.resolve(rootDir, 'examples/connect.gcscript'),
   'utf8'
 )
-
+const bigExampleScript = await fs.readFile(
+  path.resolve(rootDir, 'test/big.gcscript'),
+  'utf8'
+)
+const bigExampleUrl = await fs.readFile(
+  path.resolve(rootDir, 'test/big.url'),
+  'utf8'
+)
 const run = (title, fn) => ({ title, fn })
 const tests = []
 
@@ -38,8 +48,8 @@ const withTimeout = async (title, fn, timeoutMs = 60000) => {
   }
 }
 
-const execNode = (args, options = {}) => {
-  const result = spawnSync(process.execPath, args, {
+const execCommand = (command, args, options = {}) => {
+  const result = spawnSync(command, args, {
     cwd: rootDir,
     encoding: 'utf8',
     ...options
@@ -47,7 +57,7 @@ const execNode = (args, options = {}) => {
   if (result.status !== 0) {
     throw new Error(
       [
-        `Command failed: ${[process.execPath, ...args].join(' ')}`,
+        `Command failed: ${[command, ...args].join(' ')}`,
         result.stdout,
         result.stderr
       ]
@@ -58,12 +68,55 @@ const execNode = (args, options = {}) => {
   return result
 }
 
+const execNode = (args, options = {}) => {
+  return execCommand(process.execPath, args, options)
+}
+
 const readFileIfExists = async (filePath) => {
   try {
     return await fs.readFile(filePath)
   } catch {
     return undefined
   }
+}
+
+let packedArtifactPath
+
+const packBuiltPackage = async () => {
+  if (packedArtifactPath) return packedArtifactPath
+
+  const packDir = path.resolve(tmpDir, 'pack')
+  await fs.mkdir(packDir, { recursive: true })
+  const result = execCommand('npm', ['pack', '--pack-destination', packDir], {
+    cwd: rootDir
+  })
+  const archiveName = result.stdout
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .at(-1)
+  assert.ok(archiveName, 'npm pack did not produce an archive name')
+  packedArtifactPath = path.resolve(packDir, archiveName)
+  return packedArtifactPath
+}
+
+const installPackedPackageInto = async (consumerDir) => {
+  const archivePath = await packBuiltPackage()
+  const nodeModulesDir = path.resolve(consumerDir, 'node_modules')
+  const scopeDir = path.resolve(nodeModulesDir, '@gamechanger-finance')
+  const unpackDir = path.resolve(consumerDir, '.unpack')
+  const unpackPackageDir = path.resolve(unpackDir, 'package')
+  const installedPackageDir = path.resolve(scopeDir, 'gc')
+
+  await fs.mkdir(scopeDir, { recursive: true })
+  await fs.rm(unpackDir, { recursive: true, force: true })
+  await fs.mkdir(unpackDir, { recursive: true })
+  execCommand('tar', ['-xzf', archivePath, '-C', unpackDir])
+  await fs.rm(installedPackageDir, { recursive: true, force: true })
+  await fs.rename(unpackPackageDir, installedPackageDir)
+
+  return { archivePath, installedPackageDir }
 }
 
 const isPng = (buffer) =>
@@ -146,13 +199,43 @@ tests.push(
 )
 
 tests.push(
+  run('legacy named exports remain available', async () => {
+    const mod = await import(
+      pathToFileURL(path.resolve(rootDir, 'dist/nodejs.js')).href
+    )
+    assert.equal(
+      mod.config.DefaultAPIEncodings[mod.config.DefaultAPIVersion],
+      'gzip'
+    )
+    assert.equal(mod.config.DefaultNetwork, 'mainnet')
+    assert.equal(typeof mod.utils.Buffer.from, 'function')
+  })
+)
+
+tests.push(
+  run('browser bundle does not contain node-only leakage markers', async () => {
+    const browserBundle = await fs.readFile(
+      path.resolve(rootDir, 'dist/browser.runtime.js'),
+      'utf8'
+    )
+    assert.doesNotMatch(browserBundle, /import\(`\.\/\$\{encoder\}`\)/)
+    assert.doesNotMatch(browserBundle, /@napi-rs\/canvas/)
+    assert.doesNotMatch(browserBundle, /node-canvas/)
+    assert.doesNotMatch(browserBundle, /jsdom/)
+    assert.doesNotMatch(browserBundle, /node:fs\/promises/)
+    assert.doesNotMatch(browserBundle, /node:util\/types/)
+    assert.doesNotMatch(browserBundle, /easyqrcodejs-node\.cjs/)
+  })
+)
+
+tests.push(
   run('package self import works', async () => {
     const result = execNode([
       '--input-type=module',
       '-e',
-      "import('@gamechanger-finance/gc').then(({default: gc, encode})=>{console.log(typeof gc.encode.url + ':' + typeof encode.url)})"
+      "import('@gamechanger-finance/gc').then(({default: gc, encode, config:{DefaultAPIEncodings, DefaultAPIVersion}})=>{console.log(typeof gc.encode.url + ':' + typeof encode.url + ':' + DefaultAPIEncodings[DefaultAPIVersion])})"
     ])
-    assert.match(result.stdout.trim(), /^function:function$/)
+    assert.match(result.stdout.trim(), /^function:function:gzip$/)
   })
 )
 
@@ -160,9 +243,124 @@ tests.push(
   run('package self require works', async () => {
     const result = execNode([
       '-e',
-      "const gc=require('@gamechanger-finance/gc'); console.log(typeof gc.encode.url + ':' + typeof gc.snippet.html + ':' + typeof gc.snippet['html-zero'])"
+      "const gc=require('@gamechanger-finance/gc'); console.log(typeof gc.encode.url + ':' + typeof gc.snippet.html + ':' + typeof gc.snippet['html-zero'] + ':' + gc.config.DefaultAPIEncodings[gc.config.DefaultAPIVersion])"
     ])
-    assert.match(result.stdout.trim(), /^function:function:function$/)
+    assert.match(result.stdout.trim(), /^function:function:function:gzip$/)
+  })
+)
+
+tests.push(
+  run('packed package includes the emitted declaration graph', async () => {
+    const archivePath = await packBuiltPackage()
+    const result = execCommand('tar', ['-tf', archivePath])
+    const entries = result.stdout
+    assert.match(entries, /package\/dist\/index\.d\.ts/)
+    assert.match(entries, /package\/dist\/encodings\/index\.d\.ts/)
+    assert.match(entries, /package\/dist\/types\/index\.d\.ts/)
+    assert.match(entries, /package\/dist\/modules\/easyqrcodejs\.d\.ts/)
+    assert.match(
+      entries,
+      /package\/dist\/modules\/easyqrcodejs\.browser\.d\.ts/
+    )
+    assert.match(entries, /package\/dist\/modules\/easyqrcodejs\.shared\.d\.ts/)
+  })
+)
+
+tests.push(
+  run(
+    'packed package type-checks in a consumer TypeScript project',
+    async () => {
+      const consumerDir = path.resolve(tmpDir, 'consumer-types')
+      await fs.rm(consumerDir, { recursive: true, force: true })
+      await fs.mkdir(consumerDir, { recursive: true })
+      await installPackedPackageInto(consumerDir)
+
+      await fs.writeFile(
+        path.resolve(consumerDir, 'index.ts'),
+        `import gc, {
+  gc as gcNamed,
+  encode,
+  snippet,
+  encodings,
+  utils,
+  config,
+  NetworkType,
+} from '@gamechanger-finance/gc'
+
+const handlers = [gc, gcNamed, encode, snippet, encodings, utils, config]
+const defaultEncoding = config.DefaultAPIEncodings[config.DefaultAPIVersion]
+const network: NetworkType = config.DefaultNetwork
+const bufferValue = utils.Buffer.from('hello')
+void handlers
+void defaultEncoding
+void network
+void bufferValue
+`,
+        'utf8'
+      )
+      await fs.writeFile(
+        path.resolve(consumerDir, 'tsconfig.json'),
+        JSON.stringify(
+          {
+            compilerOptions: {
+              module: 'ES2022',
+              target: 'ES2022',
+              moduleResolution: 'Bundler',
+              strict: true,
+              skipLibCheck: false,
+              noEmit: true
+            },
+            include: ['index.ts']
+          },
+          null,
+          2
+        ),
+        'utf8'
+      )
+
+      execNode(
+        [
+          path.resolve(rootDir, 'node_modules/typescript/bin/tsc'),
+          '-p',
+          path.resolve(consumerDir, 'tsconfig.json')
+        ],
+        { cwd: consumerDir }
+      )
+    }
+  )
+)
+
+tests.push(
+  run('packed package bundles cleanly for a browser consumer', async () => {
+    const consumerDir = path.resolve(tmpDir, 'consumer-browser-bundle')
+    await fs.rm(consumerDir, { recursive: true, force: true })
+    await fs.mkdir(consumerDir, { recursive: true })
+    await installPackedPackageInto(consumerDir)
+
+    const entryFile = path.resolve(consumerDir, 'main.js')
+    await fs.writeFile(
+      entryFile,
+      `import gc, { encode } from '@gamechanger-finance/gc'
+console.log(typeof gc.encode.url, typeof encode.url)
+`,
+      'utf8'
+    )
+
+    const bundle = await rollup({
+      input: entryFile,
+      plugins: [nodeResolve({ browser: true }), CommonJS()]
+    })
+    const generated = await bundle.generate({ format: 'es' })
+    await bundle.close()
+
+    const code = generated.output.map((chunk) => chunk.code || '').join('\n')
+    assert.ok(code.includes('encode'))
+    assert.doesNotMatch(code, /easyqrcodejs-node\.cjs/)
+    assert.doesNotMatch(code, /@napi-rs\/canvas\/node-canvas/)
+    assert.doesNotMatch(code, /runtimeImport\('node:(?:module|path|url)'\)/)
+    assert.doesNotMatch(code, /require\('\.\/easyqrcodejs-node\.cjs'\)/)
+    assert.doesNotMatch(code, /require\('jsdom'\)/)
+    assert.doesNotMatch(code, /require\('undici'\)/)
   })
 )
 
@@ -222,6 +420,19 @@ tests.push(
     })
     assert.match(url, /^https:\/\//)
     assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
+  })
+)
+tests.push(
+  run('node library encode.url works with big files', async () => {
+    const url = await gc.encode.url({
+      input: bigExampleScript,
+      apiVersion: '2',
+      network: 'mainnet',
+      encoding: 'gzip'
+    })
+    assert.match(url, /^https:\/\//)
+    assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
+    assert.equal(url, bigExampleUrl)
   })
 )
 
@@ -399,81 +610,6 @@ tests.push(
       assert.equal(typeof dom.window.gc.encode.qr, 'function')
       assert.match(script, /Scan and review in\b/)
       assert.match(script, /Segoe UI Variable/)
-    }
-  )
-)
-
-tests.push(
-  run('browser runtime bundle excludes Node QR runtime imports', async () => {
-    const script = await fs.readFile(
-      path.resolve(rootDir, 'dist/browser.runtime.js'),
-      'utf8'
-    )
-    assert.doesNotMatch(script, /@napi-rs\/canvas/)
-    assert.doesNotMatch(script, /easyqrcodejs-node\.cjs/)
-    assert.doesNotMatch(script, /node:fs\/promises/)
-    assert.doesNotMatch(script, /node:util\/types/)
-    assert.doesNotMatch(script, /node:module/)
-  })
-)
-
-tests.push(
-  run(
-    'TypeScript declarations support default, named, and type-only imports',
-    async () => {
-      const typecheckDir = await fs.mkdtemp(path.join(rootDir, '.gc-types-'))
-      const sourceFile = path.resolve(typecheckDir, 'index.ts')
-      const configFile = path.resolve(typecheckDir, 'tsconfig.json')
-
-      await fs.writeFile(
-        sourceFile,
-        [
-          "import gc, { encode, snippet, gc as namedGc } from '@gamechanger-finance/gc'",
-          "import type { NetworkType, APIEncoding } from '@gamechanger-finance/gc/types'",
-          "const network: NetworkType = 'mainnet'",
-          "const encoding: APIEncoding = 'gzip'",
-          'void gc',
-          'void encode',
-          'void snippet',
-          'void namedGc',
-          'void network',
-          'void encoding'
-        ].join('\n'),
-        'utf8'
-      )
-
-      await fs.writeFile(
-        configFile,
-        JSON.stringify(
-          {
-            compilerOptions: {
-              strict: true,
-              module: 'ESNext',
-              moduleResolution: 'Bundler',
-              target: 'ES2022',
-              noEmit: true,
-              baseUrl: rootDir,
-              paths: {
-                '@gamechanger-finance/gc': ['.'],
-                '@gamechanger-finance/gc/types': ['./dist/types/index.d.ts']
-              }
-            },
-            include: [sourceFile]
-          },
-          null,
-          2
-        ),
-        'utf8'
-      )
-
-      execNode([
-        path.relative(
-          rootDir,
-          path.resolve(rootDir, 'node_modules/typescript/bin/tsc')
-        ),
-        '-p',
-        configFile
-      ])
     }
   )
 )

@@ -38,7 +38,13 @@ const writeNodeEsmWrapper = async () => {
 
   const text = `import gc from './nodejs.cjs'
 
-export const { encode, snippet, encodings, utils, config } = gc
+export const {
+  encode,
+  snippet,
+  encodings,
+  utils,
+  config,
+} = gc
 export { gc }
 export default gc
 `
@@ -58,7 +64,18 @@ const ensureBrowserFacade = async () => {
     await fs.rename(browserBundle, path.resolve(distDir, 'browser.runtime.js'))
     await fs.writeFile(
       browserBundle,
-      "import gc from './browser.runtime.js'\n\nexport const { encode, snippet, encodings, utils, config } = gc\nexport { gc }\nexport default gc\n",
+      `import gc from './browser.runtime.js'
+
+export const {
+  encode,
+  snippet,
+  encodings,
+  utils,
+  config,
+} = gc
+export { gc }
+export default gc
+`,
       'utf8'
     )
   }
@@ -71,6 +88,16 @@ const copyNodeQrRuntimeFiles = async () => {
   ]) {
     try {
       await fs.copyFile(from, to)
+    } catch {
+      // ignore
+    }
+  }
+}
+
+const removeUnusedTypeArtifacts = async () => {
+  for (const filePath of [path.resolve(distDir, 'runtime-entry.d.ts')]) {
+    try {
+      await fs.rm(filePath, { force: true })
     } catch {
       // ignore
     }
@@ -105,6 +132,7 @@ await ensureExamplesDist()
 await writeNodeEsmWrapper()
 await ensureBrowserFacade()
 await copyNodeQrRuntimeFiles()
+await removeUnusedTypeArtifacts()
 await removeDanglingLegacyArtifacts()
 await copyDir(distDir, examplesDistDir)
 await generateExamplesFromBuild({

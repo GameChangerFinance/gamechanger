@@ -723,7 +723,7 @@ function App() {
       refAddress: snapshot.options.refAddress || undefined,
       disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$
-    });
+    }).catch(err=>{alert(err)});
 
     if (snapshot.options.walletBaseUrl) url = replaceUrlBase(url, snapshot.options.walletBaseUrl);
     return url;
@@ -737,7 +737,7 @@ function App() {
       ? config.resolveIntentCode({ state: snapshot, intentKey, code: source, helpers })
       : source;
 
-    return window.gc.encode.qr({
+    return await window.gc.encode.qr({
       input: JSON.stringify(code),
       apiVersion: $#___API_VERSION___#$,
       network: snapshot.options.network,
@@ -746,7 +746,7 @@ function App() {
       disableNetworkRouter: !!snapshot.options.disableNetworkRouter,
       urlPattern: $#___URL_PATTERN___#$,
       qrResultType
-    });
+    }).catch(err=>{alert(err)});
   }
 
   async function applyWalletResult(resultValue) {

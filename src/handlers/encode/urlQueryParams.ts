@@ -1,4 +1,5 @@
-import { DefaultNetwork, NetworkType } from '../../types'
+import { DefaultNetwork } from 'src/config'
+import { NetworkType } from '../../types'
 
 export const buildWalletQueryParams = (args: {
   network?: NetworkType

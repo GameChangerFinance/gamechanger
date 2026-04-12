@@ -1,4 +1,4 @@
-import { DefaultQRSubTitle, DefaultQRTitle } from '../types'
+import { DefaultQRSubTitle, DefaultQRTitle } from '../config'
 //import { resolveGlobal } from '../utils'
 
 import logoURL from '../assets/images/dapp-logo.png'

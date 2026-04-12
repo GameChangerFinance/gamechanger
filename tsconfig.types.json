@@ -3,12 +3,13 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "./dist",
+    "declarationMap": false,
+    "outDir": "./dist",
     "rootDir": "./src",
     "noEmit": false,
-    "checkJs": false,
-    "allowJs": false
+    "sourceMap": false,
+    "checkJs": false
   },
   "include": ["src"],
-  "exclude": ["src/tests/**/*", "dist", "bin", "examples"]
+  "exclude": ["src/modules/**/*.cjs"]
 }

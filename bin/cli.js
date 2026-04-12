@@ -238,25 +238,6 @@ export default async function main() {
               urlPattern,
               snippetArgs
             }
-            //   config: {
-            //     networks,
-            //     actions,
-            //     subActions: { [action]: subActions },
-            //     apiVersions,
-            //     defaults: {
-            //       network: DefaultNetwork,
-            //       encodings: DefaultAPIEncodings,
-            //       apiVersion: DefaultAPIVersion,
-            //       qr: {
-            //         template: DefaultQRTemplate,
-            //         title: DefaultQRTitle,
-            //         subTitle: DefaultQRSubTitle
-            //       }
-            //     },
-            //     apiEncodings,
-            //     gcDappConnUrls: GCDappConnUrls,
-            //     msgHeaders: EncodingByHeaders
-            //   }
           },
           null,
           2
