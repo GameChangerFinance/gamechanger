@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"adress\".",
+      "fileName": "009-unrelated-address-typo.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/009-unrelated-address-typo.gcscript",
+      "jsonPath": "/adress",
+      "location": {
+        "line": 3,
+        "column": 13,
+        "offset": 45,
+        "length": 22
+      },
+      "error": "Unknown property",
+      "suggestion": "Remove \"adress\" or check the property spelling.",
+      "provided": "adress",
+      "details": {
+        "propertyName": "adress",
+        "propertyJsonPath": "/adress",
+        "branchMismatch": false,
+        "closestProperties": [],
+        "schemaPaths": [],
+        "branchScores": [
+          {
+            "schemaPath": "/getCurrentAddress.json/additionalProperties",
+            "title": "Get Current Address",
+            "score": 9.6,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": [],
+            "additionalProperties": ["adress"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "/getCurrentAddress.json/additionalProperties",
+        "params": {
+          "additionalProperty": "adress"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 6,
+    "schemaMs": 0
+  }
+}

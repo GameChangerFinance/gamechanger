@@ -1,0 +1,50 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-invalid-const-enum",
+      "message": "Unknown GCScript function type \"getCurrentAddresses\". Did you mean \"getCurrentAddress\"?",
+      "fileName": "029-deep-wrong-type.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/029-deep-wrong-type.gcscript",
+      "jsonPath": "/run/level1/run/level2/run/bad/type",
+      "location": {
+        "line": 11,
+        "column": 23,
+        "offset": 198,
+        "length": 21
+      },
+      "error": "Unknown GCScript function type",
+      "suggestion": "Replace \"getCurrentAddresses\" with \"getCurrentAddress\".",
+      "examples": [
+        {
+          "type": "getCurrentAddress"
+        }
+      ],
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/getCurrentAddress.html"
+      ],
+      "provided": "getCurrentAddresses",
+      "details": {
+        "propertyName": "type",
+        "closestValues": ["getCurrentAddress"],
+        "schemaPaths": ["/getCurrentAddress.json/properties/type/const"],
+        "branchScores": {
+          "schemaPath": "#/properties/type/const",
+          "score": -5.4,
+          "matchingDiscriminators": [],
+          "mismatchingDiscriminators": [],
+          "siblingMatches": [],
+          "missingRequired": [],
+          "additionalProperties": ["type"],
+          "typeCompatible": false
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 3,
+    "schemaMs": 0
+  }
+}

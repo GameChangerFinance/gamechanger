@@ -1,0 +1,71 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-type-mismatch",
+      "message": "Expected /run to be array or object, got string.",
+      "fileName": "006-script-run-string.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/006-script-run-string.gcscript",
+      "jsonPath": "/run",
+      "location": {
+        "line": 3,
+        "column": 10,
+        "offset": 31,
+        "length": 24
+      },
+      "error": "Type mismatch",
+      "suggestion": "Use a value of type array or object.",
+      "provided": "{get('cache.address')}",
+      "details": {
+        "expected": "array or object",
+        "actual": "string",
+        "branchScores": [
+          {
+            "schemaPath": "#/properties/run/anyOf/0/type",
+            "title": "Array",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/properties/run/anyOf/1/type",
+            "title": "Numerical key map",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/properties/run/anyOf/2/type",
+            "title": "Alphanumerical key map",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          }
+        ],
+        "keyword": "type",
+        "schemaPath": "#/properties/run/anyOf/0/type",
+        "params": {
+          "type": "array"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

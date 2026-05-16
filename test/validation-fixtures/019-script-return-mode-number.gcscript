@@ -1,0 +1,11 @@
+{
+  "type": "script",
+  "return": {
+    "mode": 42
+  },
+  "run": {
+    "a": {
+      "type": "getCurrentAddress"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"exportAss\". Did you mean \"exportAs\"?",
+      "fileName": "008-script-exportas-typo.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/008-script-exportas-typo.gcscript",
+      "jsonPath": "/exportAss",
+      "location": {
+        "line": 3,
+        "column": 16,
+        "offset": 37,
+        "length": 8
+      },
+      "error": "Unknown property",
+      "suggestion": "Replace \"exportAss\" with \"exportAs\".",
+      "provided": "exportAss",
+      "details": {
+        "propertyName": "exportAss",
+        "propertyJsonPath": "/exportAss",
+        "branchMismatch": false,
+        "closestProperties": ["exportAs"],
+        "schemaPaths": ["/script.json/properties/exportAs"],
+        "branchScores": [
+          {
+            "schemaPath": "#/additionalProperties",
+            "title": "Initial block of code",
+            "score": 10.8,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type", "run"],
+            "missingRequired": [],
+            "additionalProperties": ["exportAss"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "#/additionalProperties",
+        "params": {
+          "additionalProperty": "exportAss"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 10,
+    "schemaMs": 0
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "type": "query",
+  "queries": "not-an-object"
+}

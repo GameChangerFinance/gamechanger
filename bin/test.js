@@ -5,6 +5,7 @@ import path from 'node:path'
 import os from 'node:os'
 import vm from 'node:vm'
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { JSDOM } from 'jsdom'
 import { createCanvas, Image } from '@napi-rs/canvas'
@@ -27,6 +28,102 @@ const bigExampleScript = await fs.readFile(
 )
 const bigExampleUrl = await fs.readFile(
   path.resolve(rootDir, 'test/big.url'),
+  'utf8'
+)
+const schemaTmpDir = path.resolve(tmpDir, 'schema')
+
+const deriveMinSchemaUrl = (schemaUrl) => {
+  if (schemaUrl.endsWith('.full')) return schemaUrl.replace(/\.full$/, '.min')
+  if (schemaUrl.includes('index.json.full')) {
+    return schemaUrl.replace('index.json.full', 'index.json.min')
+  }
+  throw new Error(`Cannot derive min schema URL from ${schemaUrl}`)
+}
+
+const readJsonIfFresh = async (filePath, ttlHours) => {
+  try {
+    const stat = await fs.stat(filePath)
+    const ageMs = Date.now() - stat.mtimeMs
+    if (ageMs >= Number(ttlHours || 24) * 60 * 60 * 1000) return undefined
+    return JSON.parse(await fs.readFile(filePath, 'utf8'))
+  } catch {
+    return undefined
+  }
+}
+
+const writeJsonCache = async (filePath, value) => {
+  await fs.mkdir(path.dirname(filePath), { recursive: true })
+  await fs.writeFile(filePath, JSON.stringify(value))
+}
+
+const writeSchemaCacheForTest = async (cacheFileName, schema) => {
+  const candidates = [os.tmpdir(), rootDir]
+  let lastError
+  for (const dir of candidates) {
+    try {
+      const cachePath = path.resolve(dir, cacheFileName)
+      await writeJsonCache(cachePath, schema)
+      return cachePath
+    } catch (err) {
+      lastError = err
+    }
+  }
+  throw lastError
+}
+
+const downloadJson = async (url) => {
+  if (typeof fetch !== 'function') {
+    throw new Error(`No fetch implementation available to download ${url}`)
+  }
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`Failed to download ${url} (${response.status})`)
+  }
+  return response.json()
+}
+
+const loadSchemaFromTmpDir = async ({
+  schemaUrl,
+  cacheFileName,
+  tmpFileName
+}) => {
+  const ttlHours = gc.config.GCScriptSchemaCacheTTLHours
+  const cacheCandidates = [
+    path.resolve(os.tmpdir(), cacheFileName),
+    path.resolve(rootDir, cacheFileName)
+  ]
+
+  let schema
+  for (const cachePath of cacheCandidates) {
+    schema = await readJsonIfFresh(cachePath, ttlHours)
+    if (schema) break
+  }
+
+  if (!schema) {
+    schema = await downloadJson(schemaUrl)
+    await writeSchemaCacheForTest(cacheFileName, schema)
+  }
+
+  const tmpSchemaPath = path.resolve(schemaTmpDir, tmpFileName)
+  await writeJsonCache(tmpSchemaPath, schema)
+  return JSON.parse(await fs.readFile(tmpSchemaPath, 'utf8'))
+}
+
+const validationSchemaMin = await loadSchemaFromTmpDir({
+  schemaUrl: deriveMinSchemaUrl(gc.config.GCScriptSchemaURL),
+  cacheFileName: `${gc.config.GCScriptSchemaCacheFileName}.min`,
+  tmpFileName: 'index.json.min'
+})
+const validationSchemaFull = await loadSchemaFromTmpDir({
+  schemaUrl: gc.config.GCScriptSchemaURL,
+  cacheFileName: gc.config.GCScriptSchemaCacheFileName,
+  tmpFileName: 'index.json.full'
+})
+const invalidGCScript = await fs.readFile(
+  path.resolve(
+    rootDir,
+    'test/validation-fixtures/exampleInvalidGCScript.gcscript'
+  ),
   'utf8'
 )
 const run = (title, fn) => ({ title, fn })
@@ -140,6 +237,19 @@ const decodeDataUri = (value) => {
     : Buffer.from(decodeURIComponent(payload))
 }
 
+const validateReport = async (input, options = {}) =>
+  JSON.parse(
+    decodeDataUri(
+      await gc.validate.file({
+        input,
+        useSchema: options.useSchema || validationSchemaFull,
+        fileName: options.fileName,
+        filePath: options.filePath,
+        fileUri: options.fileUri
+      })
+    ).toString('utf8')
+  )
+
 const parseUrl = (value) => new URL(String(value))
 
 const installCanvasShim = (dom) => {
@@ -180,6 +290,8 @@ tests.push(
     assert.equal(typeof gc.encode.qr, 'function')
     assert.equal(typeof gc.snippet.html, 'function')
     assert.equal(typeof gc.snippet['html-zero'], 'function')
+    assert.equal(typeof gc.build.file, 'function')
+    assert.equal(typeof gc.validate.file, 'function')
   })
 )
 
@@ -192,6 +304,8 @@ tests.push(
       )
       assert.equal(typeof mod.default.encode.url, 'function')
       assert.equal(typeof mod.encode.url, 'function')
+      assert.equal(typeof mod.build.file, 'function')
+      assert.equal(typeof mod.validate.file, 'function')
       assert.equal(typeof mod.encodings.gzip.encoder, 'function')
       assert.equal(typeof mod.gc.encode.qr, 'function')
     }
@@ -209,6 +323,7 @@ tests.push(
     )
     assert.equal(mod.config.DefaultNetwork, 'mainnet')
     assert.equal(typeof mod.utils.Buffer.from, 'function')
+    assert.equal(typeof mod.utils.virtualFileSystemToZip, 'function')
   })
 )
 
@@ -233,9 +348,9 @@ tests.push(
     const result = execNode([
       '--input-type=module',
       '-e',
-      "import('@gamechanger-finance/gc').then(({default: gc, encode, config:{DefaultAPIEncodings, DefaultAPIVersion}})=>{console.log(typeof gc.encode.url + ':' + typeof encode.url + ':' + DefaultAPIEncodings[DefaultAPIVersion])})"
+      "import('@gamechanger-finance/gc').then(({default: gc, encode, build, config:{DefaultAPIEncodings, DefaultAPIVersion}})=>{console.log(typeof gc.encode.url + ':' + typeof encode.url + ':' + typeof build.file + ':' + DefaultAPIEncodings[DefaultAPIVersion])})"
     ])
-    assert.match(result.stdout.trim(), /^function:function:gzip$/)
+    assert.match(result.stdout.trim(), /^function:function:function:gzip$/)
   })
 )
 
@@ -281,20 +396,23 @@ tests.push(
   gc as gcNamed,
   encode,
   snippet,
+  build,
   encodings,
   utils,
   config,
   NetworkType,
 } from '@gamechanger-finance/gc'
 
-const handlers = [gc, gcNamed, encode, snippet, encodings, utils, config]
+const handlers = [gc, gcNamed, encode, snippet, build, encodings, utils, config]
 const defaultEncoding = config.DefaultAPIEncodings[config.DefaultAPIVersion]
 const network: NetworkType = config.DefaultNetwork
 const bufferValue = utils.Buffer.from('hello')
+const zipValue = utils.virtualFileSystemToZip({ 'hello.txt': { data: bufferValue } })
 void handlers
 void defaultEncoding
 void network
 void bufferValue
+void zipValue
 `,
         'utf8'
       )
@@ -341,7 +459,7 @@ tests.push(
     await fs.writeFile(
       entryFile,
       `import gc, { encode } from '@gamechanger-finance/gc'
-console.log(typeof gc.encode.url, typeof encode.url)
+console.log(typeof gc.encode.url, typeof encode.url, typeof gc.utils.virtualFileSystemToZip)
 `,
       'utf8'
     )
@@ -411,6 +529,52 @@ tests.push(
 )
 
 tests.push(
+  run(
+    'dist/browser.min.js build.file resolves app virtual filesystem imports',
+    async () => {
+      const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+        url: 'https://example.test/',
+        runScripts: 'outside-only',
+        pretendToBeVisual: true
+      })
+      dom.window.process = undefined
+      installCanvasShim(dom)
+      const script = await fs.readFile(
+        path.resolve(rootDir, 'dist/browser.min.js'),
+        'utf8'
+      )
+      vm.runInContext(script, dom.getInternalVMContext())
+      assert.equal(typeof dom.window.gc.build.file, 'function')
+      assert.equal(typeof dom.window.gc.utils.Buffer.from, 'function')
+
+      const output = await dom.window.gc.build.file({
+        input: JSON.stringify({
+          type: 'script',
+          run: {
+            config: {
+              type: '$importAsData',
+              as: 'object',
+              from: { config: 'app://config.json' }
+            }
+          }
+        }),
+        fileUri: 'app://main.gcscript',
+        files: {
+          'config.json': {
+            data: dom.window.gc.utils.Buffer.from('{"enabled":true}', 'utf8')
+          }
+        },
+        doValidate: false
+      })
+
+      const built = JSON.parse(decodeDataUri(output).toString('utf8'))
+      assert.equal(built.run.config.type, 'data')
+      assert.equal(built.run.config.value.config.enabled, true)
+    }
+  )
+)
+
+tests.push(
   run('node library encode.url works', async () => {
     const url = await gc.encode.url({
       input: exampleScript,
@@ -422,6 +586,508 @@ tests.push(
     assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
   })
 )
+
+tests.push(
+  run(
+    'node library build.file resolves app virtual filesystem imports',
+    async () => {
+      const main = JSON.stringify({
+        type: 'script',
+        run: {
+          data: {
+            type: '$importAsData',
+            as: 'object',
+            from: {
+              config: 'app://config.json'
+            }
+          },
+          nested: {
+            type: '$importAsScript',
+            from: {
+              child: 'app://scripts/child.gcscript'
+            }
+          }
+        }
+      })
+      const out = await gc.build.file({
+        input: main,
+        fileUri: 'app://main.gcscript',
+        doValidate: false,
+        files: {
+          'config.json': { data: Buffer.from('{"enabled":true}', 'utf8') },
+          'scripts/child.gcscript': {
+            data: Buffer.from(
+              '{"type":"script","run":{"address":{"type":"getCurrentAddress"}}}',
+              'utf8'
+            )
+          }
+        }
+      })
+      const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+      assert.equal(built.run.data.type, 'data')
+      assert.equal(built.run.data.value.config.enabled, true)
+      assert.equal(built.run.nested.type, 'script')
+      assert.equal(
+        built.run.nested.run.child.run.address.type,
+        'getCurrentAddress'
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library build.file accepts JSONC comments without touching strings',
+    async () => {
+      const input = `{
+      // line comment before type
+      "type": "script",
+      "description": "https://example.test/path//kept /* also kept */",
+      /* block comment before run */
+      "run": {
+        "message": {
+          "type": "data",
+          "value": "slash // and block /* text */ survive"
+        }
+      }
+    }`
+      const out = await gc.build.file({
+        input,
+        fileUri: 'app://main.gcscript',
+        doValidate: false
+      })
+      const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+      assert.equal(
+        built.description,
+        'https://example.test/path//kept /* also kept */'
+      )
+      assert.equal(
+        built.run.message.value,
+        'slash // and block /* text */ survive'
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library build.file supports JSONC compatibility cases',
+    async () => {
+      const input = `{
+      // line comment
+      "type": "script", // trailing line comment
+      "description": "unicode survives: 🚀 ñ // not a comment /* not a block */",
+      /* block comment */
+      "run": {
+        /* multiline block comment
+           with unicode λ 漢字 */
+        "escaped": {
+          "type": "data",
+          "value": "escaped quote: \\\" and slashes // /* */",
+        },
+      },
+    }`
+      const out = await gc.build.file({
+        input,
+        fileUri: 'app://main.gcscript',
+        doValidate: false
+      })
+      const builtJson = decodeDataUri(out).toString('utf8')
+      const built = JSON.parse(builtJson)
+      assert.equal(
+        built.run.escaped.value,
+        'escaped quote: " and slashes // /* */'
+      )
+      assert.doesNotMatch(
+        builtJson,
+        /\/\/ line comment|multiline block comment/
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library build.file parses JSONC in script and data imports across 3 levels',
+    async () => {
+      const input = `{
+        // level 1 root
+        "type": "script",
+        "run": {
+          "level2": {
+            "type": "$importAsScript",
+            "from": { "child": "app://level2.gcscript", },
+          },
+        },
+      }`
+      const out = await gc.build.file({
+        input,
+        fileUri: 'app://main.gcscript',
+        doValidate: false,
+        files: {
+          'level2.gcscript': {
+            data: Buffer.from(
+              `{
+                /* level 2 imported script */
+                "type": "script",
+                "run": {
+                  "objectData": {
+                    "type": "$importAsData",
+                    "as": "object",
+                    "from": { "obj": "app://data/object.json", },
+                  },
+                  "jsonData": {
+                    "type": "$importAsData",
+                    "as": "json",
+                    "from": { "json": "app://data/json.json", },
+                  },
+                  "level3": {
+                    "type": "$importAsScript",
+                    "from": { "grandchild": "app://level3.gcscript", },
+                  },
+                },
+              }`,
+              'utf8'
+            )
+          },
+          'level3.gcscript': {
+            data: Buffer.from(
+              `{
+                // level 3 imported script
+                "type": "script",
+                "run": {
+                  "address": { "type": "getCurrentAddress", },
+                },
+              }`,
+              'utf8'
+            )
+          },
+          'data/object.json': {
+            data: Buffer.from(
+              `{
+                // imported as object
+                "enabled": true,
+                "label": "// inside string /* safe */",
+              }`,
+              'utf8'
+            )
+          },
+          'data/json.json': {
+            data: Buffer.from(
+              `{
+                /* imported as json */
+                "name": "demo",
+                "items": [1, 2, 3,],
+              }`,
+              'utf8'
+            )
+          }
+        }
+      })
+      const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+      const child = built.run.level2.run.child
+      assert.equal(child.run.objectData.value.obj.enabled, true)
+      assert.equal(
+        child.run.objectData.value.obj.label,
+        '// inside string /* safe */'
+      )
+      assert.equal(
+        child.run.jsonData.value.json,
+        '{"name":"demo","items":[1,2,3]}'
+      )
+      assert.equal(
+        child.run.level3.run.grandchild.run.address.type,
+        'getCurrentAddress'
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'node library build.file rejects non-comment JSONC extensions',
+    async () => {
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input: `{ type: 'script', run: {}, }`,
+            fileUri: 'app://main.gcscript'
+          }),
+        /Invalid GCScript JSON\/JSONC input/
+      )
+    }
+  )
+)
+
+tests.push(
+  run('utils.hashCode matches SHA-512 over strict JSON output', async () => {
+    const code = {
+      type: 'script',
+      run: { answer: { type: 'data', value: 42 } }
+    }
+    assert.equal(
+      gc.utils.hashCode(code),
+      createHash('sha512').update(JSON.stringify(code)).digest('hex')
+    )
+  })
+)
+
+tests.push(
+  run('validate.file accepts built strict JSON with min schema', async () => {
+    const input = JSON.stringify({
+      type: 'script',
+      run: { address: { type: 'getCurrentAddress' } }
+    })
+    const out = await gc.validate.file({
+      input,
+      fileUri: 'app://valid.gcscript',
+      useSchema: validationSchemaMin
+    })
+    const report = JSON.parse(decodeDataUri(out).toString('utf8'))
+    assert.equal(report.isValid, true)
+    assert.deepEqual(report.errors, [])
+  })
+)
+
+tests.push(
+  run(
+    'validate.file rejects JSONC because validation consumes built JSON',
+    async () => {
+      const out = await gc.validate.file({
+        input: '{ // comment\n "type": "script", "run": {} }',
+        fileUri: 'app://jsonc.gcscript',
+        useSchema: validationSchemaMin
+      })
+      const report = JSON.parse(decodeDataUri(out).toString('utf8'))
+      assert.equal(report.isValid, false)
+      assert.equal(report.errors[0].code, 'code-syntax-error')
+    }
+  )
+)
+
+tests.push(
+  run('validate.file reports deepest wallet-compatible JSON path', async () => {
+    const out = await gc.validate.file({
+      input: invalidGCScript,
+      fileUri: 'app://invalid.gcscript',
+      fileName: 'exampleInvalidGCScript.gcscript',
+      useSchema: validationSchemaFull
+    })
+    const report = JSON.parse(decodeDataUri(out).toString('utf8'))
+    assert.equal(report.isValid, false)
+    assert.equal(
+      report.errors[0].jsonPath,
+      '/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa'
+    )
+    assert.equal(report.errors[0].provided, 'pubKeyHashHexa')
+  })
+)
+
+tests.push(
+  run('build.file validates final output when schema is provided', async () => {
+    const out = await gc.build.file({
+      input: `{"type":"script","run":{"address":{"type":"getCurrentAddress"}}}`,
+      fileUri: 'app://main.gcscript',
+      useSchema: validationSchemaMin
+    })
+    const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+    assert.equal(built.run.address.type, 'getCurrentAddress')
+  })
+)
+
+tests.push(
+  run('build.file can disable default validation explicitly', async () => {
+    const out = await gc.build.file({
+      input: `{"type":"script","run":{}}`,
+      fileUri: 'app://main.gcscript',
+      doValidate: false
+    })
+    assert.equal(JSON.parse(decodeDataUri(out).toString('utf8')).type, 'script')
+  })
+)
+
+tests.push(
+  run(
+    'CLI validate exits non-zero and writes JSON report for invalid code',
+    async () => {
+      await fs.writeFile(
+        path.join(os.tmpdir(), gc.config.GCScriptSchemaCacheFileName),
+        JSON.stringify(validationSchemaFull)
+      )
+      const reportPath = path.resolve(tmpDir, 'invalid-validation-report.json')
+      const result = spawnSync(
+        process.execPath,
+        [
+          './bin/cli.js',
+          'validate',
+          '-f',
+          'test/validation-fixtures/exampleInvalidGCScript.gcscript',
+          '-o',
+          reportPath
+        ],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+      assert.equal(result.status, 1)
+      assert.equal(result.stdout, '')
+      const stderr = stripAnsi(result.stderr)
+      assert.match(stderr, /error/i)
+      assert.match(stderr, /exampleInvalidGCScript\.gcscript/)
+      assert.match(stderr, /Unknown property|Did you mean|pubKeyHashHexa/)
+      assert.ok(await readFileIfExists(reportPath))
+      const report = JSON.parse(await fs.readFile(reportPath, 'utf8'))
+      assert.equal(report.isValid, false)
+      assert.equal(
+        report.errors[0].jsonPath,
+        '/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa'
+      )
+    }
+  )
+)
+
+tests.push(
+  run('node library build.file can emit compact strict JSON', async () => {
+    const out = await gc.build.file({
+      input: `{
+        // comments disappear
+        "type": "script",
+        "run": {},
+      }`,
+      fileUri: 'app://main.gcscript',
+      doValidate: false,
+      compactOutput: true
+    })
+    const builtJson = decodeDataUri(out).toString('utf8')
+    assert.equal(builtJson, '{"type":"script","run":{}}')
+  })
+)
+
+tests.push(
+  run(
+    'node library build.file rejects app path traversal above project root',
+    async () => {
+      const input = JSON.stringify({
+        type: 'script',
+        run: {
+          bad: {
+            type: '$importAsData',
+            from: { secret: 'app://../secret.json' }
+          }
+        }
+      })
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input,
+            fileUri: 'app://main.gcscript',
+            doValidate: false
+          }),
+        /Path traversal outside project root/
+      )
+    }
+  )
+)
+
+tests.push(
+  run('node library build.file applies http domain whitelist', async () => {
+    const input = JSON.stringify({
+      type: 'script',
+      run: {
+        remote: {
+          type: '$importAsData',
+          from: { config: 'https://evil.test/config.json' }
+        }
+      }
+    })
+    await assert.rejects(
+      () =>
+        gc.build.file({
+          input,
+          fileUri: 'app://main.gcscript',
+          doValidate: false,
+          allowedProtocols: ['https'],
+          allowedRemoteDomains: ['example.test'],
+          protocolHandlers: {
+            https: async () => Buffer.from('{"ok":true}', 'utf8')
+          }
+        }),
+      /Remote domain is not allowed/
+    )
+  })
+)
+
+tests.push(
+  run(
+    'node library build.file blocks mutable remote imports from local resources',
+    async () => {
+      const input = JSON.stringify({
+        type: 'script',
+        run: {
+          remote: {
+            type: '$importAsScript',
+            from: { child: 'https://example.test/remote.gcscript' }
+          }
+        }
+      })
+      const remoteScript = JSON.stringify({
+        type: 'script',
+        run: {
+          local: {
+            type: '$importAsData',
+            from: { config: 'app://config.json' }
+          }
+        }
+      })
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input,
+            fileUri: 'app://main.gcscript',
+            doValidate: false,
+            files: {
+              'config.json': { data: Buffer.from('{"secret":true}', 'utf8') }
+            },
+            allowedProtocols: ['app', 'https'],
+            allowedRemoteDomains: ['example.test'],
+            protocolHandlers: {
+              https: async () => Buffer.from(remoteScript, 'utf8')
+            }
+          }),
+        /Mutable remote resource .* cannot import local resource/
+      )
+    }
+  )
+)
+
+tests.push(
+  run('virtual filesystem ZIP helpers round-trip file data', async () => {
+    const zip = gc.utils.virtualFileSystemToZip({
+      'main.gcscript': { data: Buffer.from(exampleScript, 'utf8') },
+      'data/config.json': { data: Buffer.from('{"answer":42}', 'utf8') }
+    })
+    assert.match(zip, /^data:application\/zip;base64,/)
+    const files = gc.utils.zipToVirtualFileSystem(zip)
+    assert.equal(
+      files['data/config.json'].data.toString('utf8'),
+      '{"answer":42}'
+    )
+  })
+)
+
+tests.push(
+  run('virtual filesystem TAR.GZ helpers round-trip file data', async () => {
+    const tarGz = gc.utils.virtualFileSystemToTarGz({
+      'main.gcscript': { data: Buffer.from(exampleScript, 'utf8') },
+      'data/config.json': { data: Buffer.from('{"answer":42}', 'utf8') }
+    })
+    assert.match(tarGz, /^data:application\/gzip;base64,/)
+    const files = gc.utils.tarGzToVirtualFileSystem(tarGz)
+    assert.equal(
+      files['data/config.json'].data.toString('utf8'),
+      '{"answer":42}'
+    )
+  })
+)
+
 tests.push(
   run('node library encode.url works with big files', async () => {
     const url = await gc.encode.url({
@@ -648,6 +1314,73 @@ tests.push(
 
 tests.push(
   run(
+    'CLI encode url keeps artifact on stdout and human logs on stderr',
+    async () => {
+      const noisy = execNode([
+        'bin/cli.js',
+        'mainnet',
+        'encode',
+        'url',
+        '-v',
+        '2',
+        '-e',
+        'gzip',
+        '-f',
+        'examples/connect.gcscript'
+      ])
+      assert.match(noisy.stdout.trim(), /^https:\/\//)
+      assert.equal(
+        parseUrl(noisy.stdout.trim()).searchParams.get('networkTag'),
+        'mainnet'
+      )
+
+      const quiet = execNode([
+        'bin/cli.js',
+        'mainnet',
+        'encode',
+        'url',
+        '-v',
+        '2',
+        '-e',
+        'gzip',
+        '-f',
+        'examples/connect.gcscript',
+        '--quiet'
+      ])
+      assert.match(quiet.stdout.trim(), /^https:\/\//)
+      assert.equal(quiet.stderr, '')
+    }
+  )
+)
+
+tests.push(
+  run('CLI encode url with output file keeps stdout empty', async () => {
+    const outputFile = path.resolve(tmpDir, 'cli-url-output.txt')
+
+    const result = execNode([
+      'bin/cli.js',
+      'mainnet',
+      'encode',
+      'url',
+      '-v',
+      '2',
+      '-e',
+      'gzip',
+      '-f',
+      'examples/connect.gcscript',
+      '-o',
+      outputFile
+    ])
+
+    assert.equal(result.stdout, '')
+    const url = (await fs.readFile(outputFile, 'utf8')).trim()
+    assert.match(url, /^https:\/\//)
+    assert.equal(parseUrl(url).searchParams.get('networkTag'), 'mainnet')
+  })
+)
+
+tests.push(
+  run(
     'CLI encode url supports refAddress and disableNetworkRouter flags',
     async () => {
       const result = execNode([
@@ -670,6 +1403,58 @@ tests.push(
       assert.equal(parsed.searchParams.get('networkTag'), null)
     }
   )
+)
+
+tests.push(
+  run('CLI encode qr writes PNG to stdout without output file', async () => {
+    const result = spawnSync(
+      process.execPath,
+      [
+        'bin/cli.js',
+        'mainnet',
+        'encode',
+        'qr',
+        '-v',
+        '2',
+        '-e',
+        'gzip',
+        '-f',
+        'examples/connect.gcscript',
+        '-t',
+        'boxed'
+      ],
+      { cwd: rootDir }
+    )
+
+    assert.equal(result.status, 0, result.stderr?.toString('utf8'))
+    assert.ok(isPng(result.stdout))
+  })
+)
+
+tests.push(
+  run('CLI encode qr with output file keeps stdout empty', async () => {
+    const pngFile = path.resolve(tmpDir, 'cli-qr-output-file.png')
+
+    const result = execNode([
+      'bin/cli.js',
+      'mainnet',
+      'encode',
+      'qr',
+      '-v',
+      '2',
+      '-e',
+      'gzip',
+      '-f',
+      'examples/connect.gcscript',
+      '-o',
+      pngFile,
+      '-t',
+      'boxed'
+    ])
+
+    assert.equal(result.stdout, '')
+    assert.ok(isPng(await fs.readFile(pngFile)))
+  })
 )
 
 tests.push(
@@ -774,6 +1559,132 @@ tests.push(
 )
 
 tests.push(
+  run('CLI build writes a bundled GCScript file', async () => {
+    const projectDir = path.resolve(tmpDir, 'cli-build-project')
+    await fs.mkdir(path.resolve(projectDir, 'scripts'), { recursive: true })
+    await fs.writeFile(
+      path.resolve(projectDir, 'main.gcscript'),
+      JSON.stringify({
+        type: 'script',
+        run: {
+          data: {
+            type: '$importAsData',
+            as: 'object',
+            from: { config: 'app://config.json' }
+          },
+          nested: {
+            type: '$importAsScript',
+            from: { child: 'app://scripts/child.gcscript' }
+          }
+        }
+      }),
+      'utf8'
+    )
+    await fs.writeFile(
+      path.resolve(projectDir, 'config.json'),
+      '{"enabled":true}',
+      'utf8'
+    )
+    await fs.writeFile(
+      path.resolve(projectDir, 'scripts/child.gcscript'),
+      '{"type":"script","run":{"address":{"type":"getCurrentAddress"}}}',
+      'utf8'
+    )
+    const outputFile = path.resolve(projectDir, 'dist/built.gcscript')
+
+    const result = execNode([
+      'bin/cli.js',
+      'build',
+      '-f',
+      path.resolve(projectDir, 'main.gcscript'),
+      '-o',
+      outputFile,
+      '--cwd',
+      projectDir,
+      '--fileUri',
+      'app://main.gcscript',
+      '--quiet'
+    ])
+
+    assert.equal(result.stdout, '')
+    assert.equal(result.stderr, '')
+    const built = JSON.parse(await fs.readFile(outputFile, 'utf8'))
+    assert.equal(built.run.data.value.config.enabled, true)
+    assert.equal(
+      built.run.nested.run.child.run.address.type,
+      'getCurrentAddress'
+    )
+  })
+)
+
+tests.push(
+  run(
+    'CLI build supports compactOutput and build summary logging',
+    async () => {
+      const projectDir = path.resolve(tmpDir, 'cli-compact-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        path.resolve(projectDir, 'main.gcscript'),
+        `{
+        // JSONC + compact CLI output
+        "type": "script",
+        "run": {
+          "data": {
+            "type": "$importAsData",
+            "as": "object",
+            "from": { "config": "app://config.json", },
+          },
+        },
+      }`,
+        'utf8'
+      )
+      await fs.writeFile(
+        path.resolve(projectDir, 'config.json'),
+        `{
+        // imported data comment
+        "enabled": true,
+      }`,
+        'utf8'
+      )
+      const outputFile = path.resolve(projectDir, 'dist/built.gcscript')
+      const result = execNode([
+        'bin/cli.js',
+        'build',
+        '-f',
+        path.resolve(projectDir, 'main.gcscript'),
+        '-o',
+        outputFile,
+        '--cwd',
+        projectDir,
+        '--fileUri',
+        'app://main.gcscript',
+        '--compactOutput'
+      ])
+
+      const builtJson = await fs.readFile(outputFile, 'utf8')
+      assert.equal(
+        builtJson,
+        '{"type":"script","run":{"data":{"type":"data","value":{"config":{"enabled":true}}}}}'
+      )
+      assert.equal(result.stdout, '')
+      assert.match(result.stderr, /Build summary/)
+      assert.match(result.stderr, /app:\/\/config\.json\s+67 B, 4 lines, hash /)
+      assert.match(result.stderr, /Built artifact .* hash /)
+    }
+  )
+)
+tests.push(
+  run('CLI does not import express at startup', async () => {
+    const cliSource = await fs.readFile(
+      path.resolve(rootDir, 'bin/cli.js'),
+      'utf8'
+    )
+    assert.doesNotMatch(cliSource, /^import express from/m)
+    assert.match(cliSource, /import\('express'\)/)
+  })
+)
+
+tests.push(
   run('CLI snippet outputs can be written to files', async () => {
     const buttonFile = path.resolve(tmpDir, 'button.html')
     const htmlFile = path.resolve(tmpDir, 'snippet.html')
@@ -871,6 +1782,390 @@ tests.push(
     )
   })
 )
+
+const smallValidationSchema = {
+  'api.json': {
+    type: 'object',
+    required: ['encoding'],
+    additionalProperties: false,
+    properties: {
+      encoding: {
+        type: 'string',
+        enum: ['gzip', 'base64url'],
+        examples: [{ encoding: 'gzip' }]
+      },
+      count: {
+        type: 'number'
+      }
+    }
+  }
+}
+
+tests.push(
+  run('invalid GCScript type suggests closest API type only', async () => {
+    const report = await validateReport(
+      `{
+  "type": "getCurrentAddresses"
+}`,
+      {
+        fileName: 'invalid-type.gcscript.json'
+      }
+    )
+    const [error] = report.errors
+    assert.equal(report.isValid, false)
+    assert.equal(error.code, 'code-invalid-const-enum')
+    assert.match(error.message, /getCurrentAddress/)
+    assert.deepEqual(error.details.closestValues, ['getCurrentAddress'])
+    assert.doesNotMatch(JSON.stringify(error), /getPublicKeys/)
+  })
+)
+
+tests.push(
+  run(
+    'generic const enum suggestion works for non type/kind properties',
+    async () => {
+      const report = await validateReport('{"encoding":"gip"}', {
+        useSchema: smallValidationSchema
+      })
+      const [error] = report.errors
+      assert.equal(error.code, 'code-invalid-const-enum')
+      assert.equal(error.details.propertyName, 'encoding')
+      assert.deepEqual(error.details.closestValues, ['gzip'])
+      assert.match(error.suggestion, /gzip/)
+    }
+  )
+)
+
+const stripAnsi = (value) =>
+  String(value || '').replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '')
+tests.push(
+  run(
+    'compact CLI validation output includes focused normalized diagnostics',
+    async () => {
+      const inputFile = path.resolve(tmpDir, 'cli-invalid-type.gcscript.json')
+      const reportFile = path.resolve(tmpDir, 'cli-validation-report.json')
+
+      await fs.writeFile(
+        inputFile,
+        `{
+  "type": "getCurrentAddresses"
+}\n`
+      )
+
+      const result = spawnSync(
+        process.execPath,
+        ['bin/cli.js', 'validate', '-f', inputFile, '-o', reportFile],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+
+      const stderr = stripAnsi(result.stderr)
+
+      assert.notEqual(result.status, 0)
+      assert.equal(result.stdout, '')
+
+      assert.match(
+        stderr,
+        /Unknown GCScript function type:\s*"getCurrentAddresses"/
+      )
+      assert.match(stderr, /Did you mean:\s*"getCurrentAddress"/)
+      assert.match(stderr, /\/type\s*·\s*line\s+2,\s*col\s+11/)
+
+      assert.match(stderr, /Example:/)
+      assert.match(stderr, /"type"\s*:\s*"getCurrentAddress"/)
+
+      assert.match(
+        stderr,
+        /https:\/\/wallet\.gamechanger\.finance\/doc\/api\/v2\/getCurrentAddress\.html/
+      )
+
+      const report = JSON.parse(await fs.readFile(reportFile, 'utf8'))
+      const [error] = report.errors
+
+      assert.equal(report.isValid, false)
+      assert.equal(error.jsonPath, '/type')
+      assert.equal(error.provided, 'getCurrentAddresses')
+      assert.match(error.message, /getCurrentAddress/)
+      assert.deepEqual(error.details.closestValues, ['getCurrentAddress'])
+      assert.ok(
+        error.relatedDocs.includes(
+          'https://wallet.gamechanger.finance/doc/api/v2/getCurrentAddress.html'
+        )
+      )
+    }
+  )
+)
+
+tests.push(
+  run('validate.file rejects JSONC comments and trailing commas', async () => {
+    const withComment = await validateReport(
+      `{"encoding":"gzip" // no comments
+}`,
+      {
+        useSchema: smallValidationSchema
+      }
+    )
+    const withTrailingComma = await validateReport('{"encoding":"gzip",}', {
+      useSchema: smallValidationSchema
+    })
+    assert.equal(withComment.errors[0].code, 'code-syntax-error')
+    assert.equal(withTrailingComma.errors[0].code, 'code-syntax-error')
+  })
+)
+
+tests.push(
+  run(
+    'validation report includes related docs and value location metadata',
+    async () => {
+      const report = await validateReport(
+        `{
+  "type": "getCurrentAddresses"
+}`,
+        {
+          fileName: 'location.gcscript.json'
+        }
+      )
+      const [error] = report.errors
+      assert.ok(
+        error.relatedDocs.includes(
+          'https://wallet.gamechanger.finance/doc/api/v2/getCurrentAddress.html'
+        )
+      )
+      assert.equal(error.location.line, 2)
+      assert.equal(error.location.column, 11)
+      assert.equal(error.location.length, 21)
+    }
+  )
+)
+
+tests.push(
+  run(
+    'required additional and type mismatch validation errors are normalized',
+    async () => {
+      const required = await validateReport('{}', {
+        useSchema: smallValidationSchema
+      })
+      const additional = await validateReport(
+        '{"encoding":"gzip","extra":true}',
+        {
+          useSchema: smallValidationSchema
+        }
+      )
+      const mismatch = await validateReport('{"encoding":"gzip","count":"3"}', {
+        useSchema: smallValidationSchema
+      })
+      assert.equal(required.errors[0].code, 'code-required-property')
+      assert.equal(required.errors[0].jsonPath, '/encoding')
+      assert.equal(additional.errors[0].code, 'code-additional-property')
+      assert.equal(additional.errors[0].details.propertyName, 'extra')
+      assert.equal(mismatch.errors[0].code, 'code-type-mismatch')
+      assert.equal(mismatch.errors[0].jsonPath, '/count')
+    }
+  )
+)
+
+tests.push(
+  run(
+    'oneOf anyOf branch noise does not override better const enum diagnostic',
+    async () => {
+      const oneOfSchema = {
+        'api.json': {
+          type: 'object',
+          required: ['mode'],
+          oneOf: [
+            { properties: { mode: { const: 'alpha' } } },
+            { properties: { mode: { const: 'beta' } } }
+          ]
+        }
+      }
+      const report = await validateReport('{"mode":"alpah"}', {
+        useSchema: oneOfSchema
+      })
+      const [error] = report.errors
+      assert.equal(error.code, 'code-invalid-const-enum')
+      assert.deepEqual(error.details.closestValues, ['alpha'])
+      assert.doesNotMatch(
+        error.message,
+        /one allowed schema|any allowed schema/i
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'compact CLI validation output includes unknown property suggestion',
+    async () => {
+      const inputFile = path.resolve(
+        tmpDir,
+        'cli-unknown-property.gcscript.json'
+      )
+      const reportFile = path.resolve(
+        tmpDir,
+        'cli-unknown-property-report.json'
+      )
+
+      await fs.writeFile(
+        inputFile,
+        JSON.stringify(
+          {
+            type: 'script',
+            run: {
+              sig: {
+                type: 'signDataWithAddress',
+                adress: 'addr_test1qpzexample',
+                dataHex: '00'
+              }
+            }
+          },
+          null,
+          2
+        )
+      )
+
+      const result = spawnSync(
+        process.execPath,
+        ['bin/cli.js', 'validate', '-f', inputFile, '-o', reportFile],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+
+      const stderr = stripAnsi(result.stderr)
+      assert.notEqual(result.status, 0)
+      assert.equal(result.stdout, '')
+      assert.match(stderr, /Unknown property:\s*"adress"/)
+      assert.match(stderr, /Did you mean:\s*"address"/)
+      assert.match(stderr, /\/run\/sig\/adress\s*·\s*line\s+6,\s*col/)
+
+      const report = JSON.parse(await fs.readFile(reportFile, 'utf8'))
+      const [error] = report.errors
+      assert.equal(error.code, 'code-additional-property')
+      assert.equal(error.jsonPath, '/run/sig/adress')
+      assert.equal(error.provided, 'adress')
+      assert.deepEqual(error.details.closestProperties, ['address'])
+    }
+  )
+)
+
+tests.push(
+  run(
+    'CLI validation warnings are shown by default and hidden by --hide-warnings',
+    async () => {
+      const inputFile = path.resolve(tmpDir, 'cli-isl-typo.gcscript.json')
+      const reportFile = path.resolve(tmpDir, 'cli-isl-typo-report.json')
+      const hiddenReportFile = path.resolve(
+        tmpDir,
+        'cli-isl-typo-hidden-report.json'
+      )
+
+      await fs.writeFile(
+        inputFile,
+        JSON.stringify(
+          {
+            type: 'script',
+            exportAs: 'islWarningSmoke',
+            return: {
+              mode: 'last'
+            },
+            run: {
+              value: {
+                type: 'macro',
+                run: "{sha51('hello')}"
+              }
+            }
+          },
+          null,
+          2
+        ) + '\n'
+      )
+
+      const shown = spawnSync(
+        process.execPath,
+        ['bin/cli.js', 'validate', '-f', inputFile, '-o', reportFile],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+
+      assert.equal(shown.status, 0, shown.stderr)
+      assert.equal(shown.stdout, '')
+      const shownStderr = stripAnsi(shown.stderr)
+      assert.match(
+        shownStderr,
+        /Possible ISL function typo:\s*"sha51"/i,
+        shownStderr
+      )
+      assert.match(
+        shownStderr,
+        /Replace\s+"sha51"\s+with\s+"sha512"/i,
+        shownStderr
+      )
+      assert.match(
+        shownStderr,
+        /\/run\/value\/run\s*·\s*line\s+\d+,\s*col\s+\d+/i,
+        shownStderr
+      )
+      assert.match(
+        shownStderr,
+        /https:\/\/wallet\.gamechanger\.finance\/doc\/api\/v2\/lang\.html/i,
+        shownStderr
+      )
+
+      const hidden = spawnSync(
+        process.execPath,
+        [
+          'bin/cli.js',
+          'validate',
+          '-f',
+          inputFile,
+          '-o',
+          hiddenReportFile,
+          '--hide-warnings'
+        ],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+
+      assert.equal(hidden.status, 0, hidden.stderr)
+      assert.equal(hidden.stdout, '')
+      const hiddenStderr = stripAnsi(hidden.stderr)
+      assert.doesNotMatch(
+        hiddenStderr,
+        /Possible ISL function typo|Replace\s+"sha51"\s+with\s+"sha512"|lang\.html/i,
+        hiddenStderr
+      )
+
+      const report = JSON.parse(await fs.readFile(reportFile, 'utf8'))
+      const hiddenReport = JSON.parse(
+        await fs.readFile(hiddenReportFile, 'utf8')
+      )
+
+      assert.equal(report.isValid, true)
+      assert.ok(report.warnings?.length > 0)
+      const warningText = JSON.stringify(report.warnings)
+      assert.match(warningText, /sha51/i, warningText)
+      assert.match(warningText, /sha512/i, warningText)
+      assert.match(warningText, /lang\.html/i, warningText)
+
+      assert.equal(hiddenReport.isValid, true)
+      assert.ok(hiddenReport.warnings?.length > 0)
+      const hiddenWarningText = JSON.stringify(hiddenReport.warnings)
+      assert.match(hiddenWarningText, /sha51/i, hiddenWarningText)
+      assert.match(hiddenWarningText, /sha512/i, hiddenWarningText)
+    }
+  )
+)
+
+const { appendValidationTests } = await import(
+  pathToFileURL(path.resolve(rootDir, 'test/validation.js')).href
+)
+appendValidationTests({
+  tests,
+  run,
+  assert,
+  fs,
+  path,
+  rootDir,
+  validateReport,
+  validationSchemaFull,
+  validationSchemaMin,
+  gc
+})
 
 const main = async () => {
   let failures = 0

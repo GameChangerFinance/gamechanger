@@ -1,0 +1,71 @@
+{
+  "type": "script",
+  "title": "🚀 Pay me 1 ADA",
+  "description": "This is a payment request of 1 ADA",
+  "exportAs": "PaymentRequest",
+  "args": {
+    "title": "Payment request",
+    "message": "\nSent using \n\nhttps://gamechanger.finance/\n",
+    "return-URL": "https://cardanoscan.io/transaction/{txHash}",
+    "to-address": "addr1q9faamq9k6557gve35amtdqph99h9q2txhz07chaxg6uwwgd6j6v0fc04n5ehg292yxvs292vesrqqmxqfnp7yuwn7yqczuqwr",
+    "policy-id": "ada",
+    "asset-name": "ada",
+    "decimals": "1000000",
+    "quantity": "1"
+  },
+  "run": {
+    "build": {
+      "type": "buildTx",
+      "title": "🚀 Pay me 1 ADA",
+      "returnURLPattern": "{get('args.return-URL')}",
+      "tx": {
+        "outputs": {
+          "payment": {
+            "address": "{get('args.to-address')}",
+            "assets": [
+              {
+                "policyId": "{get('args.policy-id')}",
+                "assetName": "{get('args.asset-name')}",
+                "quantity": "{mulBigNum(get('args.quantity'),get('args.decimals'))}"
+              }
+            ]
+          }
+        },
+        "auxiliaryData": {
+          "674": {
+            "msg": "{strToMetadataStr(get('args.message'))}"
+          }
+        },
+        "options": {
+          "autoProvision": {
+            "workspaceNativeScript": true
+          },
+          "autoOptionalSigners": {
+            "nativeScript": true
+          }
+        }
+      }
+    },
+    "sign": {
+      "detailedPermissions": false,
+      "type": "signTxs",
+      "txs": [
+        "{get('cache.build.txHex')}"
+      ]
+    },
+    "submit": {
+      "type": "submitTxs",
+      "mode": "noWait",
+      "txs": "{get('cache.sign')}"
+    },
+    "finally": {
+      "type": "macro",
+      "run": {
+        "txHash": "{get('cache.build.txHash')}"
+      }
+    }
+  },
+  "return": {
+    "mode": "last"
+  }
+}

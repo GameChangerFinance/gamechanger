@@ -1,0 +1,9 @@
+{
+  "type": "script",
+  "exportAss": "result",
+  "run": {
+    "address": {
+      "type": "getCurrentAddress"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "name": "build-dummy-gcscript-project",
+  "scripts": {
+    "build": "gamechanger-cli build -f ./main.gcscript.jsonc -o ./dist/built.gcscript.json --noValidate",
+    "validate": "gamechanger-cli validate -f ./dist/built.gcscript.json -o ./dist/validation-report.json",
+    "serve": "gamechanger-cli mainnet snippet html -v 2 -S -o ./dist/index.html -f ./dist/built.gcscript.json",
+    "dev": "nodemon --watch . --ext gcscript,json,jsonc,hl --ignore dist --exec \"pnpm run build && pnpm run validate && pnpm run serve\""
+  },
+  "devDependencies": {
+    "@gamechanger-finance/gc": "file:../..",
+    "nodemon": "^3.1.10"
+  }
+}

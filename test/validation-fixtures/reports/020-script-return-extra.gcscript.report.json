@@ -1,0 +1,54 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"mod\". Did you mean \"mode\"?",
+      "fileName": "020-script-return-extra.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/020-script-return-extra.gcscript",
+      "jsonPath": "/return/mod",
+      "location": {
+        "line": 5,
+        "column": 12,
+        "offset": 67,
+        "length": 7
+      },
+      "error": "Unknown property",
+      "suggestion": "Replace \"mod\" with \"mode\".",
+      "provided": "mod",
+      "details": {
+        "propertyName": "mod",
+        "propertyJsonPath": "/return/mod",
+        "branchMismatch": false,
+        "closestProperties": ["mode"],
+        "schemaPaths": [
+          "/common.json/definitions/MultiSigProvider/oneOf/0/properties/mode"
+        ],
+        "branchScores": [
+          {
+            "schemaPath": "#/oneOf/3/additionalProperties",
+            "title": "Last",
+            "score": 9.6,
+            "matchingDiscriminators": ["mode"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["mode"],
+            "missingRequired": [],
+            "additionalProperties": ["mod"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "#/oneOf/3/additionalProperties",
+        "params": {
+          "additionalProperty": "mod"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 5,
+    "schemaMs": 0
+  }
+}

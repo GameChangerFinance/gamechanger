@@ -41,6 +41,8 @@ const writeNodeEsmWrapper = async () => {
 export const {
   encode,
   snippet,
+  build,
+  validate,
   encodings,
   utils,
   config,
@@ -69,6 +71,8 @@ const ensureBrowserFacade = async () => {
 export const {
   encode,
   snippet,
+  build,
+  validate,
   encodings,
   utils,
   config,

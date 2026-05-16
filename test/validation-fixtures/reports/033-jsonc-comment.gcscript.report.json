@@ -1,0 +1,28 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-syntax-error",
+      "message": "Strict JSON syntax error: InvalidCommentToken. Validation input must be built JSON, not JSONC.",
+      "fileName": "033-jsonc-comment.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/033-jsonc-comment.gcscript",
+      "jsonPath": "/",
+      "location": {
+        "line": 2,
+        "column": 31,
+        "offset": 32,
+        "length": 10
+      },
+      "error": "InvalidCommentToken",
+      "suggestion": "Remove comments/trailing commas or run build first. JSONC is accepted only before build emits strict JSON.",
+      "details": {
+        "parseErrorCode": 10
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0
+  }
+}

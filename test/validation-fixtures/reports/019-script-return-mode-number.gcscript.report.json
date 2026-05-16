@@ -1,0 +1,43 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-invalid-const-enum",
+      "message": "Unknown \"mode\" 42.",
+      "fileName": "019-script-return-mode-number.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/019-script-return-mode-number.gcscript",
+      "jsonPath": "/return/mode",
+      "location": {
+        "line": 4,
+        "column": 13,
+        "offset": 48,
+        "length": 2
+      },
+      "error": "Unknown \"mode\"",
+      "suggestion": "Use a value allowed by the schema for \"mode\".",
+      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
+      "provided": 42,
+      "details": {
+        "propertyName": "mode",
+        "closestValues": [],
+        "schemaPaths": [],
+        "branchScores": {
+          "schemaPath": "#/oneOf/0/properties/mode/type",
+          "score": -5.4,
+          "matchingDiscriminators": [],
+          "mismatchingDiscriminators": [],
+          "siblingMatches": [],
+          "missingRequired": [],
+          "additionalProperties": ["mode"],
+          "typeCompatible": false
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-invalid-const-enum",
+      "message": "Unknown GCScript function type 123.",
+      "fileName": "010-wrong-type-number.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/010-wrong-type-number.gcscript",
+      "jsonPath": "/type",
+      "location": {
+        "line": 2,
+        "column": 11,
+        "offset": 12,
+        "length": 3
+      },
+      "error": "Unknown GCScript function type",
+      "suggestion": "Use a value allowed by the schema for GCScript function type.",
+      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
+      "provided": 123,
+      "details": {
+        "propertyName": "type",
+        "closestValues": [],
+        "schemaPaths": [],
+        "branchScores": {
+          "schemaPath": "#/properties/type/type",
+          "score": -5.4,
+          "matchingDiscriminators": [],
+          "mismatchingDiscriminators": [],
+          "siblingMatches": [],
+          "missingRequired": [],
+          "additionalProperties": ["type"],
+          "typeCompatible": false
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

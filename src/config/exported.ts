@@ -15,7 +15,21 @@ import {
   DefaultQRTemplate,
   DefaultQRTitle,
   DefaultQRSubTitle,
-  GCLibInSnippets
+  GCLibInSnippets,
+  BuildDataFormats,
+  BuildResourceProtocols,
+  BuildResourceProtocolCategories,
+  DefaultBuildAllowedProtocols,
+  DefaultMainFileAppURI,
+  BuildOutputMimeType,
+  ZipDataUriMimeType,
+  TarGzDataUriMimeType,
+  GCScriptAPIRefURL,
+  GCScriptDocsURL,
+  GCScriptSchemaURL,
+  GCScriptSchemaRootFile,
+  GCScriptSchemaCacheFileName,
+  GCScriptSchemaCacheTTLHours
 } from '.'
 
 export default {
@@ -33,6 +47,20 @@ export default {
   DefaultQRTitle,
   DefaultQRSubTitle,
   GCLibInSnippets,
+  BuildDataFormats,
+  BuildResourceProtocols,
+  BuildResourceProtocolCategories,
+  DefaultBuildAllowedProtocols,
+  DefaultMainFileAppURI,
+  BuildOutputMimeType,
+  ZipDataUriMimeType,
+  TarGzDataUriMimeType,
+  GCScriptAPIRefURL,
+  GCScriptDocsURL,
+  GCScriptSchemaURL,
+  GCScriptSchemaRootFile,
+  GCScriptSchemaCacheFileName,
+  GCScriptSchemaCacheTTLHours,
   snippetTokens,
   QRCodeCorrectLevel
 }

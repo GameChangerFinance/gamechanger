@@ -1,0 +1,48 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-root-function-wrapper-required",
+      "message": "Root GCScript type \"macro\" is a nested function. Root GCScript must be a \"script\" block; move this function under \"run\".",
+      "fileName": "016-macro-run-object-with-invalid-node.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/016-macro-run-object-with-invalid-node.gcscript",
+      "jsonPath": "/type",
+      "location": {
+        "line": 2,
+        "column": 11,
+        "offset": 12,
+        "length": 7
+      },
+      "error": "Nested function used as root GCScript",
+      "suggestion": "Wrap this function in a root script block: {\"type\":\"script\",\"run\":{\"main\":{\"type\":\"macro\"}}}.",
+      "examples": [
+        {
+          "type": "script",
+          "run": {
+            "main": {
+              "type": "macro",
+              "run": "{get('cache.address')}"
+            }
+          }
+        }
+      ],
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/macro.html"
+      ],
+      "provided": "macro",
+      "details": {
+        "rootType": "macro",
+        "expectedRootType": "script",
+        "wrapperProperty": "run",
+        "functionSchemaFile": "macro.json",
+        "knownSchemaPaths": ["/macro.json/properties/type/const"]
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

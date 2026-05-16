@@ -1,0 +1,6 @@
+{
+  "type": "script",
+  "run": {
+    "bad": false
+  }
+}

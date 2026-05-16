@@ -1,0 +1,28 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-syntax-error",
+      "message": "Strict JSON syntax error: CloseBraceExpected. Validation input must be built JSON, not JSONC.",
+      "fileName": "035-unclosed-object.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/035-unclosed-object.gcscript",
+      "jsonPath": "/",
+      "location": {
+        "line": 3,
+        "column": 1,
+        "offset": 32,
+        "length": 0
+      },
+      "error": "CloseBraceExpected",
+      "suggestion": "Remove comments/trailing commas or run build first. JSONC is accepted only before build emits strict JSON.",
+      "details": {
+        "parseErrorCode": 7
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0
+  }
+}

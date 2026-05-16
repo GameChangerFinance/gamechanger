@@ -1,8 +1,13 @@
 import encode from './encode'
 import snippet from './snippet'
+import build from './build'
+import validate from './validate'
+
 export default {
   encode,
-  snippet
+  snippet,
+  build,
+  validate
 }
 
 // import { ActionHandlerType} from '../types';
@@ -14,7 +19,7 @@ export default {
 // import ReactEncoder  from './encode/react';
 // import ExpressEncoder  from './encode/express';
 // export const actionsHandlerLoaders: ActionHandlerLoaderType = {
-// 	encode: {
+// 	'encode': {
 // 		'url': ()=>import(`./encode/url`).then(d=>d?.default),
 // 		'qr' : ()=>import(`./encode/qr`) .then(d=>d?.default),
 // 	},

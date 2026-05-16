@@ -1,0 +1,5 @@
+{
+  // Comments and trailing commas are accepted for as: "json" imports.
+  "name": "Build project demo",
+  "version": "0.0.1"
+}

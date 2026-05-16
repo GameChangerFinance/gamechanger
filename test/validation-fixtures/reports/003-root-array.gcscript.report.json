@@ -1,0 +1,53 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-type-mismatch",
+      "message": "Expected / to be object, got array.",
+      "fileName": "003-root-array.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/003-root-array.gcscript",
+      "jsonPath": "/",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 43
+      },
+      "error": "Type mismatch",
+      "suggestion": "Use a value of type object.",
+      "provided": [
+        {
+          "type": "getCurrentAddress"
+        }
+      ],
+      "details": {
+        "expected": "object",
+        "actual": "array",
+        "branchScores": [
+          {
+            "schemaPath": "#/type",
+            "title": "Initial block of code",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          }
+        ],
+        "keyword": "type",
+        "schemaPath": "#/type",
+        "params": {
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

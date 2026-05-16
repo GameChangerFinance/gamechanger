@@ -1,8 +1,16 @@
 import { Buffer } from 'buffer'
-import _testDeps from '../tests/deps'
+import {
+  bufferToDataURI,
+  dataURIToBuffer,
+  virtualFileSystemToZip,
+  zipToVirtualFileSystem,
+  virtualFileSystemToTarGz,
+  tarGzToVirtualFileSystem,
+  hashCode
+} from '.'
+import { downloadGCScriptSchema, getSchemaDefOf } from '../handlers/helpers'
 
 const runtimeBuffer: any = Buffer
-const runtimeTestDeps: any = _testDeps
 
 export default {
   Buffer: runtimeBuffer,
@@ -11,5 +19,13 @@ export default {
   Uint16Array: Uint16Array,
   Uint32Array: Uint32Array,
   BigInt: BigInt,
-  _testDeps: runtimeTestDeps //will be deprecated
+  bufferToDataURI,
+  dataURIToBuffer,
+  virtualFileSystemToZip,
+  zipToVirtualFileSystem,
+  virtualFileSystemToTarGz,
+  tarGzToVirtualFileSystem,
+  hashCode,
+  downloadGCScriptSchema,
+  getSchemaDefOf
 }

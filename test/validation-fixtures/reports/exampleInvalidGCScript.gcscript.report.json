@@ -1,0 +1,54 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"pubKeyHashHexa\". Did you mean \"pubKeyHashHex\"?",
+      "fileName": "exampleInvalidGCScript.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/exampleInvalidGCScript.gcscript",
+      "jsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
+      "location": {
+        "line": 108,
+        "column": 59,
+        "offset": 4163,
+        "length": 49
+      },
+      "error": "Unknown property",
+      "suggestion": "Replace \"pubKeyHashHexa\" with \"pubKeyHashHex\".",
+      "provided": "pubKeyHashHexa",
+      "details": {
+        "propertyName": "pubKeyHashHexa",
+        "propertyJsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
+        "branchMismatch": false,
+        "closestProperties": ["pubKeyHashHex"],
+        "schemaPaths": [
+          "/common.json/definitions/ScriptPubKey/properties/pubKeyHashHex"
+        ],
+        "branchScores": [
+          {
+            "schemaPath": "#/oneOf/0/additionalProperties",
+            "title": "Native Script",
+            "score": -0.4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": ["pubKeyHashHexa"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "#/oneOf/0/additionalProperties",
+        "params": {
+          "additionalProperty": "pubKeyHashHexa"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 14,
+    "schemaMs": 0
+  }
+}

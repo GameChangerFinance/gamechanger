@@ -1,0 +1,7 @@
+{
+  "type": "script",
+  "return": [],
+  "run": {
+    "address": { "type": "getCurrentAddress" }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-type-mismatch",
+      "message": "Expected /return to be object, got array.",
+      "fileName": "005-script-return-array.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/005-script-return-array.gcscript",
+      "jsonPath": "/return",
+      "location": {
+        "line": 3,
+        "column": 13,
+        "offset": 34,
+        "length": 2
+      },
+      "error": "Type mismatch",
+      "suggestion": "Use a value of type object.",
+      "provided": [],
+      "details": {
+        "expected": "object",
+        "actual": "array",
+        "branchScores": [
+          {
+            "schemaPath": "#/properties/return/type",
+            "title": "Script Return Modes",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/type",
+            "title": "Script Return Modes",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          }
+        ],
+        "keyword": "type",
+        "schemaPath": "#/properties/return/type",
+        "params": {
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 8,
+    "schemaMs": 0
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"unexpected\".",
+      "fileName": "012-additional-root-property.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/012-additional-root-property.gcscript",
+      "jsonPath": "/unexpected",
+      "location": {
+        "line": 3,
+        "column": 17,
+        "offset": 49,
+        "length": 4
+      },
+      "error": "Unknown property",
+      "suggestion": "Remove \"unexpected\" or check the property spelling.",
+      "provided": "unexpected",
+      "details": {
+        "propertyName": "unexpected",
+        "propertyJsonPath": "/unexpected",
+        "branchMismatch": false,
+        "closestProperties": [],
+        "schemaPaths": [],
+        "branchScores": [
+          {
+            "schemaPath": "/getCurrentAddress.json/additionalProperties",
+            "title": "Get Current Address",
+            "score": 9.6,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": [],
+            "additionalProperties": ["unexpected"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "/getCurrentAddress.json/additionalProperties",
+        "params": {
+          "additionalProperty": "unexpected"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 6,
+    "schemaMs": 0
+  }
+}

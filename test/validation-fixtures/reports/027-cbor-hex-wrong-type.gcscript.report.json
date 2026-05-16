@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"txHex\".",
+      "fileName": "027-cbor-hex-wrong-type.gcscript",
+      "fileUri": "app://main.gcscript",
+      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/027-cbor-hex-wrong-type.gcscript",
+      "jsonPath": "/txHex",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 41
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"txHex\" at /.",
+      "details": {
+        "propertyName": "txHex",
+        "parentPath": "/",
+        "parentProvided": {
+          "type": "submitTx",
+          "txCbor": 123
+        },
+        "branchScores": [
+          {
+            "schemaPath": "/submitTx.json/required",
+            "title": "Transaction Submit",
+            "score": 9,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": ["txHex"],
+            "additionalProperties": ["txCbor"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "/submitTx.json/required",
+        "params": {
+          "missingProperty": "txHex"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}
