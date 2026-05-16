@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateExamplesFromBuild } from './generate-examples.mjs'
+import { renderUsageHelp } from '../bin/cli-usage.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,6 +21,8 @@ const srcNodeQrRuntime = path.resolve(
 const srcCanvas2Svg = path.resolve(rootDir, 'src/modules/canvas2svg.cjs')
 const distNodeQrRuntime = path.resolve(distDir, 'easyqrcodejs-node.cjs')
 const distCanvas2Svg = path.resolve(distDir, 'canvas2svg.cjs')
+
+const readmeFile = path.resolve(rootDir, 'README.md')
 
 const ensureDist = async () => {
   await fs.mkdir(distDir, { recursive: true })
@@ -108,6 +111,44 @@ const removeUnusedTypeArtifacts = async () => {
   }
 }
 
+const removeSourceMapArtifacts = async () => {
+  const entries = await fs
+    .readdir(distDir, { withFileTypes: true })
+    .catch(() => [])
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith('.map')) continue
+    await fs.rm(path.resolve(distDir, entry.name), { force: true })
+  }
+}
+
+const refreshReadmeCliUsage = async () => {
+  let readme
+  try {
+    readme = await fs.readFile(readmeFile, 'utf8')
+  } catch {
+    return
+  }
+
+  const headingIndex = readme.indexOf('## CLI Usage')
+  if (headingIndex < 0) return
+
+  const fenceStart = readme.indexOf('```', headingIndex)
+  if (fenceStart < 0) return
+
+  const lineEnd = readme.indexOf('\n', fenceStart)
+  if (lineEnd < 0) return
+
+  const fenceEnd = readme.indexOf('```', lineEnd + 1)
+  if (fenceEnd < 0) return
+
+  const usageText = renderUsageHelp()
+  const next = `${readme.slice(0, lineEnd + 1)}${usageText}\n${readme.slice(
+    fenceEnd
+  )}`
+
+  if (next !== readme) await fs.writeFile(readmeFile, next, 'utf8')
+}
+
 const removeDanglingLegacyArtifacts = async () => {
   for (const filename of ['easy.qrcode.min.js', 'json-url-single.js']) {
     try {
@@ -137,7 +178,9 @@ await writeNodeEsmWrapper()
 await ensureBrowserFacade()
 await copyNodeQrRuntimeFiles()
 await removeUnusedTypeArtifacts()
+await removeSourceMapArtifacts()
 await removeDanglingLegacyArtifacts()
+await refreshReadmeCliUsage()
 await copyDir(distDir, examplesDistDir)
 await generateExamplesFromBuild({
   distDir,

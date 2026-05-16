@@ -68,11 +68,19 @@
             "schemaPath": "/await.json/required",
             "title": "Await condition",
             "score": 9,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
-            "missingRequired": ["until"],
-            "additionalProperties": ["millisecods"],
+            "siblingMatches": [
+              "type"
+            ],
+            "missingRequired": [
+              "until"
+            ],
+            "additionalProperties": [
+              "millisecods"
+            ],
             "typeCompatible": true
           }
         ],

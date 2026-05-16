@@ -16,7 +16,9 @@
       },
       "error": "Unknown GCScript function type",
       "suggestion": "Use a value allowed by the schema for GCScript function type.",
-      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/"
+      ],
       "provided": 123,
       "details": {
         "propertyName": "type",
@@ -29,7 +31,9 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": ["type"],
+          "additionalProperties": [
+            "type"
+          ],
           "typeCompatible": false
         }
       }
@@ -37,7 +41,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

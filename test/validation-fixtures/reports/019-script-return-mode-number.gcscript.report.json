@@ -16,7 +16,9 @@
       },
       "error": "Unknown \"mode\"",
       "suggestion": "Use a value allowed by the schema for \"mode\".",
-      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/"
+      ],
       "provided": 42,
       "details": {
         "propertyName": "mode",
@@ -29,7 +31,9 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": ["mode"],
+          "additionalProperties": [
+            "mode"
+          ],
           "typeCompatible": false
         }
       }
@@ -37,7 +41,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

@@ -50,10 +50,16 @@
             "schemaPath": "/data.json/required",
             "title": "Data constant",
             "score": 10.4,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
-            "missingRequired": ["value"],
+            "siblingMatches": [
+              "type"
+            ],
+            "missingRequired": [
+              "value"
+            ],
             "additionalProperties": [],
             "typeCompatible": true
           }
@@ -68,7 +74,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

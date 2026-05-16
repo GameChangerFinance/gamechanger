@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env es6 */
 import assert from 'node:assert/strict'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -344,6 +345,26 @@ tests.push(
 )
 
 tests.push(
+  run('package build does not emit source maps', async () => {
+    const entries = await fs.readdir(path.resolve(rootDir, 'dist'))
+    assert.deepEqual(
+      entries.filter((entry) => entry.endsWith('.map')),
+      []
+    )
+    for (const filename of entries.filter((entry) =>
+      /\.m?js$|\.cjs$/.test(entry)
+    )) {
+      const text = await fs.readFile(
+        path.resolve(rootDir, 'dist', filename),
+        'utf8'
+      )
+      assert.doesNotMatch(text, /sourceMappingURL=/)
+      assert.doesNotMatch(text, /sourcesContent/)
+    }
+  })
+)
+
+tests.push(
   run('package self import works', async () => {
     const result = execNode([
       '--input-type=module',
@@ -683,7 +704,7 @@ tests.push(
            with unicode λ 漢字 */
         "escaped": {
           "type": "data",
-          "value": "escaped quote: \\\" and slashes // /* */",
+          "value": "escaped quote: \\" and slashes // /* */",
         },
       },
     }`
@@ -1354,6 +1375,44 @@ tests.push(
 )
 
 tests.push(
+  run('CLI help writes to stderr without polluting stdout', async () => {
+    const result = spawnSync(process.execPath, ['bin/cli.js', '--help'], {
+      cwd: rootDir,
+      encoding: 'utf8'
+    })
+    assert.equal(result.status, 0)
+    assert.equal(result.stdout, '')
+    const stderr = stripAnsi(result.stderr)
+    assert.match(stderr, /GameChanger Wallet CLI/)
+    assert.match(stderr, /Usage/)
+    assert.match(stderr, /--snippetArgsFile/)
+  })
+)
+
+tests.push(
+  run(
+    'CLI invalid nested snippet navigation shows scoped usage on stderr',
+    async () => {
+      const result = spawnSync(
+        process.execPath,
+        ['bin/cli.js', 'mainnet', 'snippet', 'html-cero'],
+        { cwd: rootDir, encoding: 'utf8' }
+      )
+      assert.notEqual(result.status, 0)
+      assert.equal(result.stdout, '')
+      const stderr = stripAnsi(result.stderr)
+      assert.match(
+        stderr,
+        /Error: Unknown sub action 'html-cero' for action 'snippet'/
+      )
+      assert.match(stderr, /\$ gamechanger-cli mainnet snippet \[subaction\]/)
+      assert.match(stderr, /'html-zero'/)
+      assert.doesNotMatch(stderr, /\$ gamechanger-cli build \[-f file\]/)
+    }
+  )
+)
+
+tests.push(
   run('CLI encode url with output file keeps stdout empty', async () => {
     const outputFile = path.resolve(tmpDir, 'cli-url-output.txt')
 
@@ -1783,6 +1842,113 @@ tests.push(
   })
 )
 
+tests.push(
+  run(
+    'CLI snippetArgsFile merges with snippetArgs for html/react/html-zero',
+    async () => {
+      const snippetArgsFile = path.resolve(tmpDir, 'snippet-args.json')
+      await fs.writeFile(
+        snippetArgsFile,
+        JSON.stringify({
+          title: 'Title from file',
+          description: 'Description from file',
+          buttonText: 'Button text from file'
+        }),
+        'utf8'
+      )
+
+      const dummyScript = '{"type":"script","run":{}}'
+      const cliArgs = JSON.stringify({
+        title: 'Title from CLI args',
+        defaultIntents:
+          '{\n        // default intents overridden from CLI args\n      }'
+      })
+
+      for (const subAction of ['html', 'react', 'html-zero']) {
+        const outputFile = path.resolve(
+          tmpDir,
+          `snippet-merge-${subAction}.html`
+        )
+        const result = execNode([
+          'bin/cli.js',
+          'mainnet',
+          'snippet',
+          subAction,
+          '-v',
+          '2',
+          '-e',
+          'gzip',
+          '-a',
+          dummyScript,
+          '--snippetArgsFile',
+          snippetArgsFile,
+          '--snippetArgs',
+          cliArgs,
+          '-o',
+          outputFile
+        ])
+
+        assert.equal(result.stdout, '')
+        const html = await fs.readFile(outputFile, 'utf8')
+        assert.match(html, /Title from CLI args/)
+        assert.doesNotMatch(html, /Title from file/)
+        assert.match(html, /Description from file/)
+        if (subAction !== 'html-zero') {
+          assert.match(html, /default intents overridden from CLI args/)
+        }
+      }
+    }
+  )
+)
+
+tests.push(
+  run(
+    'CLI snippets reject empty -a input even with snippet args configured',
+    async () => {
+      const snippetArgsFile = path.resolve(
+        tmpDir,
+        'empty-input-snippet-args.json'
+      )
+      await fs.writeFile(
+        snippetArgsFile,
+        JSON.stringify({ title: 'Unused' }),
+        'utf8'
+      )
+
+      for (const subAction of ['html', 'react', 'html-zero']) {
+        const result = spawnSync(
+          process.execPath,
+          [
+            'bin/cli.js',
+            'mainnet',
+            'snippet',
+            subAction,
+            '-v',
+            '2',
+            '-a',
+            '',
+            '--snippetArgsFile',
+            snippetArgsFile,
+            '--snippetArgs',
+            '{"title":"Unused override"}'
+          ],
+          { cwd: rootDir, encoding: 'utf8' }
+        )
+        assert.notEqual(result.status, 0)
+        assert.equal(result.stdout, '')
+        const stderr = stripAnsi(result.stderr)
+        assert.match(stderr, /Empty GCScript provided/)
+        assert.match(
+          stderr,
+          new RegExp(
+            `\\$ gamechanger-cli mainnet snippet ${subAction} \\[options\\]`
+          )
+        )
+      }
+    }
+  )
+)
+
 const smallValidationSchema = {
   'api.json': {
     type: 'object',
@@ -1836,8 +2002,17 @@ tests.push(
   )
 )
 
-const stripAnsi = (value) =>
-  String(value || '').replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '')
+// const stripAnsi = (value) =>
+//   String(value || '').replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '')
+
+const stripAnsi = (value) => {
+  const esc = String.fromCharCode(27)
+  return String(value || '').replace(
+    new RegExp(`${esc}(?:[@-Z\\\\-_]|\\[[0-?]*[ -/]*[@-~])`, 'g'),
+    ''
+  )
+}
+
 tests.push(
   run(
     'compact CLI validation output includes focused normalized diagnostics',

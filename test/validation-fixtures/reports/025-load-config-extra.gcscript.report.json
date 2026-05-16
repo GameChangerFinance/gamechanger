@@ -33,7 +33,9 @@
             },
             {
               "type": "Key",
-              "workspaceIds": ["derivations"],
+              "workspaceIds": [
+                "derivations"
+              ],
               "namePattern": "{index}_{key}_{kind}_{accountIndex}_{addressIndex}",
               "items": [
                 {
@@ -94,7 +96,9 @@
             },
             {
               "type": "Key",
-              "workspaceIds": ["dao"],
+              "workspaceIds": [
+                "dao"
+              ],
               "items": [
                 {
                   "namePattern": "spend-member",
@@ -112,7 +116,9 @@
             },
             {
               "type": "NativeScript",
-              "workspaceIds": ["dao"],
+              "workspaceIds": [
+                "dao"
+              ],
               "namePattern": "dao_{key}_script",
               "items": {
                 "spend": {
@@ -153,7 +159,9 @@
             },
             {
               "type": "Address",
-              "workspaceIds": ["dao"],
+              "workspaceIds": [
+                "dao"
+              ],
               "items": [
                 {
                   "namePattern": "Signer",
@@ -185,7 +193,9 @@
             },
             {
               "type": "Key",
-              "workspaceIds": ["demos"],
+              "workspaceIds": [
+                "demos"
+              ],
               "items": [
                 {
                   "namePattern": "SpendKey-main",
@@ -227,7 +237,9 @@
             },
             {
               "type": "Address",
-              "workspaceIds": ["demos"],
+              "workspaceIds": [
+                "demos"
+              ],
               "items": [
                 {
                   "namePattern": "Address-main",
@@ -278,11 +290,20 @@
             "schemaPath": "/loadConfig.json/required",
             "title": "Load Wallet Configuration",
             "score": 8.4,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
-            "missingRequired": ["layers", "updateId"],
-            "additionalProperties": ["nam"],
+            "siblingMatches": [
+              "type"
+            ],
+            "missingRequired": [
+              "layers",
+              "updateId"
+            ],
+            "additionalProperties": [
+              "nam"
+            ],
             "typeCompatible": true
           }
         ],
@@ -296,7 +317,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

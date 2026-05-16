@@ -28,11 +28,19 @@
             "schemaPath": "/submitTx.json/required",
             "title": "Transaction Submit",
             "score": 9,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
-            "missingRequired": ["txHex"],
-            "additionalProperties": ["txCbor"],
+            "siblingMatches": [
+              "type"
+            ],
+            "missingRequired": [
+              "txHex"
+            ],
+            "additionalProperties": [
+              "txCbor"
+            ],
             "typeCompatible": true
           }
         ],
@@ -46,7 +54,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
-    "schemaMs": 0
+    "validateMs": 1,
+    "schemaMs": 1
   }
 }

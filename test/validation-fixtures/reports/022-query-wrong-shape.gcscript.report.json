@@ -41,11 +41,19 @@
             "schemaPath": "/query.json/required",
             "title": "Get data from ledger",
             "score": 9,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
-            "missingRequired": ["get"],
-            "additionalProperties": ["queries"],
+            "siblingMatches": [
+              "type"
+            ],
+            "missingRequired": [
+              "get"
+            ],
+            "additionalProperties": [
+              "queries"
+            ],
             "typeCompatible": true
           }
         ],

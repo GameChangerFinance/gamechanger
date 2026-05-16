@@ -43,7 +43,7 @@ const createPlugins = ({ browser, minify = false }) =>
     }),
     createEasyQRCodeAliasPlugin(browser ? 'browser' : 'node'),
     typescript({
-      sourceMap: true,
+      sourceMap: false,
       tsconfig: './tsconfig.json',
       exclude: ['./src/assets/*', './bin/*']
     }),
@@ -81,7 +81,7 @@ export const createRollupConfig = ({
     exports: 'default',
     extend: true,
     inlineDynamicImports: true,
-    sourcemap: true
+    sourcemap: false
   },
   external: browser ? [] : ['jsdom', 'xmldom'],
   plugins: createPlugins({ browser, minify })

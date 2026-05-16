@@ -31,7 +31,10 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": ["type", "run"],
+          "additionalProperties": [
+            "type",
+            "run"
+          ],
           "typeCompatible": false
         }
       }
@@ -59,7 +62,9 @@
       "provided": "sha51",
       "details": {
         "functionName": "sha51",
-        "closestFunctions": ["sha512"],
+        "closestFunctions": [
+          "sha512"
+        ],
         "schemaPath": "/lang.json/anyOf/5/anyOf/2"
       }
     }

@@ -476,159 +476,125 @@ and will log something like:
   - challenge validation
   - HTTP origin validation
   - nor encrypts comms beyond SSL against MITM attacks
-- A highly secure connection intent could be added in the future (let us know
-  your needs!)
+- A highly secure/private connection intent could be added in the future (let us
+  know your needs!)
 
 ## CLI Usage
 
 ```
-✨ GameChanger Wallet CLI:
-        Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other related tasks (https://gamechanger.finance/)
+✨ GameChanger Wallet CLI
+	Official GameChanger Wallet library and CLI for integrating Cardano in dapps and related workflows.
 
 Usage
-        $ gamechanger-cli [network] [action] [subaction]
-        $ gamechanger-cli build [-f file] [-o output] [--fileUri app://main.gcscript]
-        $ gamechanger-cli validate [-f built.gcscript] [-o report.json]
+	$ gamechanger-cli [network] [action] [subaction] [options]
+	$ gamechanger-cli build [-f file] [-o output] [--fileUri app://main.gcscript]
+	$ gamechanger-cli validate [-f built.gcscript] [-o report.json]
 
 Networks: 'mainnet' | 'preprod'
 
 Actions:
-        'encode':
-                'url'     : generates a ready to use URL dApp connector from a valid GCScript
-                'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
-        'build':
-                'file'     : builds a multi-file GCScript project into one final GCScript JSON file
-        'validate':
-                'file'     : validates built strict JSON GCScript and returns a JSON report
-        'snippet':
-                'html'      : generates a ready to use HTML dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
-                'html-zero' : generates a highly resilient offline-ready zero-dependency HTML dApp for mission-critical and on-chain hosted frontends from a valid GCScript
-                'button'    : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-                'express'   : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
-                'react'     : generates a ready to use React dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
-Options:
-        --args [gcscript] | -a [gcscript]:  Load GCScript from arguments
+	'encode': Generate wallet connector artifacts from a valid GCScript.
+	'url' : generates a ready-to-use URL dapp connector
+	'qr'  : generates a ready-to-use QR code image
+	'snippet': Generate ready-to-use dapp/snippet source files from a valid GCScript.
+	'html'      : generates a ready-to-use HTML dapp with shared app state and auto-rendered intent argument UI
+	'html-zero' : generates a resilient offline-ready zero-dependency HTML dapp
+	'button'    : generates an embeddable HTML button snippet with a URL connector
+	'express'   : generates a Node.js Express backend that redirects users to the wallet
+	'react'     : generates a React dapp with shared app state and auto-rendered intent argument UI
+	'build': Build a multi-file GCScript project into one strict JSON GCScript file.
+	'file'    : builds a multi-file GCScript project into one final GCScript JSON file
+	'project' : supported CLI subaction
+	'validate': Validate built strict JSON GCScript and emit a JSON report.
+	'file'    : validates a built strict JSON GCScript file against the production language schema
+	'project' : supported CLI subaction
 
-        --file [filename] | -f [filename]:  Load GCScript from file
-        without --args or --file         :  Load GCScript from stdin
+Common options:
+	--args [gcscript] | -a [gcscript] : Load GCScript from arguments.
+	--file [filename] | -f [filename] : Load GCScript from file.
+	without --args or --file       : Load GCScript from stdin.
 
-        --outputFile [filename] -o [filename]:  The QR Code, HTML, html-zero, button, nodejs, or react output filename
-        without --outputFile                 :  Sends the QR Code, HTML, html-zero, button, nodejs, or react output file to stdin
+	--outputFile [filename] | -o [filename] : Write generated artifact/report to a file.
+	without --outputFile                 : Write generated artifact/report to stdout.
 
-        --apiVersion [1 | 2] | -v [1 | 2]:  Target GameChanger Wallet v1 or v2
+Encoding and wallet URL options:
+	--apiVersion [version] | -v [version] : Target API version.
+	Valid API versions: '2'
 
-        --encoding [see encodings below] | -v [see encodings below]:  Target GameChanger Wallet v1 or v2 messaging encodings
-        Valid encodings by apiVersion:
-        {"2":["json-url-lzma","gzip","base64url"]}
+	--encoding [encoding] | -e [encoding] : Target wallet message encoding.
+	Valid encodings by API version: {"2":["json-url-lzma","gzip","base64url"]}
 
-        --template [see templates below] | -t [see templates below]: QR code predefined styles
-        Valid templates: default, boxed or printable
+	--refAddress [cardanoAddress] | -r [cardanoAddress] : Append ref=<address> to generated wallet URLs and QRs.
+	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query parameter.
+	--urlPattern [url] | -u [url] : Override the default wallet URL pattern. It must include {gcscript}.
 
-        --serve | -S : Serve code snippet outputs on http://localhost:3000
+QR options:
+	--template [template] | -t [template] : QR predefined style.
+	Valid QR templates: 'boxed' | 'printable'. Default: boxed.
+	QR output type is inferred from --outputFile extension when it is 'png' | 'svg'. Without --outputFile, PNG is used.
 
-        --refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
+Snippet options:
+	--snippetArgs [json] | -A [json] : JSON map of snippet placeholder overrides.
+	--snippetArgsFile [filename] : JSON file with snippet placeholder overrides.
+	When both are provided, --snippetArgs wins over --snippetArgsFile per object property.
+	Use {"defaultIntents":"..."} to override the whole defaultIntents block.
 
-        --disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
+	--serve | -S : Serve HTML snippet outputs on http://localhost:3000.
 
-        --urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
+Build options:
+	--cwd [path] | -C [path] : Working directory used by the CLI app:// resolver. Defaults to the current working directory.
+	--fileUri [uri] | -U [uri] : Logical parent URI used by build. Defaults to app://main.gcscript.
+	--allowProtocols [csv] : Build protocol allow-list. Defaults to app.
+	--allowedRemoteDomains [csv] : Optional exact or wildcard host allow-list for http(s) build imports.
+	--compactOutput : Emit compact strict JSON.
+	--noValidate : Disable schema validation during build. Validation is enabled by default.
 
-        --snippetArgs [json] | -A [json] : JSON map of snippet placeholder overrides (snippet actions only). Use {"defaultIntents": "..."} to override the whole defaultIntents block.
+Validation options:
+	--schemaUrl [url] : Override the GCScript JSON schema URL. Defaults to https://wallet.gamechanger.finance/schema/api/v2/index.json.full.
+	--hide-warnings : Hide non-blocking validation warnings during build/validate.
 
-        --cwd [path] | -C [path] : Working directory used by the CLI app:// resolver. Defaults to the current working directory.
+	--quiet | -q : Disable non-essential human logs. Generated output still uses stdout when --outputFile is omitted.
 
-        --fileUri [uri] | -U [uri] : Logical parent URI used by build only to resolve relative imports. It is not the same as --file and is never read or written as the input file. Defaults to DefaultMainFileAppURI (app://main.gcscript).
-
-        --allowProtocols [csv] : Build protocol allow-list. Defaults to DefaultBuildAllowedProtocols (app). file:// is available in CLI when explicitly allowed and is not restricted to --cwd.
-
-        --allowedRemoteDomains [csv] : Optional exact or wildcard host allow-list for http(s) build imports, for example example.com,*.example.org.
-
-        --noValidate : Disable the build action's default schema validation.
-
-        --schemaUrl [url] : Override the production GCScript schema URL used by validation-consuming CLI actions.
-
-        --hide-warnings : Hide non-blocking validation warnings, including likely ISL typos, during build/validate.
-
-        --quiet | -q : Disable CLI progress logs when writing to output files.
+POSIX behavior:
+	Human help, progress, warnings, validation summaries, and errors are written to stderr.
+	Generated artifacts and JSON reports are written to stdout only when --outputFile is omitted.
+	Exit codes: encode/snippet/build succeed with 0 and fail non-zero; validate returns 0 only when isValid is true.
 
 Examples
 
-        ⭐ GCScript build:
-                $ gamechanger-cli build -f ./main.gcscript -o ./dist/built.gcscript
+	⭐ GCScript build:
+		$ gamechanger-cli build -f ./main.gcscript -o ./dist/built.gcscript
+		$ gamechanger-cli build -f ./src/main.gcscript -o ./dist/built.gcscript --cwd . --fileUri app://src/main.gcscript
 
-                # Resolve app:// imports relative to another project root.
-                # --fileUri is the logical parent URI for relative imports, not the input file path.
-                $ gamechanger-cli build -f ./src/main.gcscript -o ./dist/built.gcscript --cwd . --fileUri app://src/main.gcscript
+	⭐ GCScript validation for CI/CD:
+		$ gamechanger-cli validate -f ./dist/built.gcscript -o ./dist/validation-report.json
+		$ gamechanger-cli validate -f ./dist/built.gcscript >/tmp/report.json
 
-                # Skip validation during build when no schema object is available.
-                $ gamechanger-cli build -f ./main.gcscript -o ./dist/built.gcscript --noValidate
+	⭐ URL encoding:
+		$ gamechanger-cli mainnet encode url -v 2 -f examples/connect.gcscript
+		https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
+		$ gamechanger-cli mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
+		https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet&ref=addr1...
+		$ gamechanger-cli mainnet encode url -v 2 -a '{"title":"Get Address","description":"Do you authorize sharing your address with this dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
+		https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
 
-        ⭐ GCScript validation for CI/CD:
-                $ gamechanger-cli validate -f ./dist/built.gcscript -o ./dist/validation-report.json
+	⭐ QR encoding:
+		$ gamechanger-cli mainnet encode qr -v 2 -f examples/connect.gcscript -o examples/qr_output.png
+		$ gamechanger-cli mainnet encode qr -e gzip -v 2 -f examples/connect.gcscript -o examples/qr_output.svg
 
-                # POSIX-friendly: exits 0 when valid, non-zero when invalid, and logs to stderr.
-                $ gamechanger-cli validate -f ./dist/built.gcscript >/tmp/report.json
-
-        ⭐ URL encoding:
-                $ gamechanger-cli mainnet encode url -v 2 -f examples/connect.gcscript
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
-
-                $ gamechanger-cli mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet&ref=addr1...
-
-                $ gamechanger-cli mainnet encode url -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
-
-                $ cat examples/connect.gcscript | gamechanger-cli mainnet encode url -v 2
-                https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet
-
-        ⭐ QR encoding:
-                $ gamechanger-cli preprod encode qr -v 2 -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}' > qr_output.png
-
-                $ gamechanger-cli mainnet encode qr -v 2 -o examples/qr_output.png -a '{"title":"Get Address","description":"Do you authorize to share address to dapp?","type":"script","exportAs":"MyData","run":{"address":{"type":"getCurrentAddress"}}}'
-
-                $ cat examples/connect.gcscript | gamechanger-cli mainnet encode qr -v 2 -o examples/qr_output.png
-
-
-                $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
-
-
-        Code generation and serve dapp (-S):
-
-        ⭐ HTML code:
-                $ gamechanger-cli preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
-                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-        ⭐ HTML Zero code:
-                $ gamechanger-cli mainnet snippet html-zero -v 2 -S -o examples/htmlZeroDapp.html -f examples/connect.gcscript
-                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-        ⭐ ReactJS code:
-                $ gamechanger-cli mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
-                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-        ⭐ HTML Button snippet:
-                $ gamechanger-cli mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
-                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-        ⭐ Express backend code:
-                $ gamechanger-cli mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
-                $ node examples/expressBackend.js
-                🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
+	⭐ Snippet generation:
+		$ gamechanger-cli mainnet snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
+		$ gamechanger-cli mainnet snippet html-zero -v 2 -o examples/htmlZeroDapp.html -f examples/connect.gcscript
+		$ gamechanger-cli mainnet snippet react -v 2 -o examples/reactDapp.html -f examples/connect.gcscript
+		$ gamechanger-cli mainnet snippet html -v 2 -f ./dist/open.gcscript.json --snippetArgsFile ./config/snippet-args.json
+		$ gamechanger-cli mainnet snippet html -v 2 -f ./dist/open.gcscript.json --snippetArgsFile ./config/snippet-args.json --snippetArgs '{"title":"Local override"}'
 
 Build protocol resolvers:
-        'app://'  : default virtual filesystem resolver in the library. In CLI it is resolved from --cwd and cannot escape that directory.
-        'file://' : platform-specific and not allowed by default. In CLI it is unrestricted when explicitly enabled with --allowProtocols.
-        'http://' and 'https://' : resolved through fetch where available and optionally restricted with --allowedRemoteDomains. Mutable remote resources cannot import nested local resources.
-        'blob:'   : browser-oriented local resolver through fetch where available.
-
-Validation schema cache:
-        The CLI downloads the production GCScript schema into a hidden temporary file named .lang.def and reuses it for 24 hours. If the system temp directory is not writable, it falls back to the working directory.
-
-Express note:
-        Express is suggested only when using snippet serving (-S) or generated express examples. The CLI does not require it for encode, snippet generation, or build actions.
-
-
-
+	'app://' | 'http://' | 'https://' | 'file://' | 'blob://' | 'gcfs://' | 'ipfs://'
+	app:// is the default virtual filesystem resolver in the CLI and resolves from --cwd.
+	file:// is unrestricted when explicitly enabled with --allowProtocols.
+	http:// and https:// are mutable remote resources and can be restricted with --allowedRemoteDomains.
+	blob://, gcfs://, and ipfs:// are available to the library build pipeline when supported by the runtime/protocol handler.
 ```
 
 ## Breaking Changes Notice

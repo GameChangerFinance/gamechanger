@@ -46,8 +46,12 @@
             "score": 1.6,
             "matchingDiscriminators": [],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["title"],
-            "missingRequired": ["type"],
+            "siblingMatches": [
+              "title"
+            ],
+            "missingRequired": [
+              "type"
+            ],
             "additionalProperties": [],
             "typeCompatible": true
           }

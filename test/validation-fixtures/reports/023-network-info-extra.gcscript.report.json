@@ -28,11 +28,17 @@
             "schemaPath": "/getNetworkInfo.json/additionalProperties",
             "title": "Get Current Network Information",
             "score": 9.6,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
+            "siblingMatches": [
+              "type"
+            ],
             "missingRequired": [],
-            "additionalProperties": ["networkk"],
+            "additionalProperties": [
+              "networkk"
+            ],
             "typeCompatible": true
           }
         ],
@@ -46,7 +52,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 5,
+    "validateMs": 6,
     "schemaMs": 0
   }
 }

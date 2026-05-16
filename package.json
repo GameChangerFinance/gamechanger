@@ -102,6 +102,7 @@
   },
   "files": [
     "bin/cli.js",
+    "bin/cli-usage.js",
     "dist/"
   ],
   "jsdelivr": "./dist/browser.min.js",

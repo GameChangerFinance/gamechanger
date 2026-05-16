@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-env es6 */
+
 import gc from '../dist/nodejs.cjs'
 import meow from 'meow'
 import getStdin from 'get-stdin'
@@ -6,6 +8,14 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import os from 'os'
+import { createUsageContext, printUsageHelp } from './cli-usage.js'
+
+const CLI_HANDLERS = {
+  encode: gc.encode,
+  snippet: gc.snippet,
+  build: gc.build,
+  validate: gc.validate
+}
 
 const supportsColor = () =>
   Boolean(process.stderr.isTTY) &&
@@ -462,7 +472,6 @@ export const serveHtml = async ({
 
 export default async function main() {
   const {
-    usageMessage,
     QRRenderTypes,
     DefaultNetwork,
     DefaultBuildAllowedProtocols,
@@ -474,16 +483,33 @@ export default async function main() {
     GCScriptSchemaCacheTTLHours
   } = gc.config
 
+  const errorLogger = createLogger({ enabled: true })
+  let usageContext = createUsageContext(
+    process.argv.slice(2),
+    gc.config,
+    CLI_HANDLERS
+  )
+
   try {
     process.on('uncaughtException', function (err) {
-      console.error('Error: ' + err.message)
-      console.error(usageMessage)
+      printUsageHelp({
+        logger: errorLogger,
+        context: usageContext,
+        error: err instanceof Error ? err : new Error(String(err))
+      })
       process.exit(1)
     })
-    const cli = meow(usageMessage, {
-      help: usageMessage,
-      autoHelp: true,
+    const wantsHelp = process.argv
+      .slice(2)
+      .some((arg) => arg === '--help' || arg === '-h')
+    const cli = meow('', {
+      help: false,
+      autoHelp: false,
       flags: {
+        help: {
+          type: 'boolean',
+          alias: 'h'
+        },
         args: {
           type: 'string',
           alias: 'a'
@@ -540,6 +566,9 @@ export default async function main() {
           type: 'string',
           alias: 'A'
         },
+        snippetArgsFile: {
+          type: 'string'
+        },
         cwd: {
           type: 'string',
           alias: 'C'
@@ -572,6 +601,12 @@ export default async function main() {
         }
       }
     })
+
+    usageContext = createUsageContext(cli.input, gc.config, CLI_HANDLERS)
+    if (wantsHelp || cli.flags.help) {
+      printUsageHelp({ logger: errorLogger, context: usageContext })
+      return
+    }
 
     const workingDirectory = path.resolve(cli.flags.cwd || process.cwd())
     const parseCsvFlag = (value) =>
@@ -627,16 +662,37 @@ export default async function main() {
     }
 
     const { network, action, subAction } = parseAction(cli.input)
-    const actions = Object.keys(gc)
-    if (!actions.includes(action)) {
-      throw new Error('Unknown action')
+    usageContext = createUsageContext(cli.input, gc.config, CLI_HANDLERS)
+    const actions = Object.keys(CLI_HANDLERS)
+    if (!action) {
+      throw new Error('Missing action')
     }
-    const subActions = Object.keys(gc[action])
+    if (
+      action !== 'build' &&
+      action !== 'validate' &&
+      !gc.config.networkTags.includes(network)
+    ) {
+      throw new Error(`Unknown network '${network || ''}'`)
+    }
+    if (!actions.includes(action)) {
+      throw new Error(`Unknown action '${action}'`)
+    }
+    const subActions = Object.keys(CLI_HANDLERS[action])
+    if (!subAction) {
+      throw new Error(`Missing sub action for action '${action}'`)
+    }
     if (!subActions.includes(subAction)) {
-      throw new Error(`Unknown sub action for action '${action}'`)
+      throw new Error(
+        `Unknown sub action '${subAction}' for action '${action}'`
+      )
     }
 
-    const source = cli.flags.args ? 'args' : cli.flags.file ? 'file' : 'stdin'
+    const source =
+      typeof cli.flags.args === 'string'
+        ? 'args'
+        : cli.flags.file
+        ? 'file'
+        : 'stdin'
     const debug = !!cli.flags.debug
     const encoding = cli.flags.encoding
     const apiVersion = cli.flags.apiVersion
@@ -658,17 +714,55 @@ export default async function main() {
     const disableNetworkRouter = !!cli.flags.disableNetworkRouter
     const urlPattern = cli.flags.urlPattern
     const snippetArgsRaw = cli.flags.snippetArgs
+    const snippetArgsFileRaw = cli.flags.snippetArgsFile
     const compactOutput = !!cli.flags.compactOutput
     const showWarnings = needsSchema && !cli.flags.hideWarnings
 
-    let snippetArgs = undefined
-    if (typeof snippetArgsRaw === 'string' && snippetArgsRaw.trim()) {
+    const parseSnippetArgsObject = (raw, sourceLabel) => {
+      if (typeof raw !== 'string' || !raw.trim()) return undefined
+      let parsed
       try {
-        snippetArgs = JSON.parse(snippetArgsRaw)
+        parsed = JSON.parse(raw)
       } catch (err) {
-        throw new Error(`Invalid --snippetArgs JSON. ${err}`)
+        throw new Error(`Invalid ${sourceLabel} JSON. ${err}`)
+      }
+      if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+        throw new Error(`${sourceLabel} must be a JSON object`)
+      }
+      return parsed
+    }
+
+    let snippetArgsFromFile = undefined
+    if (typeof snippetArgsFileRaw === 'string' && snippetArgsFileRaw.trim()) {
+      const snippetArgsFilePath = path.resolve(
+        process.cwd(),
+        snippetArgsFileRaw
+      )
+      try {
+        snippetArgsFromFile = parseSnippetArgsObject(
+          fs.readFileSync(snippetArgsFilePath, 'utf8'),
+          '--snippetArgsFile'
+        )
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.startsWith('Invalid --snippetArgsFile')
+        ) {
+          throw err
+        }
+        throw new Error(
+          `Failed to read --snippetArgsFile '${snippetArgsFileRaw}'. ${err.message}`
+        )
       }
     }
+    const snippetArgsFromArgs = parseSnippetArgsObject(
+      snippetArgsRaw,
+      '--snippetArgs'
+    )
+    const snippetArgs =
+      snippetArgsFromFile || snippetArgsFromArgs
+        ? { ...(snippetArgsFromFile || {}), ...(snippetArgsFromArgs || {}) }
+        : undefined
 
     let qrResultType = 'png'
     if (outputFile) {
@@ -679,7 +773,7 @@ export default async function main() {
     }
 
     const sourceResolver = sourcesHandlers[source]
-    const actionResolver = gc[action][subAction]
+    const actionResolver = CLI_HANDLERS[action][subAction]
 
     logger.info(`Running ${action}:${subAction}`)
     const input = await sourceResolver()
@@ -866,7 +960,8 @@ export default async function main() {
               refAddress,
               disableNetworkRouter,
               urlPattern,
-              snippetArgs
+              snippetArgs,
+              snippetArgsFile: snippetArgsFileRaw
             }
           },
           null,
@@ -875,10 +970,11 @@ export default async function main() {
       )
     }
   } catch (err) {
-    if (err instanceof Error) {
-      console.error('Error: ' + err.message)
-      console.error(usageMessage)
-    }
+    printUsageHelp({
+      logger: errorLogger,
+      context: usageContext,
+      error: err instanceof Error ? err : new Error(String(err))
+    })
     process.exit(1)
   }
 }
