@@ -5,7 +5,7 @@
       "code": "code-required-property",
       "message": "Missing required property \"until\".",
       "fileName": "021-await-wrong-prop.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/021-await-wrong-prop.gcscript",
       "jsonPath": "/until",
       "location": {

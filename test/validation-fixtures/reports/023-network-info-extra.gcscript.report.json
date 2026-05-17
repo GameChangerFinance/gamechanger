@@ -5,7 +5,7 @@
       "code": "code-additional-property",
       "message": "Unknown property \"networkk\".",
       "fileName": "023-network-info-extra.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/023-network-info-extra.gcscript",
       "jsonPath": "/networkk",
       "location": {

@@ -5,7 +5,7 @@
       "code": "code-type-mismatch",
       "message": "Expected / to be object, got string.",
       "fileName": "004-root-string.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/004-root-string.gcscript",
       "jsonPath": "/",
       "location": {
@@ -43,7 +43,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

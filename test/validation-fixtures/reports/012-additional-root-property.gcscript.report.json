@@ -5,7 +5,7 @@
       "code": "code-additional-property",
       "message": "Unknown property \"unexpected\".",
       "fileName": "012-additional-root-property.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/012-additional-root-property.gcscript",
       "jsonPath": "/unexpected",
       "location": {

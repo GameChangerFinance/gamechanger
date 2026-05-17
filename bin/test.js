@@ -579,7 +579,7 @@ tests.push(
             }
           }
         }),
-        fileUri: 'app://main.gcscript',
+        fileUri: 'app:///main.gcscript',
         files: {
           'config.json': {
             data: dom.window.gc.utils.Buffer.from('{"enabled":true}', 'utf8')
@@ -632,7 +632,7 @@ tests.push(
       })
       const out = await gc.build.file({
         input: main,
-        fileUri: 'app://main.gcscript',
+        fileUri: 'app:///main.gcscript',
         doValidate: false,
         files: {
           'config.json': { data: Buffer.from('{"enabled":true}', 'utf8') },
@@ -674,7 +674,7 @@ tests.push(
     }`
       const out = await gc.build.file({
         input,
-        fileUri: 'app://main.gcscript',
+        fileUri: 'app:///main.gcscript',
         doValidate: false
       })
       const built = JSON.parse(decodeDataUri(out).toString('utf8'))
@@ -710,7 +710,7 @@ tests.push(
     }`
       const out = await gc.build.file({
         input,
-        fileUri: 'app://main.gcscript',
+        fileUri: 'app:///main.gcscript',
         doValidate: false
       })
       const builtJson = decodeDataUri(out).toString('utf8')
@@ -743,7 +743,7 @@ tests.push(
       }`
       const out = await gc.build.file({
         input,
-        fileUri: 'app://main.gcscript',
+        fileUri: 'app:///main.gcscript',
         doValidate: false,
         files: {
           'level2.gcscript': {
@@ -832,7 +832,7 @@ tests.push(
         () =>
           gc.build.file({
             input: `{ type: 'script', run: {}, }`,
-            fileUri: 'app://main.gcscript'
+            fileUri: 'app:///main.gcscript'
           }),
         /Invalid GCScript JSON\/JSONC input/
       )
@@ -908,7 +908,7 @@ tests.push(
   run('build.file validates final output when schema is provided', async () => {
     const out = await gc.build.file({
       input: `{"type":"script","run":{"address":{"type":"getCurrentAddress"}}}`,
-      fileUri: 'app://main.gcscript',
+      fileUri: 'app:///main.gcscript',
       useSchema: validationSchemaMin
     })
     const built = JSON.parse(decodeDataUri(out).toString('utf8'))
@@ -920,7 +920,7 @@ tests.push(
   run('build.file can disable default validation explicitly', async () => {
     const out = await gc.build.file({
       input: `{"type":"script","run":{}}`,
-      fileUri: 'app://main.gcscript',
+      fileUri: 'app:///main.gcscript',
       doValidate: false
     })
     assert.equal(JSON.parse(decodeDataUri(out).toString('utf8')).type, 'script')
@@ -973,7 +973,7 @@ tests.push(
         "type": "script",
         "run": {},
       }`,
-      fileUri: 'app://main.gcscript',
+      fileUri: 'app:///main.gcscript',
       doValidate: false,
       compactOutput: true
     })
@@ -999,11 +999,203 @@ tests.push(
         () =>
           gc.build.file({
             input,
-            fileUri: 'app://main.gcscript',
+            fileUri: 'app:///main.gcscript',
             doValidate: false
           }),
         /Path traversal outside project root/
       )
+    }
+  )
+)
+
+tests.push(
+  run('build.file rejects protocol-less import directives', async () => {
+    const uris = [
+      './common.gcscript.jsonc',
+      '../common.gcscript.jsonc',
+      'lib/common.gcscript.jsonc'
+    ]
+    for (const uri of uris) {
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input: JSON.stringify({
+              type: 'script',
+              run: {
+                bad: {
+                  type: '$importAsData',
+                  as: 'string',
+                  from: { value: uri }
+                }
+              }
+            }),
+            doValidate: false
+          }),
+        /Missing protocol/
+      )
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input: JSON.stringify({
+              type: 'script',
+              run: {
+                bad: { type: '$importAsScript', from: { value: uri } }
+              }
+            }),
+            doValidate: false
+          }),
+        /Missing protocol/
+      )
+    }
+  })
+)
+
+tests.push(
+  run(
+    'build.file resolves explicit app protocol relative and absolute imports',
+    async () => {
+      const mk = (uri) =>
+        JSON.stringify({
+          type: 'script',
+          run: {
+            data: { type: '$importAsData', as: 'string', from: { value: uri } }
+          }
+        })
+
+      let out = await gc.build.file({
+        input: mk('app://./x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        doValidate: false,
+        files: { 'dir/x.txt': { data: Buffer.from('relative-dot') } }
+      })
+      assert.equal(
+        JSON.parse(decodeDataUri(out).toString('utf8')).run.data.value.value,
+        'relative-dot'
+      )
+
+      out = await gc.build.file({
+        input: mk('app://../x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        doValidate: false,
+        files: { 'x.txt': { data: Buffer.from('relative-parent') } }
+      })
+      assert.equal(
+        JSON.parse(decodeDataUri(out).toString('utf8')).run.data.value.value,
+        'relative-parent'
+      )
+
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input: mk('app://../x.txt'),
+            fileUri: 'app:///main.gcscript',
+            doValidate: false
+          }),
+        /Path traversal outside project root/
+      )
+
+      out = await gc.build.file({
+        input: mk('app://lib/x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        doValidate: false,
+        files: { 'dir/lib/x.txt': { data: Buffer.from('relative-lib') } }
+      })
+      assert.equal(
+        JSON.parse(decodeDataUri(out).toString('utf8')).run.data.value.value,
+        'relative-lib'
+      )
+
+      out = await gc.build.file({
+        input: mk('app:///lib/x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        doValidate: false,
+        files: { 'lib/x.txt': { data: Buffer.from('absolute-lib') } }
+      })
+      assert.equal(
+        JSON.parse(decodeDataUri(out).toString('utf8')).run.data.value.value,
+        'absolute-lib'
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'build.file resolves file protocol only when explicitly allowed',
+    async () => {
+      const mk = (uri) =>
+        JSON.stringify({
+          type: 'script',
+          run: {
+            data: { type: '$importAsData', as: 'string', from: { value: uri } }
+          }
+        })
+      const read = { uri: '' }
+      const file = async (uri) => {
+        read.uri = uri
+        return Buffer.from('file-data')
+      }
+
+      await assert.rejects(
+        () =>
+          gc.build.file({ input: mk('file:///tmp/x.txt'), doValidate: false }),
+        /Illegal protocol 'file'/
+      )
+
+      await gc.build.file({
+        input: mk('file://./x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        appWorkingDir: '/app',
+        allowedProtocols: ['app', 'file'],
+        protocolHandlers: { file },
+        doValidate: false
+      })
+      assert.equal(read.uri, 'file:///app/dir/x.txt')
+
+      await gc.build.file({
+        input: mk('file://../outside.txt'),
+        fileUri: 'app:///main.gcscript',
+        appWorkingDir: '/app',
+        allowedProtocols: ['app', 'file'],
+        protocolHandlers: { file },
+        doValidate: false
+      })
+      assert.equal(read.uri, 'file:///outside.txt')
+
+      await gc.build.file({
+        input: mk('file:///lib/x.txt'),
+        fileUri: 'app:///dir/main.gcscript',
+        appWorkingDir: '/app',
+        allowedProtocols: ['app', 'file'],
+        protocolHandlers: { file },
+        doValidate: false
+      })
+      assert.equal(read.uri, 'file:///lib/x.txt')
+    }
+  )
+)
+
+tests.push(
+  run(
+    'build.file validates root fileUri and defaults to app absolute main URI',
+    async () => {
+      for (const fileUri of [
+        './main.gcscript',
+        'app://main.gcscript',
+        'file:///tmp/main.gcscript',
+        'http://example.com/main.gcscript'
+      ]) {
+        await assert.rejects(
+          () => gc.build.file({ input: '{}', fileUri, doValidate: false }),
+          /fileUri must be an absolute app/
+        )
+      }
+      await gc.build.file({ input: '{}', doValidate: false })
+      await gc.build.file({
+        input: '{}',
+        fileUri: 'app:///main.gcscript',
+        doValidate: false
+      })
     }
   )
 )
@@ -1023,7 +1215,7 @@ tests.push(
       () =>
         gc.build.file({
           input,
-          fileUri: 'app://main.gcscript',
+          fileUri: 'app:///main.gcscript',
           doValidate: false,
           allowedProtocols: ['https'],
           allowedRemoteDomains: ['example.test'],
@@ -1062,7 +1254,7 @@ tests.push(
         () =>
           gc.build.file({
             input,
-            fileUri: 'app://main.gcscript',
+            fileUri: 'app:///main.gcscript',
             doValidate: false,
             files: {
               'config.json': { data: Buffer.from('{"secret":true}', 'utf8') }
@@ -1661,7 +1853,7 @@ tests.push(
       '--cwd',
       projectDir,
       '--fileUri',
-      'app://main.gcscript',
+      'app:///main.gcscript',
       '--quiet'
     ])
 
@@ -1716,7 +1908,7 @@ tests.push(
         '--cwd',
         projectDir,
         '--fileUri',
-        'app://main.gcscript',
+        'app:///main.gcscript',
         '--compactOutput'
       ])
 
@@ -1727,7 +1919,10 @@ tests.push(
       )
       assert.equal(result.stdout, '')
       assert.match(result.stderr, /Build summary/)
-      assert.match(result.stderr, /app:\/\/config\.json\s+67 B, 4 lines, hash /)
+      assert.match(
+        result.stderr,
+        /app:\/\/\/config\.json\s+67 B, 4 lines, hash /
+      )
       assert.match(result.stderr, /Built artifact .* hash /)
     }
   )

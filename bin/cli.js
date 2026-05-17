@@ -834,6 +834,7 @@ export default async function main() {
       snippetArgs,
 
       fileUri,
+      appWorkingDir: workingDirectory,
       allowedProtocols,
       allowedRemoteDomains,
       compactOutput,

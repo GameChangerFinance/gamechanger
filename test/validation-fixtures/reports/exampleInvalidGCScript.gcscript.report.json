@@ -5,7 +5,7 @@
       "code": "code-additional-property",
       "message": "Unknown property \"pubKeyHashHexa\". Did you mean \"pubKeyHashHex\"?",
       "fileName": "exampleInvalidGCScript.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/exampleInvalidGCScript.gcscript",
       "jsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
       "location": {

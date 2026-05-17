@@ -5,7 +5,7 @@
       "code": "code-type-mismatch",
       "message": "Expected /run/bad to be object, got array.",
       "fileName": "030-array-type-in-object.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/030-array-type-in-object.gcscript",
       "jsonPath": "/run/bad",
       "location": {

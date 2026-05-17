@@ -5,7 +5,7 @@
       "code": "code-additional-property",
       "message": "Unknown property \"exportAss\". Did you mean \"exportAs\"?",
       "fileName": "008-script-exportas-typo.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/008-script-exportas-typo.gcscript",
       "jsonPath": "/exportAss",
       "location": {
@@ -57,7 +57,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 9,
+    "validateMs": 11,
     "schemaMs": 0
   }
 }

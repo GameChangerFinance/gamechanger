@@ -122,7 +122,8 @@ export const BuildResourceProtocolCategories = {
 } as const
 
 export const DefaultBuildAllowedProtocols = ['app'] as const
-export const DefaultMainFileAppURI = 'app://main.gcscript'
+export const DefaultFilesystemRoot = '/'
+export const DefaultMainFileAppURI = 'app:///main.gcscript'
 export const BuildOutputMimeType = 'application/json;charset=utf-8'
 export const ZipDataUriMimeType = 'application/zip'
 export const TarGzDataUriMimeType = 'application/gzip'

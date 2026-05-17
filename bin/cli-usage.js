@@ -152,7 +152,7 @@ const renderSnippetOptions = () =>
 const renderBuildOptions = (config) =>
   [
     '\t--cwd [path] | -C [path] : Working directory used by the CLI app:// resolver. Defaults to the current working directory.',
-    `\t--fileUri [uri] | -U [uri] : Logical parent URI used by build. Defaults to ${config.DefaultMainFileAppURI}.`,
+    `\t--fileUri [uri] | -U [uri] : Absolute app:// URI identity used by build. Defaults to ${config.DefaultMainFileAppURI}.`,
     `\t--allowProtocols [csv] : Build protocol allow-list. Defaults to ${(
       config.DefaultBuildAllowedProtocols || []
     ).join(',')}.`,
@@ -185,7 +185,7 @@ const renderTopUsage = ({ config, handlers }) => {
     '',
     'Usage',
     `\t$ ${CLI_NAME} [network] [action] [subaction] [options]`,
-    `\t$ ${CLI_NAME} build [-f file] [-o output] [--fileUri ${config.DefaultMainFileAppURI}]`,
+    `\t$ ${CLI_NAME} build [-f file] [-o output] [--cwd projectRoot] [--fileUri ${config.DefaultMainFileAppURI}]`,
     `\t$ ${CLI_NAME} validate [-f built.gcscript] [-o report.json]`,
     '',
     `Networks: ${formatChoiceList(config.networkTags || [])}`,

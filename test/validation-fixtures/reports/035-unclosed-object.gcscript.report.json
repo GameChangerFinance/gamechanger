@@ -5,7 +5,7 @@
       "code": "code-syntax-error",
       "message": "Strict JSON syntax error: CloseBraceExpected. Validation input must be built JSON, not JSONC.",
       "fileName": "035-unclosed-object.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/035-unclosed-object.gcscript",
       "jsonPath": "/",
       "location": {

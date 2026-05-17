@@ -5,7 +5,7 @@
       "code": "code-required-property",
       "message": "Missing required property \"dataHex\".",
       "fileName": "013-missing-required-sign-data.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/013-missing-required-sign-data.gcscript",
       "jsonPath": "/dataHex",
       "location": {
@@ -65,7 +65,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

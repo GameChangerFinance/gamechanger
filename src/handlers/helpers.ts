@@ -4,7 +4,8 @@ import {
   BuildResourceProtocols,
   DefaultBuildAllowedProtocols,
   BuildOutputMimeType,
-  DefaultMainFileAppURI
+  DefaultMainFileAppURI,
+  DefaultFilesystemRoot
 } from '../config'
 import { bufferToDataURI, hashCode } from '../utils'
 import {
@@ -189,6 +190,8 @@ export type BuildOptions = {
    * filesystem.
    */
   fileUri?: string
+  /** Absolute filesystem/virtual root used as the app:// root for build-time resolution. */
+  appWorkingDir?: string
   files?: VirtualFileSystem
   allowedProtocols?: string[]
   /** Optional exact/wildcard hostname whitelist for http(s) resources. */
@@ -217,6 +220,7 @@ export type BuildContext = {
   input: string
   fileUri: string
   explicitFileUri: boolean
+  appWorkingDir: string
   files: VirtualFileSystem
   allowedProtocols: string[]
   allowedRemoteDomains?: string[]
@@ -358,32 +362,81 @@ export const gcScriptWalker = async ({
 const hasProtocol = (resourceUri: string) =>
   /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(resourceUri)
 
-/**
- * Normalizes virtual/project-relative paths and rejects traversal above root.
- * This is intentionally stricter than URL pathname normalization: app:// paths
- * identify project resources, not arbitrary local filesystem locations.
- */
-const normalizeRelativePath = (value: string) => {
+const splitProtocol = (resourceUri: string) => {
+  const match = String(resourceUri || '').match(
+    /^([a-zA-Z][a-zA-Z0-9+.-]*):(.*)$/s
+  )
+  return match ? { protocol: match[1], rest: match[2] } : undefined
+}
+
+const normalizeSlashes = (value: string) =>
+  String(value || '').replace(/\\/g, '/')
+
+const normalizeFilesystemPath = (value: string) => {
+  const source = normalizeSlashes(value)
+  const absolute = source.startsWith('/')
   const parts: string[] = []
-  for (const rawPart of value.replace(/\\/g, '/').split('/')) {
+  for (const rawPart of source.split('/')) {
     const part = rawPart.trim()
     if (!part || part === '.') continue
     if (part === '..') {
-      if (parts.length === 0) {
-        throw new Error(
-          `Path traversal outside project root is not allowed: ${value}`
-        )
+      if (parts.length > 0 && parts[parts.length - 1] !== '..') {
+        parts.pop()
+      } else if (!absolute) {
+        parts.push('..')
       }
-      parts.pop()
       continue
     }
     parts.push(part)
   }
-  return parts.join('/')
+  const joined = parts.join('/')
+  return absolute ? `/${joined}`.replace(/\/+$|^$/g, '') || '/' : joined || '.'
+}
+
+const joinFilesystemPath = (...parts: string[]) =>
+  normalizeFilesystemPath(parts.filter((part) => part !== undefined).join('/'))
+
+const dirnameOf = (value: string) => {
+  const normalized = normalizeFilesystemPath(value)
+  if (normalized === '/') return '/'
+  const parts = normalized.split('/')
+  parts.pop()
+  const joined = parts.join('/')
+  return joined || (normalized.startsWith('/') ? '/' : '.')
+}
+
+const stripTrailingSlash = (value: string) =>
+  value.length > 1 ? value.replace(/\/+$/g, '') : value
+
+const assertAbsolutePath = (value: string, label: string) => {
+  if (typeof value !== 'string' || !normalizeSlashes(value).startsWith('/')) {
+    throw createBuildError({
+      type: 'BuildError',
+      message: `${label} must be an absolute path. Received '${value || ''}'.`
+    })
+  }
+  return stripTrailingSlash(normalizeFilesystemPath(value)) || '/'
+}
+
+/**
+ * Normalizes app/project paths and rejects traversal above the app root.
+ * app:// is a restricted file-like protocol rooted at appWorkingDir.
+ */
+const normalizeAppProjectPath = (value: string) => {
+  const normalized = normalizeFilesystemPath(value)
+  if (!normalized.startsWith('/')) {
+    throw new Error(`Internal app path must be absolute: ${value}`)
+  }
+  if (normalized.includes('/../') || normalized.endsWith('/..')) {
+    throw new Error(
+      `Path traversal outside project root is not allowed: ${value}`
+    )
+  }
+  return normalized
 }
 
 export const getResourceProtocol = (resourceUri: string) => {
-  const match = resourceUri.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)
+  const match = String(resourceUri || '').match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/)
   return match ? match[1] : ''
 }
 
@@ -399,59 +452,237 @@ export const getBuildResourceProtocolCategory = (
   ) as BuildResourceProtocolCategory[]) {
     if (categories[category].includes(protocol)) return category
   }
-  // Unknown future protocols are conservative: mutable until explicitly configured.
   return 'mutable'
+}
+
+export const assertResourceHasProtocol = (
+  resourceUri: string,
+  context?: BuildContext,
+  path?: string[]
+) => {
+  if (!getResourceProtocol(resourceUri)) {
+    throw createBuildError({
+      type: 'BuildError',
+      importTrace: context?.importTrace,
+      path,
+      message: `Missing protocol at '${resourceUri}'. Build resource imports must be explicit, for example app://./file.gcscript.jsonc or app:///file.gcscript.jsonc.`
+    })
+  }
+}
+
+export const assertBuildFileUri = (fileUri: string) => {
+  const parsed = parseBuildResourceUri(fileUri)
+  if (parsed.protocol !== 'app' || !parsed.isAbsolute) {
+    throw createBuildError({
+      type: 'BuildError',
+      message: `build() fileUri must be an absolute app:// URI such as '${DefaultMainFileAppURI}'. Received '${
+        fileUri || ''
+      }'.`
+    })
+  }
+  return appProjectPathToUri(normalizeAppProjectPath(parsed.path))
+}
+
+const appProjectPathToUri = (projectPath: string) =>
+  `app://${normalizeAppProjectPath(projectPath)}`
+
+const joinAppProjectPath = (baseDir: string, childPath: string) => {
+  const parts = normalizeAppProjectPath(baseDir).split('/').filter(Boolean)
+  for (const rawPart of normalizeSlashes(childPath).split('/')) {
+    const part = rawPart.trim()
+    if (!part || part === '.') continue
+    if (part === '..') {
+      if (parts.length === 0) {
+        throw new Error(
+          `Path traversal outside project root is not allowed: ${childPath}`
+        )
+      }
+      parts.pop()
+      continue
+    }
+    parts.push(part)
+  }
+  return `/${parts.join('/')}`
+}
+
+const filePathToUri = (filesystemPath: string) =>
+  `file://${encodeURI(normalizeFilesystemPath(filesystemPath))}`
+
+export const parseBuildResourceUri = (resourceUri: string) => {
+  const parsed = splitProtocol(resourceUri)
+  if (!parsed) {
+    return { protocol: '', path: resourceUri, isAbsolute: false }
+  }
+  const { protocol, rest } = parsed
+  if (protocol === 'app' || protocol === 'file') {
+    if (rest.startsWith('///')) {
+      return {
+        protocol,
+        path: decodeURIComponent(rest.slice(2)),
+        isAbsolute: true
+      }
+    }
+    if (rest.startsWith('//')) {
+      return {
+        protocol,
+        path: decodeURIComponent(rest.slice(2)),
+        isAbsolute: false
+      }
+    }
+    return {
+      protocol,
+      path: decodeURIComponent(rest.replace(/^\/+/, '')),
+      isAbsolute: false
+    }
+  }
+  return { protocol, path: rest, isAbsolute: true }
+}
+
+export const appUriToProjectPath = (resourceUri: string) => {
+  const parsed = parseBuildResourceUri(resourceUri)
+  if (parsed.protocol !== 'app') {
+    throw new Error(`Expected app:// URI. Received '${resourceUri}'.`)
+  }
+  return normalizeAppProjectPath(
+    parsed.isAbsolute ? parsed.path : `/${parsed.path}`
+  )
+}
+
+export const fileUriToFilesystemPath = (resourceUri: string) => {
+  const parsed = parseBuildResourceUri(resourceUri)
+  if (parsed.protocol !== 'file') {
+    throw new Error(`Expected file:// URI. Received '${resourceUri}'.`)
+  }
+  return normalizeFilesystemPath(
+    parsed.isAbsolute ? parsed.path : `/${parsed.path}`
+  )
+}
+
+const appProjectPathToFilesystemPath = (
+  appWorkingDir: string,
+  projectPath: string
+) => joinFilesystemPath(appWorkingDir, normalizeAppProjectPath(projectPath))
+
+const filesystemPathToAppProjectPath = (
+  appWorkingDir: string,
+  filesystemPath: string
+) => {
+  const root = stripTrailingSlash(normalizeFilesystemPath(appWorkingDir)) || '/'
+  const target = normalizeFilesystemPath(filesystemPath)
+  if (root === '/') return normalizeAppProjectPath(target)
+  if (target === root) return '/'
+  if (!target.startsWith(`${root}/`)) return undefined
+  return normalizeAppProjectPath(target.slice(root.length) || '/')
+}
+
+const getCurrentFilesystemPath = (context: BuildContext) => {
+  const protocol = getResourceProtocol(context.fileUri)
+  if (protocol === 'file') return fileUriToFilesystemPath(context.fileUri)
+  if (protocol === 'app') {
+    return appProjectPathToFilesystemPath(
+      context.appWorkingDir,
+      appUriToProjectPath(context.fileUri)
+    )
+  }
+  return appProjectPathToFilesystemPath(context.appWorkingDir, '/')
+}
+
+export const resolveBuildResourceUri = (
+  resourceUri: string,
+  context: BuildContext,
+  path?: string[]
+) => {
+  assertResourceHasProtocol(resourceUri, context, path)
+  const parsed = parseBuildResourceUri(resourceUri)
+  const protocol = parsed.protocol
+
+  if (!BuildResourceProtocols.includes(protocol as BuildResourceProtocol)) {
+    throw createBuildError({
+      type: 'BuildError',
+      importTrace: context.importTrace,
+      path,
+      message: `Unknown protocol '${protocol}' at '${resourceUri}'`
+    })
+  }
+  if (!context.allowedProtocols.includes(protocol)) {
+    throw createBuildError({
+      type: 'BuildError',
+      importTrace: context.importTrace,
+      path,
+      message: `Illegal protocol '${protocol}' at '${resourceUri}'`
+    })
+  }
+
+  if (protocol === 'app' || protocol === 'file') {
+    if (protocol === 'app') {
+      try {
+        const currentProtocol = getResourceProtocol(context.fileUri)
+        if (!parsed.isAbsolute && currentProtocol === 'app') {
+          const projectPath = joinAppProjectPath(
+            dirnameOf(appUriToProjectPath(context.fileUri)),
+            parsed.path
+          )
+          return appProjectPathToUri(projectPath)
+        }
+
+        const currentDir = dirnameOf(getCurrentFilesystemPath(context))
+        const targetFilesystemPath = parsed.isAbsolute
+          ? appProjectPathToFilesystemPath(context.appWorkingDir, parsed.path)
+          : joinFilesystemPath(currentDir, parsed.path)
+        const projectPath = filesystemPathToAppProjectPath(
+          context.appWorkingDir,
+          targetFilesystemPath
+        )
+        if (!projectPath) {
+          throw new Error(
+            `app:// resource '${resourceUri}' resolves outside the app root.`
+          )
+        }
+        return appProjectPathToUri(projectPath)
+      } catch (err) {
+        throw createBuildError({
+          type: 'BuildError',
+          importTrace: context.importTrace,
+          path,
+          message: err instanceof Error ? err.message : String(err)
+        })
+      }
+    }
+
+    const currentDir = dirnameOf(getCurrentFilesystemPath(context))
+    const targetFilesystemPath = parsed.isAbsolute
+      ? normalizeFilesystemPath(parsed.path)
+      : joinFilesystemPath(currentDir, parsed.path)
+    return filePathToUri(targetFilesystemPath)
+  }
+
+  if (protocol === 'http' || protocol === 'https' || protocol === 'blob') {
+    return resourceUri
+  }
+
+  return resourceUri
 }
 
 export const resourceUriToRelativePath = (resourceUri: string) => {
   const protocol = getResourceProtocol(resourceUri)
-  if (!protocol) return normalizeRelativePath(resourceUri)
+  if (!protocol) return normalizeFilesystemPath(resourceUri).replace(/^\/+/, '')
 
   if (protocol === 'app') {
-    const url = new URL(resourceUri)
-    return normalizeRelativePath(
-      [url.hostname, decodeURIComponent(url.pathname || '')]
-        .filter(Boolean)
-        .join('/')
-    )
+    return appUriToProjectPath(resourceUri).replace(/^\/+/, '')
   }
 
-  return normalizeRelativePath(
+  if (protocol === 'file') return fileUriToFilesystemPath(resourceUri)
+
+  return normalizeFilesystemPath(
     decodeURIComponent(new URL(resourceUri).pathname)
-  )
+  ).replace(/^\/+/, '')
 }
 
-export const resolveResourceUri = (
-  resourceUri: string,
-  baseUri?: string,
-  options?: { explicitBaseUri?: boolean }
-) => {
-  if (hasProtocol(resourceUri)) return resourceUri
-  if (!baseUri) return resourceUri
-
-  const baseProtocol = getResourceProtocol(baseUri)
-
-  if (baseProtocol === 'file' && !options?.explicitBaseUri) {
-    throw new Error(
-      `Relative import '${resourceUri}' from file: requires an explicit fileUri parent.`
-    )
-  }
-
-  if (baseProtocol === 'app') {
-    const basePath = resourceUriToRelativePath(baseUri)
-    const baseDir = basePath.split('/').slice(0, -1).join('/')
-    const relPath = normalizeRelativePath([baseDir, resourceUri].join('/'))
-    return `app://${relPath}`
-  }
-
-  if (baseProtocol === 'http' || baseProtocol === 'https') {
+export const resolveResourceUri = (resourceUri: string, baseUri?: string) => {
+  if (!baseUri || hasProtocol(resourceUri)) return resourceUri
+  if (baseUri.startsWith('http:') || baseUri.startsWith('https:')) {
     return new URL(resourceUri, baseUri).toString()
   }
-
-  if (baseProtocol === 'file') {
-    return new URL(resourceUri, baseUri).toString()
-  }
-
   return resourceUri
 }
 
@@ -459,21 +690,25 @@ const createBuildError = ({
   type,
   importTrace,
   path,
-  message
+  message,
+  data
 }: {
   type: string
   importTrace?: string[]
   path?: string[]
   message: string
+  data?: Record<string, unknown>
 }) => {
   const error = new Error(message) as Error & {
     type?: string
     importTrace?: string[]
     path?: string
+    data?: Record<string, unknown>
   }
   error.type = type
   error.importTrace = importTrace
   error.path = path ? path2Str(path) : undefined
+  error.data = data
   return error
 }
 
@@ -568,14 +803,15 @@ export const getResource = async (
   fileUri: string,
   options: BuildResourceArgs
 ) => {
-  const resourceUri = resolveResourceUri(fileUri, options?.baseUri, {
-    explicitBaseUri: options.explicitBaseUri ?? options.context?.explicitFileUri
-  })
+  const context = options.context
+  const resourceUri = context
+    ? resolveBuildResourceUri(fileUri, context)
+    : resolveResourceUri(fileUri, options?.baseUri)
   const allowedProtocols = options?.allowedProtocols ||
-    options.context?.allowedProtocols || [...DefaultBuildAllowedProtocols]
+    context?.allowedProtocols || [...DefaultBuildAllowedProtocols]
   const protocolHandlers: BuildProtocolHandlers = {
     ...defaultBuildProtocolHandlers,
-    ...(options.context?.protocolHandlers || {}),
+    ...(context?.protocolHandlers || {}),
     ...(options.protocolHandlers || {})
   }
 
@@ -587,11 +823,7 @@ export const getResource = async (
   if (allowedProtocols && !allowedProtocols.includes(protocol)) {
     throw new Error(`Illegal protocol '${protocol}' at '${resourceUri}'`)
   }
-  await assertMutableBranchCanAccessProtocol(
-    options.context,
-    protocol,
-    resourceUri
-  )
+  await assertMutableBranchCanAccessProtocol(context, protocol, resourceUri)
 
   if (
     (protocol === 'http' || protocol === 'https') &&
@@ -601,7 +833,7 @@ export const getResource = async (
     )
   ) {
     throw await createBuildSecurityError(
-      options.context,
+      context,
       `Remote domain is not allowed for '${resourceUri}'`,
       { resourceUri, protocol }
     )
@@ -610,8 +842,8 @@ export const getResource = async (
   const handler = protocolHandlers[protocol]
   if (!handler) throw new Error(`Missing handler for protocol '${protocol}'`)
 
-  if (options.context) {
-    await emitBuildEvent(options.context, {
+  if (context) {
+    await emitBuildEvent(context, {
       type: 'resource:load',
       protocol,
       fileUri: resourceUri,
@@ -621,7 +853,7 @@ export const getResource = async (
 
   const data = await handler(resourceUri, { ...options, fileUri: resourceUri })
 
-  if (options.context && options.context.options.collectSummary) {
+  if (context && context.options.collectSummary) {
     const buffer = Buffer.from(data)
     let resourceHash: string | undefined
     let jsonCompatible = false
@@ -633,7 +865,7 @@ export const getResource = async (
       // are valid build inputs, but they do not have a wallet-compatible
       // GCScript hashCode(). The CLI summary still reports bytes and lines.
     }
-    await emitBuildEvent(options.context, {
+    await emitBuildEvent(context, {
       type: 'resource:loaded',
       protocol,
       fileUri: resourceUri,
@@ -782,9 +1014,10 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
     const fromKeysDict: Record<string, string> = {}
     for (let kvIndex = 0; kvIndex < kvFrom.length; kvIndex++) {
       const [fromKey, rawFileUri] = kvFrom[kvIndex]
-      const fileUri = resolveResourceUri(String(rawFileUri), context.fileUri, {
-        explicitBaseUri: context.explicitFileUri
-      })
+      const fileUri = resolveBuildResourceUri(String(rawFileUri), context, [
+        ...path,
+        String(fromKey)
+      ])
       const fileBuff = await getResource(fileUri, {
         ...context.options,
         context,
@@ -795,13 +1028,17 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
         ...context.options,
         input: Buffer.from(fileBuff).toString('utf8'),
         fileUri,
+        appWorkingDir: context.appWorkingDir,
         files: context.files,
         allowedProtocols: context.allowedProtocols,
         allowedRemoteDomains: context.allowedRemoteDomains,
         protocolHandlers: context.protocolHandlers,
         directiveHandlers: context.directiveHandlers,
         importTrace: context.importTrace,
-        security: getChildSecurityContext(context, fileUri),
+        security: {
+          ...getChildSecurityContext(context, fileUri),
+          __allowResolvedFileUri: true
+        } as BuildSecurityContext,
         onEvent: context.options.onEvent
       })
       kvFrom[kvIndex] = [fromKey, solvedData]
@@ -855,9 +1092,10 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
 
     for (let kvIndex = 0; kvIndex < kvFrom.length; kvIndex++) {
       const [fromKey, rawFileUri] = kvFrom[kvIndex]
-      const fileUri = resolveResourceUri(String(rawFileUri), context.fileUri, {
-        explicitBaseUri: context.explicitFileUri
-      })
+      const fileUri = resolveBuildResourceUri(String(rawFileUri), context, [
+        ...path,
+        String(fromKey)
+      ])
       const fileBuff = await getResource(fileUri, {
         ...context.options,
         context,
@@ -882,28 +1120,46 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
   }
 }
 
-const createBuildContext = (options: BuildOptions): BuildContext => ({
-  input: options.input,
-  fileUri: options.fileUri || DefaultMainFileAppURI,
-  explicitFileUri: Boolean(options.fileUri),
-  files: options.files || {},
-  allowedProtocols: options.allowedProtocols || [
-    ...DefaultBuildAllowedProtocols
-  ],
-  allowedRemoteDomains: options.allowedRemoteDomains,
-  protocolHandlers: {
-    ...defaultBuildProtocolHandlers,
-    ...(options.protocolHandlers || {})
-  },
-  directiveHandlers: {
-    ...defaultBuildDirectiveHandlers,
-    ...(options.directiveHandlers || {})
-  },
-  importTrace: [...(options.importTrace || [])],
-  security: { ...(options.security || {}) },
-  options,
-  state: {}
-})
+const createBuildContext = (options: BuildOptions): BuildContext => {
+  const appWorkingDir = assertAbsolutePath(
+    options.appWorkingDir || DefaultFilesystemRoot,
+    'build() appWorkingDir'
+  )
+  const allowResolvedFileUri = Boolean(
+    (
+      options.security as
+        | (BuildSecurityContext & { __allowResolvedFileUri?: boolean })
+        | undefined
+    )?.__allowResolvedFileUri
+  )
+  const rawFileUri = options.fileUri || DefaultMainFileAppURI
+  const fileUri = allowResolvedFileUri
+    ? resolveResourceUri(rawFileUri)
+    : assertBuildFileUri(rawFileUri)
+  return {
+    input: options.input,
+    fileUri,
+    explicitFileUri: Boolean(options.fileUri),
+    appWorkingDir,
+    files: options.files || {},
+    allowedProtocols: options.allowedProtocols || [
+      ...DefaultBuildAllowedProtocols
+    ],
+    allowedRemoteDomains: options.allowedRemoteDomains,
+    protocolHandlers: {
+      ...defaultBuildProtocolHandlers,
+      ...(options.protocolHandlers || {})
+    },
+    directiveHandlers: {
+      ...defaultBuildDirectiveHandlers,
+      ...(options.directiveHandlers || {})
+    },
+    importTrace: [...(options.importTrace || [])],
+    security: { ...(options.security || {}) },
+    options,
+    state: {}
+  }
+}
 
 export const resolveBuildDirectivesStage: BuildStage = async ({
   context,

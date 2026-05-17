@@ -11,6 +11,18 @@ in links, QRs, dapps, web, screens, social media and solve other related tasks
 > Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
 > flavors
 
+### Build resource URI security
+
+Build imports are explicit and protocol-qualified. Protocol-less imports such as
+`./common.gcscript.jsonc`, `../common.gcscript.jsonc`, or
+`lib/common.gcscript.jsonc` are rejected before loading. Use
+`app://./common.gcscript.jsonc` or `app:///lib/common.gcscript.jsonc` for
+app-rooted resources. `file://` remains disabled by default; when explicitly
+enabled, `file://./x` and `file://../x` resolve with the same
+directory-navigation semantics as `app://`, but may traverse outside the app
+root. CLI `-f` only selects the input file; pass `--cwd` as the app filesystem
+root and `--fileUri app:///main.gcscript` as the logical build URI.
+
 ## Try it online:
 
 [✨ Kitchen Sink Dapp ✨](https://gclib-kitchen-sink.netlify.app/)
@@ -279,14 +291,14 @@ const outputDataURI = await gc.build.file({
   }`,
   // fileUri is only the logical parent URI used to resolve relative imports.
   // It is never read or written as the build input file.
-  fileUri: 'app://main.gcscript',
+  fileUri: 'app:///main.gcscript',
   files
 })
 
 // Use compactOutput for smaller generated files when whitespace is not needed.
 const compactOutputDataURI = await gc.build.file({
   input: '{"type":"script","run":{}}',
-  fileUri: 'app://main.gcscript',
+  fileUri: 'app:///main.gcscript',
   compactOutput: true
 })
 
@@ -303,7 +315,7 @@ schema URL and can be overridden by callers:
 const useSchema = await gc.utils.downloadGCScriptSchema()
 const outputDataURI = await gc.build.file({
   input: sourceJSONC,
-  fileUri: 'app://main.gcscript',
+  fileUri: 'app:///main.gcscript',
   files,
   useSchema
 })
@@ -487,7 +499,7 @@ and will log something like:
 
 Usage
 	$ gamechanger-cli [network] [action] [subaction] [options]
-	$ gamechanger-cli build [-f file] [-o output] [--fileUri app://main.gcscript]
+	$ gamechanger-cli build [-f file] [-o output] [--cwd projectRoot] [--fileUri app:///main.gcscript]
 	$ gamechanger-cli validate [-f built.gcscript] [-o report.json]
 
 Networks: 'mainnet' | 'preprod'
@@ -543,7 +555,7 @@ Snippet options:
 
 Build options:
 	--cwd [path] | -C [path] : Working directory used by the CLI app:// resolver. Defaults to the current working directory.
-	--fileUri [uri] | -U [uri] : Logical parent URI used by build. Defaults to app://main.gcscript.
+	--fileUri [uri] | -U [uri] : Absolute app:// URI identity used by build. Defaults to app:///main.gcscript.
 	--allowProtocols [csv] : Build protocol allow-list. Defaults to app.
 	--allowedRemoteDomains [csv] : Optional exact or wildcard host allow-list for http(s) build imports.
 	--compactOutput : Emit compact strict JSON.

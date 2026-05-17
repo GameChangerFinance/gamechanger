@@ -5,7 +5,7 @@
       "code": "code-required-property",
       "message": "Missing required property \"type\".",
       "fileName": "018-script-nested-missing-run-node.gcscript",
-      "fileUri": "app://main.gcscript",
+      "fileUri": "app:///main.gcscript",
       "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/018-script-nested-missing-run-node.gcscript",
       "jsonPath": "/run/a/type",
       "location": {
@@ -66,7 +66,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 3,
+    "validateMs": 2,
     "schemaMs": 0
   }
 }
