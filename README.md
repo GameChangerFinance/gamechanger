@@ -11,18 +11,6 @@ in links, QRs, dapps, web, screens, social media and solve other related tasks
 > Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
 > flavors
 
-### Build resource URI security
-
-Build imports are explicit and protocol-qualified. Protocol-less imports such as
-`./common.gcscript.jsonc`, `../common.gcscript.jsonc`, or
-`lib/common.gcscript.jsonc` are rejected before loading. Use
-`app://./common.gcscript.jsonc` or `app:///lib/common.gcscript.jsonc` for
-app-rooted resources. `file://` remains disabled by default; when explicitly
-enabled, `file://./x` and `file://../x` resolve with the same
-directory-navigation semantics as `app://`, but may traverse outside the app
-root. CLI `-f` only selects the input file; pass `--cwd` as the app filesystem
-root and `--fileUri app:///main.gcscript` as the logical build URI.
-
 ## Try it online:
 
 [✨ Kitchen Sink Dapp ✨](https://gclib-kitchen-sink.netlify.app/)
@@ -31,22 +19,36 @@ root and `--fileUri app:///main.gcscript` as the logical build URI.
 - All the supported outputs formats for you to integrate or share
 - All the supported code generation languages for you to integrate
 
-## Example CLI/Library outputs:
+## Examples:
 
-To run web based examples:
+To run Kitchen Sink and other web based examples:
 
 ```bash
-$ npm run examples
+$ pnpm run examples
 ```
 
 To run the backend example:
 
 ```bash
-$ npm run examples:express
+$ pnpm run examples:express
 
 ```
 
-- [Kitchen Sink - all outputs in one example](examples/index.html):
+To run the NPM project example:
+
+```bash
+$ pnpm install
+$ pnpm run dev
+```
+
+### Custom examples
+
+- [Kitchen Sink](examples/index.html): all outputs in one example
+- [NPM Project Example](examples/project/): a modular, GCScript multi-file NPM project with auto frontend generation
+
+
+### CLI/library output examples
+
 - [URL](examples/URL.txt)
 - [QR (png)](examples/QR.png)
 - [QR (svg)](examples/QR.svg)
@@ -70,6 +72,7 @@ to the wallet and then captures the response via "webhook" redirection. Express
 is suggested only for serving snippets or running Express examples; it is not
 required for normal CLI encode, snippet generation, or build actions.
 
+
 Read more about examples [here](examples/README.md):
 
 ## Install CLI
@@ -84,6 +87,8 @@ Node target: `>=24.12.0`
 
 ```
 $ npm install -s @gamechanger-finance/gc
+# or
+$ pnpm add @gamechanger-finance/gc
 ```
 
 ## Import library on your projects:
@@ -150,7 +155,7 @@ browser-targeted builds, so bundlers such as Vite can consume the package
 without pulling `@napi-rs/canvas`, `jsdom`, or the Node EasyQRCodeJS runtime
 into browser dependency graphs.
 
-For local packaging smoke tests during development:
+For local packaging / smoke tests during development:
 
 ```bash
 npm run pack:local
@@ -320,6 +325,20 @@ const outputDataURI = await gc.build.file({
   useSchema
 })
 ```
+#### Notes:
+
+- Build imports are explicit and protocol-qualified. Protocol-less imports such as
+`./common.gcscript.jsonc`, `../common.gcscript.jsonc`, or
+`lib/common.gcscript.jsonc` are rejected before loading. 
+- Use`app://./common.gcscript.jsonc` or `app:///lib/common.gcscript.jsonc` for
+app-rooted resources. 
+- Protocol `file://` remains disabled by default; when explicitly
+enabled, `file://./x` and `file://../x` resolve with the same
+directory-navigation semantics as `app://`, but may traverse outside the app
+root. 
+- In CLI `-f` argument only selects the input file; pass `--cwd` as the app filesystem
+root and `--fileUri app:///main.gcscript` as the logical build URI.
+
 
 ### Validate built GCScript JSON
 
@@ -348,14 +367,6 @@ hints/examples when the full schema flavor provides documentation metadata.
 Validation also performs lightweight ISL checks for very likely inline code
 strings, reporting probable function-name typos as warnings rather than errors.
 
-The CLI keeps generated output POSIX-friendly: human progress, warnings, and
-validation summaries are written to `stderr`; generated artifacts and validation
-JSON reports are written to `stdout` only when `-o/--outputFile` is omitted.
-`--quiet` suppresses non-essential human logs without changing generated output.
-Validation warnings are shown by default during `build` and `validate`; pass
-`--hide-warnings` to hide them. Successful `encode`, `snippet`, and `build`
-actions exit `0`; failures exit non-zero. `validate` exits `0` only when the
-report has `isValid: true`.
 
 For bulk fixture checks, run:
 
@@ -397,6 +408,16 @@ Security model:
 - Unknown future protocols are treated as mutable by default.
 - Mutable remote resources such as `http`/`https` taint their dependency branch
   and cannot import nested local resources such as `app`, `file`, or `blob`.
+
+CLI notes:
+- The CLI keeps generated output POSIX-friendly: human progress, warnings, and
+validation summaries are written to `stderr`; generated artifacts and validation
+JSON reports are written to `stdout` only when `-o/--outputFile` is omitted.
+- `--quiet` suppresses non-essential human logs without changing generated output.
+- Validation warnings are shown by default during `build` and `validate`; pass
+`--hide-warnings` to hide them. 
+- Successful `encode`, `snippet`, and `build` actions exit `0`; failures exit non-zero. 
+- `validate` exits `0` only when the report has `isValid: true`.
 
 Virtual files use `Buffer` for cross-target consistency:
 
