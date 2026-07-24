@@ -1,0 +1,49 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-type-mismatch",
+      "message": "Expected / to be object, got string.",
+      "fileName": "004-root-string.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/004-root-string.gcscript",
+      "jsonPath": "/",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 19
+      },
+      "error": "Type mismatch",
+      "suggestion": "Use a value of type object.",
+      "provided": "getCurrentAddress",
+      "details": {
+        "expected": "object",
+        "actual": "string",
+        "branchScores": [
+          {
+            "schemaPath": "#/type",
+            "title": "Initial block of code",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          }
+        ],
+        "keyword": "type",
+        "schemaPath": "#/type",
+        "params": {
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

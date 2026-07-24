@@ -1,0 +1,65 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"get\".",
+      "fileName": "022-query-wrong-shape.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/022-query-wrong-shape.gcscript",
+      "jsonPath": "/get",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 51
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"get\" at /.",
+      "examples": [
+        {
+          "type": "query",
+          "get": {
+            "kind": "BeaconToken",
+            "asset": {
+              "policyId": "8453db57f15bd9e657253daeac76c020c17533aff1dcba29a78f7348",
+              "assetNameHex": "41444d494e5f544f4b454e"
+            },
+            "address": "addr_test1zqjpzgmyr4s9320aq3c3t0uuumfedlwl46pttpdw0uwwz5r94yyu35k68r5jxe7gam5hf3kehj0rptje8v3m4wkxjumsvwnpuj"
+          }
+        }
+      ],
+      "details": {
+        "propertyName": "get",
+        "parentPath": "/",
+        "parentProvided": {
+          "type": "query",
+          "queries": "not-an-object"
+        },
+        "branchScores": [
+          {
+            "schemaPath": "/query.json/required",
+            "title": "Get data from ledger",
+            "score": 9,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": ["get"],
+            "additionalProperties": ["queries"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "/query.json/required",
+        "params": {
+          "missingProperty": "get"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

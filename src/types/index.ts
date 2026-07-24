@@ -104,3 +104,4 @@ export type ExecuteType = {
 
 export type ObjectType = { [name: string]: any }
 export type QRTemplateType = 'boxed' | 'printable'
+export type { SchemaDefinitionLookupResult } from '../handlers/helpers'

@@ -1,0 +1,50 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-invalid-const-enum",
+      "message": "Unknown \"mode\" \"lst\". Did you mean \"last\"?",
+      "fileName": "011-wrong-kind.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/011-wrong-kind.gcscript",
+      "jsonPath": "/return/mode",
+      "location": {
+        "line": 4,
+        "column": 13,
+        "offset": 48,
+        "length": 5
+      },
+      "error": "Unknown \"mode\"",
+      "suggestion": "Replace \"lst\" with \"last\".",
+      "examples": [
+        {
+          "mode": "last"
+        }
+      ],
+      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
+      "provided": "lst",
+      "details": {
+        "propertyName": "mode",
+        "closestValues": ["last"],
+        "schemaPaths": [
+          "/common.json/definitions/ScriptReturnModes/oneOf/3/properties/mode/const"
+        ],
+        "branchScores": {
+          "schemaPath": "#/oneOf/0/properties/mode/const",
+          "score": -5.4,
+          "matchingDiscriminators": [],
+          "mismatchingDiscriminators": [],
+          "siblingMatches": [],
+          "missingRequired": [],
+          "additionalProperties": ["mode"],
+          "typeCompatible": false
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

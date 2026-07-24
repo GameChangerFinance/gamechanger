@@ -1,6 +1,6 @@
 {
   "name": "@gamechanger-finance/gc",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Official GameChanger Wallet library and CLI for integrating with Cardano dapps and solve other tasks (https://gamechanger.finance/)",
   "license": "MIT",
   "repository": "https://github.com/GameChangerFinance/gamechanger.git",
@@ -16,16 +16,17 @@
     "GameChanger",
     "GameChanger Wallet",
     "GameChanger Finance",
-    "GCScript",
-    "GCScripts",
+    "GCScript DSL",
+    "wallet scripts",
     "dApp",
     "dApp connector",
+    "universal dApp connector",
     "blockchain",
-    "utxo",
-    "eutxo",
+    "intents",
+    "CLI",
+    "library",
     "qr",
-    "json",
-    "no code"
+    "json"
   ],
   "scripts": {
     "format": "node ./node_modules/prettier/bin-prettier.js --write --ignore-path .gitignore .",
@@ -43,31 +44,35 @@
     "examples": "npm run build && npm run examples:serve",
     "npm-publish": "npm publish --access public",
     "build-types": "node ./node_modules/typescript/bin/tsc -p tsconfig.types.json",
-    "pack:local": "npm run build && pnpm pack --out dist/%s-%v.tgz"
+    "pack:local": "npm run build && pnpm pack --out dist/%s-%v.tgz",
+    "pnpm-check-before-install": "pnpm install --lockfile-only --ignore-scripts",
+    "pnpm-install": "pnpm install --frozen-lockfile --ignore-scripts",
+    "test:gcscript": "GC_TEST_CLI_STDERR=1 node ./test/gcscript.js"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.96",
-    "data-uri-to-buffer": "^3.0.1",
-    "data-uri-to-file": "^0.1.8",
-    "easyqrcodejs": "^4.4.10",
+    "@napi-rs/canvas": "^0.1.100",
+    "@noble/hashes": "^1.8.0",
+    "ajv": "^8.20.0",
+    "easyqrcodejs": "^4.6.2",
+    "fast-uri": "3.1.4",
+    "fflate": "^0.8.3",
     "get-stdin": "^8.0.0",
-    "jsdom": "^29.0.0",
+    "jsdom": "^29.1.1",
     "json-stringify-safe": "^5.0.1",
-    "lzma": "^2.3.2",
+    "jsonc-parser": "^3.3.1",
     "meow": "^9.0.0",
-    "pako": "^2.1.0",
+    "pako": "^2.2.0",
     "string-placeholder": "^1.0.2",
-    "svgo": "^3.3.2"
+    "svgo": "^3.3.4"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.0.1",
-    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-terser": "^1.0.0",
-    "@rollup/plugin-typescript": "^11.1.5",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@rollup/plugin-url": "^8.0.2",
-    "@types/jsdom": "^28.0.0",
-    "@types/node": "^20.9.1",
+    "@types/node": "^20.19.43",
     "eslint": "8.44.0",
     "eslint-config-prettier": "8.8.0",
     "express": "^5.2.1",
@@ -75,8 +80,8 @@
     "rollup": "^3.30.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "serve": "^14.2.6",
-    "tslib": "^2.6.2",
-    "typescript": "^5.2.2"
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
   },
   "type": "module",
   "exports": {
@@ -98,6 +103,7 @@
   },
   "files": [
     "bin/cli.js",
+    "bin/cli-usage.js",
     "dist/"
   ],
   "jsdelivr": "./dist/browser.min.js",

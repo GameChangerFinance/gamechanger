@@ -1,0 +1,18 @@
+{
+  "type": "script",
+  "run": {
+    "level1": {
+      "type": "script",
+      "run": {
+        "level2": {
+          "type": "script",
+          "run": {
+            "bad": {
+              "type": "getCurrentAddresses"
+            }
+          }
+        }
+      }
+    }
+  }
+}

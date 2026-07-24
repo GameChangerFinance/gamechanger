@@ -1,0 +1,74 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"value\".",
+      "fileName": "014-data-value-missing.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/014-data-value-missing.gcscript",
+      "jsonPath": "/value",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 20
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"value\" at /.",
+      "examples": [
+        {
+          "type": "data",
+          "value": "🚀 Hello world!"
+        },
+        {
+          "type": "data",
+          "value": [
+            "foo",
+            "bar",
+            "baz",
+            true,
+            null,
+            {
+              "nested": {
+                "object": {
+                  "inside": "here"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "details": {
+        "propertyName": "value",
+        "parentPath": "/",
+        "parentProvided": {
+          "type": "data"
+        },
+        "branchScores": [
+          {
+            "schemaPath": "/data.json/required",
+            "title": "Data constant",
+            "score": 10.4,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": ["value"],
+            "additionalProperties": [],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "/data.json/required",
+        "params": {
+          "missingProperty": "value"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

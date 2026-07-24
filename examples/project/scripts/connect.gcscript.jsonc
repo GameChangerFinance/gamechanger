@@ -1,0 +1,12 @@
+{
+  // Imported scripts are parsed as JSONC during build.
+  "type": "script",
+  "title": "Connect with dapp?",
+  "description": "Share basic wallet information with this demo dapp",
+  "exportAs": "connect",
+  "run": {
+    "address": {
+      "type": "getCurrentAddress"
+    }
+  }
+}

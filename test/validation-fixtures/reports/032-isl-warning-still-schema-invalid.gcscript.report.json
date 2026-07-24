@@ -1,0 +1,71 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-invalid-const-enum",
+      "message": "Unknown GCScript function type \"notARealType\".",
+      "fileName": "032-isl-warning-still-schema-invalid.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
+      "jsonPath": "/type",
+      "location": {
+        "line": 2,
+        "column": 11,
+        "offset": 12,
+        "length": 14
+      },
+      "error": "Unknown GCScript function type",
+      "suggestion": "Use a value allowed by the schema for GCScript function type.",
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/notARealType.html"
+      ],
+      "provided": "notARealType",
+      "details": {
+        "propertyName": "type",
+        "closestValues": [],
+        "schemaPaths": [],
+        "branchScores": {
+          "schemaPath": "#/properties/type/const",
+          "score": -6.8,
+          "matchingDiscriminators": [],
+          "mismatchingDiscriminators": [],
+          "siblingMatches": [],
+          "missingRequired": [],
+          "additionalProperties": ["type", "run"],
+          "typeCompatible": false
+        }
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "code": "code-isl-unknown-function-warning",
+      "message": "Possible ISL function typo: unknown function \"sha51\". Did you mean \"sha512\"?",
+      "fileName": "032-isl-warning-still-schema-invalid.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
+      "jsonPath": "/run",
+      "location": {
+        "line": 3,
+        "column": 10,
+        "offset": 37,
+        "length": 31
+      },
+      "error": "Possible ISL function typo",
+      "suggestion": "Replace \"sha51\" with \"sha512\" if this is intended to be ISL code.",
+      "relatedDocs": [
+        "https://wallet.gamechanger.finance/doc/api/v2/lang.html"
+      ],
+      "provided": "sha51",
+      "details": {
+        "functionName": "sha51",
+        "closestFunctions": ["sha512"],
+        "schemaPath": "/lang.json/anyOf/5/anyOf/2"
+      }
+    }
+  ],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

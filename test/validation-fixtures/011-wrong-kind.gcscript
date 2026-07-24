@@ -1,0 +1,11 @@
+{
+  "type": "script",
+  "return": {
+    "mode": "lst"
+  },
+  "run": {
+    "address": {
+      "type": "getCurrentAddress"
+    }
+  }
+}

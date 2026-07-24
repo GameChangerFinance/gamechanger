@@ -1,0 +1,4 @@
+{
+  "type": "notARealType",
+  "run": "{sha51(get('cache.address'))}"
+}

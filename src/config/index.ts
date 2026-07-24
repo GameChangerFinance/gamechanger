@@ -5,9 +5,13 @@ const packageJson: any = {} //TODO: make this work with bundlers
 export const version = packageJson.version
 export const projectName = packageJson.name
 export const repositoryUrl = packageJson.repository
-export const cliName = 'gamechanger-cli'
 
-export const DefaultNetwork: NetworkType = 'mainnet'
+export const DefaultNetworkTag: NetworkType = 'mainnet'
+/**
+ * @deprecated Use {@link DefaultNetworkTag} instead.
+ */
+export const DefaultNetwork: NetworkType = DefaultNetworkTag
+export const DefaultDLTTag = 'cardano'
 export const DefaultAPIVersion: APIVersion = '2'
 export const DefaultAPIEncodings: { [apiVer: string]: APIEncoding } = {
   '1': 'json-url-lzw',
@@ -18,6 +22,7 @@ export const DefaultQRTitle = 'Dapp Action'
 export const DefaultQRSubTitle = 'scan to execute | escanear para ejecutar'
 
 export const networks: NetworkType[] = ['mainnet', 'preprod']
+export const networkTags = networks // Future-friendly export for better devEx
 export const apiVersions: APIVersion[] = [
   // '1',
   '2'
@@ -86,138 +91,55 @@ export const GCDappConnUrls = {
   }
 }
 export const QRRenderTypes = ['png', 'svg']
-// export const demoGCS = {
-//   type: 'tx',
-//   title: 'Demo',
-//   description: 'created with ' + cliName,
-//   metadata: {
-//     '123': {
-//       message: 'Hello World!'
-//     }
-//   }
-// }
-// export const demoPacked =
-//   'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
-export const escapeShellArg = (arg: string) =>
-  // eslint-disable-next-line quotes
-  `'${arg.replace(/'/g, "'\\''")}'`
-export const demoGCS2 = {
-  gcscript: {
-    title: 'Get Address',
-    description: 'Do you authorize to share address to dapp?',
-    type: 'script',
-    exportAs: 'MyData',
-    run: {
-      address: {
-        type: 'getCurrentAddress'
-      }
-    }
-  },
-  gzipShort:
-    'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAA...?networkTag=mainnet',
-  gzip: 'https://wallet.gamechanger.finance/api/2/run/1-H4sIAAAAAAAAAzWOQQrDMAwEvyJ07gt6KaGBnvoIUYvGECIhy1A3-O-VSXpbjZhld_TsK-MVH-wwpWRcCl4wcXlZVs-yxW8WaFKBqi9i-cvgAmUhY6DDGCCR6i1Ubzr6Dj9u_qiYTyXYs83kFMxq1O542iOe1pv9Xs148_-W3vsPri6B66UAAAA?networkTag=mainnet'
-}
+export const QRTemplates = ['boxed', 'printable'] as const
 
-export const usageMessage = `
-✨ GameChanger Wallet CLI:
-	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other related tasks (https://gamechanger.finance/)
+export const BuildDataFormats = [
+  'string',
+  'json',
+  'object',
+  'base64',
+  'hex'
+] as const
+export const BuildResourceProtocols = [
+  'app',
+  'http',
+  'https',
+  'file',
+  'blob',
+  'gcfs',
+  'ipfs'
+] as const
 
-Usage
-	$ ${cliName} [network] [action] [subaction]
+/**
+ * Build resource protocol categories used by the build handler security model.
+ *
+ * - local: can read caller-local state such as an app VFS or filesystem.
+ * - immutable: deterministic content-addressed/inline resources.
+ * - mutable: externally controlled or time-varying resources.
+ *
+ * Unknown future protocols are treated as mutable by the build handler until
+ * they are explicitly categorized here.
+ */
+export const BuildResourceProtocolCategories = {
+  local: ['app', 'file', 'blob'],
+  immutable: ['gcfs', 'ipfs'],
+  mutable: ['http', 'https']
+} as const
 
-Networks: ${networks.map((x) => `'${x}'`).join(' | ')}
+export const DefaultBuildAllowedProtocols = ['app'] as const
+export const DefaultFilesystemRoot = '/'
+export const DefaultMainFileAppURI = 'app:///main.gcscript'
+export const BuildOutputMimeType = 'application/json;charset=utf-8'
+export const ZipDataUriMimeType = 'application/zip'
+export const TarGzDataUriMimeType = 'application/gzip'
 
-Actions:
-	'encode':
-		'url'     : generates a ready to use URL dApp connector from a valid GCScript
-		'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
-	'snippet':
-		'html'      : generates a ready to use HTML dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
-		'html-zero' : generates a highly resilient offline-ready zero-dependency HTML dApp for mission-critical and on-chain hosted frontends from a valid GCScript
-		'button'    : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-		'express'   : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
-		'react'     : generates a ready to use React dApp with shared app state, multi-intent UX, and auto-rendered intent argument UI from a valid GCScript
-Options:
-	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
+export const GCScriptAPIRefURL =
+  'https://wallet.gamechanger.finance/doc/api/v2/'
+export const GCScriptDocsURL =
+  'https://github.com/GameChangerFinance/gamechanger.wallet'
 
-	--file [filename] | -a [filename]:  Load GCScript from file
-	without --args or --file         :  Load GCScript from stdin
-
-	--outputFile [filename] -o [filename]:  The QR Code, HTML, html-zero, button, nodejs, or react output filename
-	without --outputFile                 :  Sends the QR Code, HTML, html-zero, button, nodejs, or react output file to stdin
-
-	--apiVersion [1 | 2] | -v [1 | 2]:  Target GameChanger Wallet v1 or v2
-
-	--encoding [see encodings below] | -v [see encodings below]:  Target GameChanger Wallet v1 or v2 messaging encodings
-	Valid encodings by apiVersion:
-	${JSON.stringify(apiEncodings)}
-
-	--template [see templates below] | -t [see templates below]: QR code predefined styles
-	Valid templates: default, boxed or printable
-
-	--serve | -S : Serve code snippet outputs on http://localhost:3000
-
-	--refAddress [cardanoAddress] | -r [cardanoAddress]: Append ref=<address> to generated wallet URLs and QRs
-
-	--disableNetworkRouter | -R : Do not append the default networkTag=<network> query string parameter
-
-	--urlPattern [url] | -u [url] : Override the default wallet URL pattern (must include {gcscript})
-
-	--snippetArgs [json] | -A [json] : JSON map of snippet placeholder overrides (snippet actions only). Use {"defaultIntents": "..."} to override the whole defaultIntents block.
-
-Examples
-
-	⭐ URL encoding:
-		$ ${cliName} mainnet encode url -v 2 -f examples/connect.gcscript
-		${demoGCS2.gzipShort}
-
-		$ ${cliName} mainnet encode url -v 2 -r addr1... -f examples/connect.gcscript
-		${demoGCS2.gzipShort}&ref=addr1...
-
-		$ ${cliName} mainnet encode url -v 2 -a ${escapeShellArg(
-  JSON.stringify(demoGCS2.gcscript)
-)}
-		${demoGCS2.gzipShort}
-
-		$ cat examples/connect.gcscript | ${cliName} mainnet encode url -v 2
-		${demoGCS2.gzipShort}
-
-	⭐ QR encoding:
-		$ ${cliName} preprod encode qr -v 2 -a ${escapeShellArg(
-  JSON.stringify(demoGCS2.gcscript)
-)} > qr_output.png
-
-		$ ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png -a ${escapeShellArg(
-  JSON.stringify(demoGCS2.gcscript)
-)}
-		
-		$ cat examples/connect.gcscript | ${cliName} mainnet encode qr -v 2 -o examples/qr_output.png
-
-
-		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f examples/connect.gcscript -o examples/qr_output.png
-
-
-	Code generation and serve dapp (-S):
-
-	⭐ HTML code:
-		$ ${cliName} preprod snippet html -v 2 -S -o examples/htmlDapp.html -f examples/connect.gcscript
-		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-	⭐ HTML Zero code:
-		$ ${cliName} mainnet snippet html-zero -v 2 -S -o examples/htmlZeroDapp.html -f examples/connect.gcscript
-		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-	⭐ ReactJS code:
-		$ ${cliName} mainnet snippet react -v 2 -S -o examples/reactDapp.html -f examples/connect.gcscript
-		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-
-	⭐ HTML Button snippet:
-		$ ${cliName} mainnet snippet button -v 2 -S -o examples/connectButton.html -f examples/connect.gcscript
-		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
-		
-	⭐ Express backend code:
-		$ ${cliName} mainnet snippet express -v 2 -o examples/expressBackend.js -f examples/connect.gcscript
-		$ node examples/expressBackend.js
-		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
-
-`
+export const GCScriptSchemaURL =
+  'https://wallet.gamechanger.finance/schema/api/v2/index.json.full'
+export const GCScriptSchemaRootFile = 'api.json'
+export const GCScriptSchemaCacheFileName = '.lang.def'
+export const GCScriptSchemaCacheTTLHours = 24

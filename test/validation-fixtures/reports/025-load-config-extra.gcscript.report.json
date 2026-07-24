@@ -1,0 +1,302 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"layers\".",
+      "fileName": "025-load-config-extra.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/025-load-config-extra.gcscript",
+      "jsonPath": "/layers",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 46
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"layers\" at /.",
+      "examples": [
+        {
+          "type": "loadConfig",
+          "updateId": "demo",
+          "layers": [
+            {
+              "type": "Workspace",
+              "items": [
+                {
+                  "namePattern": "derivations",
+                  "titlePattern": "Derivations",
+                  "descriptionPattern": "Wallet settings to test key derivations"
+                }
+              ]
+            },
+            {
+              "type": "Key",
+              "workspaceIds": ["derivations"],
+              "namePattern": "{index}_{key}_{kind}_{accountIndex}_{addressIndex}",
+              "items": [
+                {
+                  "namePattern": "{kind}{addressIndex}",
+                  "kind": "spend",
+                  "accountIndex": 5,
+                  "addressIndex": 10
+                },
+                {
+                  "namePattern": "{kind}{addressIndex}",
+                  "kind": "stake",
+                  "accountIndex": 5,
+                  "addressIndex": 10
+                },
+                {
+                  "namePattern": "{kind}{addressIndex}Copy",
+                  "pathPattern": "m/1852h/1815h/5h/0/10"
+                },
+                {
+                  "namePattern": "{kind}{addressIndex}Copy",
+                  "pathPattern": "m/1852h/1815h/5h/2/10"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/5h/1/0"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/0h/0/{index}"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/1h/0/{index}"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/2h/0/{index}"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/3h/0/{index}"
+                },
+                {
+                  "pathPattern": "m/1852h/1815h/4h/0/{index}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "loadConfig",
+          "updateId": "Dao",
+          "layers": [
+            {
+              "type": "Workspace",
+              "items": [
+                {
+                  "namePattern": "dao",
+                  "titlePattern": "DAO",
+                  "descriptionPattern": "Wallet settings that creates a shared treasury of at least 3 of 4 signers for spending and staking operations"
+                }
+              ]
+            },
+            {
+              "type": "Key",
+              "workspaceIds": ["dao"],
+              "items": [
+                {
+                  "namePattern": "spend-member",
+                  "kind": "spend",
+                  "accountIndex": 0,
+                  "addressIndex": 0
+                },
+                {
+                  "namePattern": "stake-member",
+                  "kind": "stake",
+                  "accountIndex": 0,
+                  "addressIndex": 0
+                }
+              ]
+            },
+            {
+              "type": "NativeScript",
+              "workspaceIds": ["dao"],
+              "namePattern": "dao_{key}_script",
+              "items": {
+                "spend": {
+                  "atLeast": 3,
+                  "ofThese": {
+                    "Member_0": {
+                      "pubKeyHashHex": "13e93a48c66322d79fcd83d581f2348b567039ab3d988ff8d6286b3d"
+                    },
+                    "Member_1": {
+                      "pubKeyHashHex": "4cd0faea320a38e4c49e32dc40df1ba4b8eadb0ef4c31522c3cc56f1"
+                    },
+                    "Member_2": {
+                      "pubKeyHashHex": "83a5351d7891145760ff96e29c375a43355b085d50313be266d4977d"
+                    },
+                    "Member_3": {
+                      "pubKeyHashHex": "755ff75c3a2cc16730139793bfca8f5a2b78c29547700080d34e2273"
+                    }
+                  }
+                },
+                "stake": {
+                  "atLeast": 3,
+                  "ofThese": {
+                    "Member_0": {
+                      "pubKeyHashHex": "c235dad80af6f95715adfd7ecc3ffc844c502f335e37ba019a57b198"
+                    },
+                    "Member_1": {
+                      "pubKeyHashHex": "c8a058e99d844c47f47cb04cead9ea5a7ffca8432f7e054635298e47"
+                    },
+                    "Member_2": {
+                      "pubKeyHashHex": "abca9cd9d3bb75d7febd99dfeb8fba0e0550a038d9e09206a82b706f"
+                    },
+                    "Member_3": {
+                      "pubKeyHashHex": "814da95aef8621d4e4ba5a0f7c379a5583aaf1244ef04269d3f8ff93"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Address",
+              "workspaceIds": ["dao"],
+              "items": [
+                {
+                  "namePattern": "Signer",
+                  "spendPubKeyName": "spend-member",
+                  "stakePubKeyName": "stake-member"
+                },
+                {
+                  "namePattern": "Shared Treasury",
+                  "spendNativeScriptName": "dao_spend_script",
+                  "stakeNativeScriptName": "dao_stake_script"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "loadConfig",
+          "updateId": "MultiStakeDelegation",
+          "layers": [
+            {
+              "type": "Workspace",
+              "items": [
+                {
+                  "namePattern": "demos",
+                  "titlePattern": "Demos",
+                  "descriptionPattern": "My custom multi-delegation wallet settings"
+                }
+              ]
+            },
+            {
+              "type": "Key",
+              "workspaceIds": ["demos"],
+              "items": [
+                {
+                  "namePattern": "SpendKey-main",
+                  "kind": "spend",
+                  "accountIndex": 0,
+                  "addressIndex": 0
+                },
+                {
+                  "namePattern": "StakeKey-main",
+                  "kind": "stake",
+                  "accountIndex": 0,
+                  "addressIndex": 0
+                },
+                {
+                  "namePattern": "SpendKey-0",
+                  "kind": "spend",
+                  "accountIndex": 5,
+                  "addressIndex": 92
+                },
+                {
+                  "namePattern": "StakeKey-A",
+                  "kind": "stake",
+                  "accountIndex": 34,
+                  "addressIndex": 423
+                },
+                {
+                  "namePattern": "StakeKey-B",
+                  "kind": "stake",
+                  "accountIndex": 632,
+                  "addressIndex": 7434
+                },
+                {
+                  "namePattern": "StakeKey-C",
+                  "kind": "stake",
+                  "accountIndex": 26,
+                  "addressIndex": 754
+                }
+              ]
+            },
+            {
+              "type": "Address",
+              "workspaceIds": ["demos"],
+              "items": [
+                {
+                  "namePattern": "Address-main",
+                  "spendPubKeyName": "SpendKey-main",
+                  "stakePubKeyName": "StakeKey-main"
+                },
+                {
+                  "namePattern": "Address-0A",
+                  "spendPubKeyName": "SpendKey-0",
+                  "stakePubKeyName": "StakeKey-A"
+                },
+                {
+                  "namePattern": "Address-0B",
+                  "spendPubKeyName": "SpendKey-0",
+                  "stakePubKeyName": "StakeKey-B"
+                },
+                {
+                  "namePattern": "Address-0C",
+                  "spendPubKeyName": "SpendKey-0",
+                  "stakePubKeyName": "StakeKey-C"
+                },
+                {
+                  "namePattern": "RewardAddress-A",
+                  "stakePubKeyName": "StakeKey-A"
+                },
+                {
+                  "namePattern": "RewardAddress-B",
+                  "stakePubKeyName": "StakeKey-B"
+                },
+                {
+                  "namePattern": "RewardAddress-C",
+                  "stakePubKeyName": "StakeKey-C"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "details": {
+        "propertyName": "layers",
+        "parentPath": "/",
+        "parentProvided": {
+          "type": "loadConfig",
+          "nam": "default"
+        },
+        "branchScores": [
+          {
+            "schemaPath": "/loadConfig.json/required",
+            "title": "Load Wallet Configuration",
+            "score": 8.4,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": ["layers", "updateId"],
+            "additionalProperties": ["nam"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "/loadConfig.json/required",
+        "params": {
+          "missingProperty": "layers"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

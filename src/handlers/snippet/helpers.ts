@@ -1,10 +1,11 @@
 import { Buffer } from 'buffer'
+import { bufferToDataURI } from '../../utils'
 import {
   GCDomains,
   GCLibInSnippets,
   contact,
   DefaultAPIVersion,
-  DefaultNetwork
+  DefaultNetworkTag
 } from '../../config'
 import {
   APIEncoding,
@@ -141,9 +142,7 @@ export const replaceSnippetPlaceholders = (
 }
 
 export const toUtf8DataUri = (mimeType: string, text: string) =>
-  `data:${mimeType};charset=utf-8;base64,${Buffer.from(text, 'utf8').toString(
-    'base64'
-  )}`
+  bufferToDataURI(Buffer.from(text, 'utf8'), `${mimeType};charset=utf-8`)
 
 export const toJSLiteral = (value?: string) =>
   value === undefined ? 'undefined' : JSON.stringify(value)
@@ -153,7 +152,7 @@ export const toBooleanLiteral = (value?: boolean) => (value ? 'true' : 'false')
 export const resolveSnippetOrigin = (
   apiVersion?: APIVersion,
   network?: NetworkType
-) => GCDomains[apiVersion || DefaultAPIVersion][network || DefaultNetwork]
+) => GCDomains[apiVersion || DefaultAPIVersion][network || DefaultNetworkTag]
 
 const ensureTrailingSlash = (value?: string) =>
   value ? (value.endsWith('/') ? value : `${value}/`) : value

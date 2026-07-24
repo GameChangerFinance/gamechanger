@@ -1,0 +1,68 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"type\".",
+      "fileName": "018-script-nested-missing-run-node.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/018-script-nested-missing-run-node.gcscript",
+      "jsonPath": "/run/a/type",
+      "location": {
+        "line": 4,
+        "column": 10,
+        "offset": 42,
+        "length": 32
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"type\" at /run/a.",
+      "examples": [
+        {
+          "type": "importAsScript",
+          "from": [
+            "gcfs://88e0e51d4522c8d9c10e061dca6eb928c1df2a5d10efdcae9059bc85.test@latest://src/script.gcscript"
+          ]
+        },
+        {
+          "type": "importAsScript",
+          "decryptWith": {
+            "kind": "system"
+          },
+          "from": [
+            "gcfs://1170d12887c70593e40938a5ff1832f9eb2b8e4a328a982621b36a57.gc_settings@latest://scripts/config.gcscript.sys"
+          ]
+        }
+      ],
+      "details": {
+        "propertyName": "type",
+        "parentPath": "/run/a",
+        "parentProvided": {
+          "title": "No type"
+        },
+        "branchScores": [
+          {
+            "schemaPath": "#/required",
+            "title": "Import external files as scripts",
+            "score": 1.6,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["title"],
+            "missingRequired": ["type"],
+            "additionalProperties": [],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "#/required",
+        "params": {
+          "missingProperty": "type"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 3,
+    "schemaMs": 0
+  }
+}

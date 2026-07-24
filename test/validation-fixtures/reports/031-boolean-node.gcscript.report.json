@@ -1,0 +1,93 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-type-mismatch",
+      "message": "Expected /run/bad to be object, got boolean.",
+      "fileName": "031-boolean-node.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/031-boolean-node.gcscript",
+      "jsonPath": "/run/bad",
+      "location": {
+        "line": 4,
+        "column": 12,
+        "offset": 44,
+        "length": 5
+      },
+      "error": "Type mismatch",
+      "suggestion": "Use a value of type object.",
+      "provided": false,
+      "details": {
+        "expected": "object",
+        "actual": "boolean",
+        "branchScores": [
+          {
+            "schemaPath": "#/properties/run/anyOf/1/patternProperties//anyOf/0/type",
+            "title": "Await condition",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/type",
+            "title": "Await condition",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/properties/run/anyOf/1/patternProperties//anyOf/1/type",
+            "title": "Get Public Keys",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/type",
+            "title": "Get Public Keys",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          },
+          {
+            "schemaPath": "#/properties/run/anyOf/1/patternProperties//anyOf/2/type",
+            "title": "Get Addresses",
+            "score": -4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": [],
+            "typeCompatible": false
+          }
+        ],
+        "keyword": "type",
+        "schemaPath": "#/properties/run/anyOf/1/patternProperties//anyOf/0/type",
+        "params": {
+          "type": "object"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

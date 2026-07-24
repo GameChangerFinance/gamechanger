@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"unknownSection\".",
+      "fileName": "026-build-tx-empty.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/026-build-tx-empty.gcscript",
+      "jsonPath": "/tx/unknownSection",
+      "location": {
+        "line": 4,
+        "column": 23,
+        "offset": 55,
+        "length": 2
+      },
+      "error": "Unknown property",
+      "suggestion": "Remove \"unknownSection\" or check the property spelling.",
+      "provided": "unknownSection",
+      "details": {
+        "propertyName": "unknownSection",
+        "propertyJsonPath": "/tx/unknownSection",
+        "branchMismatch": false,
+        "closestProperties": [],
+        "schemaPaths": [],
+        "branchScores": [
+          {
+            "schemaPath": "#/additionalProperties",
+            "title": "Transaction",
+            "score": -0.4,
+            "matchingDiscriminators": [],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": [],
+            "missingRequired": [],
+            "additionalProperties": ["unknownSection"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "#/additionalProperties",
+        "params": {
+          "additionalProperty": "unknownSection"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 2712,
+    "schemaMs": 0
+  }
+}

@@ -3,7 +3,7 @@ import config from './config/exported'
 import handlers from './handlers'
 import encodings from './encodings'
 
-export const { encode, snippet } = handlers
+export const { encode, snippet, build, validate } = handlers
 
 /**
  * GameChanger Lib unified export object.
@@ -13,9 +13,19 @@ export const { encode, snippet } = handlers
 export const gc = {
   encode,
   snippet,
+  build,
+  validate,
   encodings,
   utils,
   config
+} as {
+  encode: typeof encode
+  snippet: typeof snippet
+  build: typeof build
+  validate: typeof validate
+  encodings: typeof encodings
+  utils: typeof utils
+  config: typeof config
 }
 
 export { encodings, utils, config }

@@ -1,0 +1,33 @@
+{
+  // Build accepts JSONC comments and trailing commas in source files.
+  "type": "script",
+  "title": "Build project demo",
+  "description": "Minimal multi-file GCScript build (dummy) example as a package.json npm/pnpm project",
+  "exportAs": "BuildProjectDemo",
+  "run": {
+    "config": {
+      "type": "$importAsData",
+      /* Imported JSON can also include comments because object/json data imports
+         are parsed by the build handler. */
+      "as": "json",
+      "from": {
+        "metadata": "app://metadata.jsonc"
+      }
+    },
+    "contractSource": {
+      "type": "$importAsData",
+      "as": "hex",
+      "from": {
+        "contract": "app://contract.hl"
+      }
+    },
+    "nested": {
+      "type": "$importAsScript",
+      // imported GCScript can receive extra arguments like 'isolateCache'
+      "isolateCache": true,
+      "from": {
+        "connect": "app://scripts/connect.gcscript.jsonc"
+      }
+    }
+  }
+}

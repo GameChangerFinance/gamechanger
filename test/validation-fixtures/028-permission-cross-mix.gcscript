@@ -1,0 +1,7 @@
+{
+  "type": "getCurrentAddress",
+  "permissions": {
+    "signData": true
+  },
+  "dataHex": "00"
+}

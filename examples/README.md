@@ -8,20 +8,20 @@ outputs.
 Install dependencies and build the library:
 
 ```bash
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
 Serve the examples locally to run web based examples:
 
 ```bash
-$ npm run examples
+$ pnpm run examples
 ```
 
 To run the backend example and consume it's endpoints:
 
 ```bash
-$ npm run examples:express
+$ pnpm run examples:express
 
 ```
 
@@ -42,7 +42,7 @@ paths.
 For real projects, prefer installing and importing the package normally:
 
 ```bash
-npm install -s @gamechanger-finance/gc
+pnpm add @gamechanger-finance/gc
 ```
 
 Browser/CDN usage:
@@ -68,7 +68,7 @@ The kitchen sink example also exposes the handler-only URL options:
 Those options are applied by the handlers. The lower-level encoders remain
 generic.
 
-## Files
+## Files and Directories under `examples/`
 
 - `connect.gcscript`: a simple intent to showcase GCScript DSL in order to
   connect a user wallet. This is the default sample script used by all the
@@ -88,6 +88,9 @@ generic.
 - `QR.png`: Intent URL encoded as a QR code
 - `QR.svg`: Intent URL encoded as a QR code
 - `URL.txt`: Intent URL in plain text
+- `res/`: library files
+- `project/`: A modular, GCScript multi-file NPM (dummy) project with auto
+  frontend generation
 
 ## Snippet flavors
 

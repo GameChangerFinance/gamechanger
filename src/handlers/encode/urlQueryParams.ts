@@ -1,4 +1,4 @@
-import { DefaultNetwork } from 'src/config'
+import { DefaultNetworkTag } from 'src/config'
 import { NetworkType } from '../../types'
 
 export const buildWalletQueryParams = (args: {
@@ -15,7 +15,7 @@ export const buildWalletQueryParams = (args: {
   const queryParams: { [key: string]: string } = {}
 
   if (!args?.disableNetworkRouter) {
-    queryParams.networkTag = args?.network || DefaultNetwork
+    queryParams.networkTag = args?.network || DefaultNetworkTag
   }
 
   if (args?.refAddress) {

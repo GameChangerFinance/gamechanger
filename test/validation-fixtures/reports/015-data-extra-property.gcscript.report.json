@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"valu\". Did you mean \"value\"?",
+      "fileName": "015-data-extra-property.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/015-data-extra-property.gcscript",
+      "jsonPath": "/valu",
+      "location": {
+        "line": 4,
+        "column": 11,
+        "offset": 44,
+        "length": 1
+      },
+      "error": "Unknown property",
+      "suggestion": "Replace \"valu\" with \"value\".",
+      "provided": "valu",
+      "details": {
+        "propertyName": "valu",
+        "propertyJsonPath": "/valu",
+        "branchMismatch": false,
+        "closestProperties": ["value"],
+        "schemaPaths": ["/data.json/properties/value"],
+        "branchScores": [
+          {
+            "schemaPath": "/data.json/additionalProperties",
+            "title": "Data constant",
+            "score": 11.6,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type", "value"],
+            "missingRequired": [],
+            "additionalProperties": ["valu"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "/data.json/additionalProperties",
+        "params": {
+          "additionalProperty": "valu"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 6,
+    "schemaMs": 0
+  }
+}

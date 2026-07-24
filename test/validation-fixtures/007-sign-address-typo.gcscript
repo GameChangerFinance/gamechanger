@@ -1,0 +1,5 @@
+{
+  "type": "signDataWithAddress",
+  "adress": "addr_test1qpzexample",
+  "dataHex": "00"
+}

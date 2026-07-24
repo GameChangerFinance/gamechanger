@@ -2,37 +2,80 @@ import { snippetTokens } from 'src/handlers/snippet/helpers'
 import { QRCodeCorrectLevel } from './styles'
 
 import {
-  usageMessage,
   QRRenderTypes,
+  QRTemplates,
   GCDomains,
   contact,
+  networkTags,
+  apiVersions,
+  apiEncodings,
   version,
   projectName,
   repositoryUrl,
   DefaultNetwork,
-  DefaultAPIVersion,
-  DefaultAPIEncodings,
-  DefaultQRTemplate,
-  DefaultQRTitle,
-  DefaultQRSubTitle,
-  GCLibInSnippets
-} from '.'
-
-export default {
-  version,
-  projectName,
-  repositoryUrl,
-  usageMessage,
-  QRRenderTypes,
-  GCDomains,
-  contact,
-  DefaultNetwork,
+  DefaultNetworkTag,
+  DefaultDLTTag,
   DefaultAPIVersion,
   DefaultAPIEncodings,
   DefaultQRTemplate,
   DefaultQRTitle,
   DefaultQRSubTitle,
   GCLibInSnippets,
+  BuildDataFormats,
+  BuildResourceProtocols,
+  BuildResourceProtocolCategories,
+  DefaultBuildAllowedProtocols,
+  DefaultMainFileAppURI,
+  BuildOutputMimeType,
+  ZipDataUriMimeType,
+  TarGzDataUriMimeType,
+  GCScriptAPIRefURL,
+  GCScriptDocsURL,
+  GCScriptSchemaURL,
+  GCScriptSchemaRootFile,
+  GCScriptSchemaCacheFileName,
+  GCScriptSchemaCacheTTLHours
+} from '.'
+
+const config = {
+  version,
+  projectName,
+  repositoryUrl,
+  QRRenderTypes,
+  QRTemplates,
+  GCDomains,
+  contact,
+  networkTags,
+  apiVersions,
+  apiEncodings,
+  /**
+   * @deprecated Use {@link DefaultNetworkTag} instead.
+   */
+  DefaultNetwork,
+  DefaultNetworkTag,
+  DefaultDLTTag,
+  DefaultAPIVersion,
+  DefaultAPIEncodings,
+  DefaultQRTemplate,
+  DefaultQRTitle,
+  DefaultQRSubTitle,
+  GCLibInSnippets,
+  BuildDataFormats,
+  BuildResourceProtocols,
+  BuildResourceProtocolCategories,
+  DefaultBuildAllowedProtocols,
+  DefaultMainFileAppURI,
+  BuildOutputMimeType,
+  ZipDataUriMimeType,
+  TarGzDataUriMimeType,
+  GCScriptAPIRefURL,
+  GCScriptDocsURL,
+  GCScriptSchemaURL,
+  GCScriptSchemaRootFile,
+  GCScriptSchemaCacheFileName,
+  GCScriptSchemaCacheTTLHours,
   snippetTokens,
   QRCodeCorrectLevel
 }
+
+export default config

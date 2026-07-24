@@ -1,0 +1,52 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-branch-property-mismatch",
+      "message": "Property \"permissions\" is not allowed in this schema branch.",
+      "fileName": "028-permission-cross-mix.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/028-permission-cross-mix.gcscript",
+      "jsonPath": "/permissions",
+      "location": {
+        "line": 3,
+        "column": 18,
+        "offset": 50,
+        "length": 26
+      },
+      "error": "Branch property mismatch",
+      "suggestion": "\"permissions\" is known in another schema branch, but it is not allowed in this object. Check the surrounding function type and object shape.",
+      "provided": "permissions",
+      "details": {
+        "propertyName": "permissions",
+        "propertyJsonPath": "/permissions",
+        "branchMismatch": true,
+        "closestProperties": [],
+        "schemaPaths": [],
+        "branchScores": [
+          {
+            "schemaPath": "/getCurrentAddress.json/additionalProperties",
+            "title": "Get Current Address",
+            "score": 8.2,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": [],
+            "additionalProperties": ["permissions", "dataHex"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "/getCurrentAddress.json/additionalProperties",
+        "params": {
+          "additionalProperty": "permissions"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 1,
+    "schemaMs": 0
+  }
+}

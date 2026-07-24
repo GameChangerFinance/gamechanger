@@ -1,0 +1,92 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-required-property",
+      "message": "Missing required property \"until\".",
+      "fileName": "021-await-wrong-prop.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/021-await-wrong-prop.gcscript",
+      "jsonPath": "/until",
+      "location": {
+        "line": 1,
+        "column": 1,
+        "offset": 0,
+        "length": 44
+      },
+      "error": "Missing required property",
+      "suggestion": "Add required property \"until\" at /.",
+      "examples": [
+        {
+          "type": "await",
+          "until": {
+            "beneficiaryTimeLock": {
+              "kind": "timer",
+              "unit": "seconds",
+              "value": 10
+            }
+          }
+        },
+        {
+          "type": "await",
+          "until": {
+            "A": {
+              "kind": "timer",
+              "unit": "seconds",
+              "value": 15
+            },
+            "B": {
+              "kind": "balance",
+              "asset": {
+                "policyId": "ada",
+                "assetName": "ada",
+                "quantity": "5250000"
+              }
+            },
+            "C": {
+              "kind": "balance",
+              "address": "addr1q98f06pcrsn8x03uw0vlejw684fcu02waffvfscdsz0djgqd6j6v0fc04n5ehg292yxvs292vesrqqmxqfnp7yuwn7yq2vsyn7",
+              "is": "equal",
+              "asset": {
+                "policyId": "d491234d8b40b63aceab0d7329c6db111c3634d9e0d3c6166c66c13b",
+                "assetName": "FakeUSD",
+                "quantity": "5"
+              }
+            }
+          }
+        }
+      ],
+      "details": {
+        "propertyName": "until",
+        "parentPath": "/",
+        "parentProvided": {
+          "type": "await",
+          "millisecods": 1000
+        },
+        "branchScores": [
+          {
+            "schemaPath": "/await.json/required",
+            "title": "Await condition",
+            "score": 9,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type"],
+            "missingRequired": ["until"],
+            "additionalProperties": ["millisecods"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "required",
+        "schemaPath": "/await.json/required",
+        "params": {
+          "missingProperty": "until"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}

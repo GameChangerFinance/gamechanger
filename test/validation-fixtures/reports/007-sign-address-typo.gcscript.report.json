@@ -1,0 +1,63 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "code": "code-additional-property",
+      "message": "Unknown property \"adress\". Did you mean \"address\"?",
+      "fileName": "007-sign-address-typo.gcscript",
+      "fileUri": "app:///main.gcscript",
+      "filePath": "test/validation-fixtures/007-sign-address-typo.gcscript",
+      "jsonPath": "/adress",
+      "location": {
+        "line": 3,
+        "column": 13,
+        "offset": 47,
+        "length": 22
+      },
+      "error": "Unknown property",
+      "suggestion": "Replace \"adress\" with \"address\".",
+      "examples": [
+        {
+          "type": "signDataWithAddress",
+          "address": "addr_test1qqgpat9pkufccdwss659culgcrpezfhq3fp3pcl8ec5v2u8nawvrn7emu0nxkvcte8fjz02f3s7krg07fvekn8cymnjs0ff9xn",
+          "dataHex": "f09f9a802048656c6c6f20576f726c64206f66204349502d382064617461207369676e696e6721"
+        },
+        {
+          "type": "signDataWithAddress",
+          "address": "{get('cache.usingMainAddress.address')}",
+          "dataHex": "{get('cache.dependencies.dataHex')}"
+        }
+      ],
+      "provided": "adress",
+      "details": {
+        "propertyName": "adress",
+        "propertyJsonPath": "/adress",
+        "closestProperties": ["address"],
+        "schemaPaths": ["/signDataWithAddress.json/required"],
+        "branchScores": [
+          {
+            "schemaPath": "/signDataWithAddress.json/required",
+            "title": "Data Signing with address (CIP-8)",
+            "score": 11,
+            "matchingDiscriminators": ["type"],
+            "mismatchingDiscriminators": [],
+            "siblingMatches": ["type", "dataHex"],
+            "missingRequired": ["address"],
+            "additionalProperties": ["adress"],
+            "typeCompatible": true
+          }
+        ],
+        "keyword": "additionalProperties",
+        "schemaPath": "/signDataWithAddress.json/additionalProperties",
+        "params": {
+          "additionalProperty": "adress"
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "profiling": {
+    "validateMs": 0,
+    "schemaMs": 0
+  }
+}
