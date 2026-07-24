@@ -6,7 +6,7 @@
       "message": "Unknown property \"valu\". Did you mean \"value\"?",
       "fileName": "015-data-extra-property.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/015-data-extra-property.gcscript",
+      "filePath": "test/validation-fixtures/015-data-extra-property.gcscript",
       "jsonPath": "/valu",
       "location": {
         "line": 4,
@@ -21,29 +21,18 @@
         "propertyName": "valu",
         "propertyJsonPath": "/valu",
         "branchMismatch": false,
-        "closestProperties": [
-          "value"
-        ],
-        "schemaPaths": [
-          "/data.json/properties/value"
-        ],
+        "closestProperties": ["value"],
+        "schemaPaths": ["/data.json/properties/value"],
         "branchScores": [
           {
             "schemaPath": "/data.json/additionalProperties",
             "title": "Data constant",
             "score": 11.6,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type",
-              "value"
-            ],
+            "siblingMatches": ["type", "value"],
             "missingRequired": [],
-            "additionalProperties": [
-              "valu"
-            ],
+            "additionalProperties": ["valu"],
             "typeCompatible": true
           }
         ],
@@ -57,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 5,
+    "validateMs": 7,
     "schemaMs": 0
   }
 }

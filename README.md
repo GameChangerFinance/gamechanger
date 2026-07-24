@@ -44,8 +44,8 @@ $ pnpm run dev
 ### Custom examples
 
 - [Kitchen Sink](examples/index.html): all outputs in one example
-- [NPM Project Example](examples/project/): a modular, GCScript multi-file NPM project with auto frontend generation
-
+- [NPM Project Example](examples/project/): a modular, GCScript multi-file NPM
+  (dummy) project with auto frontend generation
 
 ### CLI/library output examples
 
@@ -71,7 +71,6 @@ points of failure.
 to the wallet and then captures the response via "webhook" redirection. Express
 is suggested only for serving snippets or running Express examples; it is not
 required for normal CLI encode, snippet generation, or build actions.
-
 
 Read more about examples [here](examples/README.md):
 
@@ -290,6 +289,7 @@ const outputDataURI = await gc.build.file({
       },
       "connect": {
         "type": "$importAsScript",
+        "args": "{get('args')}",        
         "from": { "connect": "app://scripts/connect.gcscript" },
       },
     }
@@ -310,11 +310,25 @@ const compactOutputDataURI = await gc.build.file({
 const builtGcscript = gc.utils.dataURIToBuffer(outputDataURI).toString('utf8')
 ```
 
+`$importAsScript` is a thin build-time wrapper for the normal GCScript `script`
+function. It resolves `from` into the generated wrapper `run`, and every other
+property such as `args`, `argsByKey`, `isolateCache`, `return`, or `finally` is
+passed through verbatim for the final GCScript/schema/wallet validation layers.
+The build layer does not distribute `argsByKey` into imported children.
+
+`$importAsData` is a thin build-time wrapper for the normal GCScript `data`
+function. It resolves `from`, converts each imported resource according to `as`
+(`string`, `object`, `json`, `hex`, or `base64`), and emits the converted result
+as the generated data node `value`. Other data-node properties are passed
+through for final GCScript/schema/wallet validation.
+
 By default, `build.file` validates the final resolved strict JSON against the
-GCScript JSON Schema. Pass `doValidate: false` only when you intentionally want
-to skip schema validation, for example in tests or offline prototyping. Library
-validation requires `useSchema`; the helper below downloads the production
-schema URL and can be overridden by callers:
+GCScript JSON Schema. Library validation requires a `useSchema` object; if
+`doValidate` is not `false` and no schema is provided, the library throws a
+clear `Missing useSchema` error. Pass `doValidate: false` only when you
+intentionally want to skip schema validation, for example in tests or offline
+prototyping. The helper below downloads the production schema URL and can be
+overridden by callers:
 
 ```javascript
 const useSchema = await gc.utils.downloadGCScriptSchema()
@@ -325,20 +339,19 @@ const outputDataURI = await gc.build.file({
   useSchema
 })
 ```
+
 #### Notes:
 
-- Build imports are explicit and protocol-qualified. Protocol-less imports such as
-`./common.gcscript.jsonc`, `../common.gcscript.jsonc`, or
-`lib/common.gcscript.jsonc` are rejected before loading. 
+- Build imports are explicit and protocol-qualified. Protocol-less imports such
+  as `./common.gcscript.jsonc`, `../common.gcscript.jsonc`, or
+  `lib/common.gcscript.jsonc` are rejected before loading.
 - Use`app://./common.gcscript.jsonc` or `app:///lib/common.gcscript.jsonc` for
-app-rooted resources. 
-- Protocol `file://` remains disabled by default; when explicitly
-enabled, `file://./x` and `file://../x` resolve with the same
-directory-navigation semantics as `app://`, but may traverse outside the app
-root. 
-- In CLI `-f` argument only selects the input file; pass `--cwd` as the app filesystem
-root and `--fileUri app:///main.gcscript` as the logical build URI.
-
+  app-rooted resources.
+- Protocol `file://` remains disabled by default; when explicitly enabled,
+  `file://./x` and `file://../x` resolve with the same directory-navigation
+  semantics as `app://`, but may traverse outside the app root.
+- In CLI `-f` argument only selects the input file; pass `--cwd` as the app
+  filesystem root and `--fileUri app:///main.gcscript` as the logical build URI.
 
 ### Validate built GCScript JSON
 
@@ -366,7 +379,6 @@ identifiers, JSON path, location when available, provided value, and concise
 hints/examples when the full schema flavor provides documentation metadata.
 Validation also performs lightweight ISL checks for very likely inline code
 strings, reporting probable function-name typos as warnings rather than errors.
-
 
 For bulk fixture checks, run:
 
@@ -410,13 +422,17 @@ Security model:
   and cannot import nested local resources such as `app`, `file`, or `blob`.
 
 CLI notes:
+
 - The CLI keeps generated output POSIX-friendly: human progress, warnings, and
-validation summaries are written to `stderr`; generated artifacts and validation
-JSON reports are written to `stdout` only when `-o/--outputFile` is omitted.
-- `--quiet` suppresses non-essential human logs without changing generated output.
+  validation summaries are written to `stderr`; generated artifacts and
+  validation JSON reports are written to `stdout` only when `-o/--outputFile` is
+  omitted.
+- `--quiet` suppresses non-essential human logs without changing generated
+  output.
 - Validation warnings are shown by default during `build` and `validate`; pass
-`--hide-warnings` to hide them. 
-- Successful `encode`, `snippet`, and `build` actions exit `0`; failures exit non-zero. 
+  `--hide-warnings` to hide them.
+- Successful `encode`, `snippet`, and `build` actions exit `0`; failures exit
+  non-zero.
 - `validate` exits `0` only when the report has `isValid: true`.
 
 Virtual files use `Buffer` for cross-target consistency:

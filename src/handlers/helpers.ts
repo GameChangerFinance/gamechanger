@@ -991,27 +991,15 @@ const getChildSecurityContext = (
 
 export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
   $importAsScript: async ({ node, path, context }) => {
-    const { type, args, argsByKey, from, ...props } = (node || {}) as any
+    const { type, from, ...props } = (node || {}) as any
     const kvFrom = toKVList(from)
-    const kvArgsByKey = toKVList(argsByKey)
 
     if (!(kvFrom.length > 0)) {
       throw new Error(
         `At least one valid resource URI must be provided in 'from' in '${type}'`
       )
     }
-    if (argsByKey !== undefined && !(kvArgsByKey.length > 0)) {
-      throw new Error(
-        `At least one argument must be provided in 'argsByKey' in '${type}'`
-      )
-    }
-    if (args && kvArgsByKey.length > 0) {
-      throw new Error(
-        `Only one argument passing method can be used. You provided 'args' and 'argsByKey' in '${type}'`
-      )
-    }
 
-    const fromKeysDict: Record<string, string> = {}
     for (let kvIndex = 0; kvIndex < kvFrom.length; kvIndex++) {
       const [fromKey, rawFileUri] = kvFrom[kvIndex]
       const fileUri = resolveBuildResourceUri(String(rawFileUri), context, [
@@ -1042,15 +1030,6 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
         onEvent: context.options.onEvent
       })
       kvFrom[kvIndex] = [fromKey, solvedData]
-      fromKeysDict[fromKey] = fileUri
-    }
-
-    for (const [argKey] of kvArgsByKey) {
-      if (!fromKeysDict[argKey]) {
-        throw new Error(
-          `Argument provided in 'argsByKey' for an unknown resource key '${argKey}' in '${type}'`
-        )
-      }
     }
 
     const solvedFrom = isArray(from)
@@ -1061,8 +1040,6 @@ export const defaultBuildDirectiveHandlers: BuildDirectiveHandlers = {
       type: 'script',
       run: solvedFrom
     }
-    if (args) newNode.args = args
-    if (argsByKey) newNode.argsByKey = argsByKey
 
     await emitBuildEvent(context, {
       type: 'directive:resolved',

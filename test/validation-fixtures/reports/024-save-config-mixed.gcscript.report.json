@@ -6,7 +6,7 @@
       "message": "Missing required property \"layers\".",
       "fileName": "024-save-config-mixed.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/024-save-config-mixed.gcscript",
+      "filePath": "test/validation-fixtures/024-save-config-mixed.gcscript",
       "jsonPath": "/layers",
       "location": {
         "line": 1,
@@ -32,9 +32,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "derivations"
-              ],
+              "workspaceIds": ["derivations"],
               "namePattern": "{index}_{key}_{kind}_{accountIndex}_{addressIndex}",
               "items": [
                 {
@@ -94,9 +92,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "items": [
                 {
                   "namePattern": "spend-member",
@@ -114,9 +110,7 @@
             },
             {
               "type": "NativeScript",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "namePattern": "dao_{key}_script",
               "items": {
                 "spend": {
@@ -157,9 +151,7 @@
             },
             {
               "type": "Address",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "items": [
                 {
                   "namePattern": "Signer",
@@ -190,9 +182,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "demos"
-              ],
+              "workspaceIds": ["demos"],
               "items": [
                 {
                   "namePattern": "SpendKey-main",
@@ -234,9 +224,7 @@
             },
             {
               "type": "Address",
-              "workspaceIds": [
-                "demos"
-              ],
+              "workspaceIds": ["demos"],
               "items": [
                 {
                   "namePattern": "Address-main",
@@ -288,20 +276,11 @@
             "schemaPath": "/saveConfig.json/required",
             "title": "Save Wallet Configuration",
             "score": 7.6,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
-            "missingRequired": [
-              "layers"
-            ],
-            "additionalProperties": [
-              "name",
-              "config"
-            ],
+            "siblingMatches": ["type"],
+            "missingRequired": ["layers"],
+            "additionalProperties": ["name", "config"],
             "typeCompatible": true
           }
         ],
@@ -315,7 +294,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

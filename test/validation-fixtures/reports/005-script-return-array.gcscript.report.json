@@ -6,7 +6,7 @@
       "message": "Expected /return to be object, got array.",
       "fileName": "005-script-return-array.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/005-script-return-array.gcscript",
+      "filePath": "test/validation-fixtures/005-script-return-array.gcscript",
       "jsonPath": "/return",
       "location": {
         "line": 3,
@@ -54,7 +54,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 8,
+    "validateMs": 5,
     "schemaMs": 0
   }
 }

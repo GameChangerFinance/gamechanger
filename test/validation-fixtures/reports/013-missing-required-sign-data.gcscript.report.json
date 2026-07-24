@@ -6,7 +6,7 @@
       "message": "Missing required property \"dataHex\".",
       "fileName": "013-missing-required-sign-data.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/013-missing-required-sign-data.gcscript",
+      "filePath": "test/validation-fixtures/013-missing-required-sign-data.gcscript",
       "jsonPath": "/dataHex",
       "location": {
         "line": 1,
@@ -40,17 +40,10 @@
             "schemaPath": "/signDataWithAddress.json/required",
             "title": "Data Signing with address (CIP-8)",
             "score": 12.4,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type",
-              "address"
-            ],
-            "missingRequired": [
-              "dataHex"
-            ],
+            "siblingMatches": ["type", "address"],
+            "missingRequired": ["dataHex"],
             "additionalProperties": [],
             "typeCompatible": true
           }
@@ -65,7 +58,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

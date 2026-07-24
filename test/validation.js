@@ -50,6 +50,36 @@ const writeReport = async (fs, reportPath, report) => {
   await fs.writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`)
 }
 
+const toRelativeReportPath = (rootDir, filePath) => {
+  if (typeof filePath !== 'string' || !path.isAbsolute(filePath)) {
+    return filePath
+  }
+  const relative = path.relative(rootDir, filePath)
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+    return filePath
+  }
+  return relative.split(path.sep).join('/')
+}
+
+const sanitizeReportFilePaths = (value, rootDir) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeReportFilePaths(item, rootDir))
+  }
+  if (!value || typeof value !== 'object') return value
+
+  const output = {}
+  for (const [key, child] of Object.entries(value)) {
+    output[key] =
+      key === 'filePath'
+        ? toRelativeReportPath(rootDir, child)
+        : sanitizeReportFilePaths(child, rootDir)
+  }
+  return output
+}
+
+const writeFixtureReport = async (fs, rootDir, reportPath, report) =>
+  writeReport(fs, reportPath, sanitizeReportFilePaths(report, rootDir))
+
 const pointerUnescape = (part) =>
   String(part).replace(/~1/g, '/').replace(/~0/g, '~')
 
@@ -248,7 +278,7 @@ export const appendValidationTests = ({
             filePath
           })
           const reportPath = reportPathFor(fixturesDir, reportsDir, filePath)
-          await writeReport(fs, reportPath, report)
+          await writeFixtureReport(fs, rootDir, reportPath, report)
           const elapsedMs = performance.now() - startedAt
           const heapDeltaKB = heapUsed() - beforeHeapKB
           const error = report.errors?.[0]

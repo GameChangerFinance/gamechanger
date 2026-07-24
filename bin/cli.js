@@ -473,7 +473,7 @@ export const serveHtml = async ({
 export default async function main() {
   const {
     QRRenderTypes,
-    DefaultNetwork,
+    DefaultNetworkTag,
     DefaultBuildAllowedProtocols,
     DefaultMainFileAppURI,
     BuildResourceProtocols,
@@ -649,7 +649,7 @@ export default async function main() {
     const parseAction = (input) => {
       if (input[0] === 'build' || input[0] === 'validate') {
         return {
-          network: DefaultNetwork,
+          network: DefaultNetworkTag,
           action: input[0],
           subAction: input[1] || 'file'
         }

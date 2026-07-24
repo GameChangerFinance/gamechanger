@@ -6,7 +6,7 @@
       "message": "Unknown property \"mod\". Did you mean \"mode\"?",
       "fileName": "020-script-return-extra.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/020-script-return-extra.gcscript",
+      "filePath": "test/validation-fixtures/020-script-return-extra.gcscript",
       "jsonPath": "/return/mod",
       "location": {
         "line": 5,
@@ -21,9 +21,7 @@
         "propertyName": "mod",
         "propertyJsonPath": "/return/mod",
         "branchMismatch": false,
-        "closestProperties": [
-          "mode"
-        ],
+        "closestProperties": ["mode"],
         "schemaPaths": [
           "/common.json/definitions/MultiSigProvider/oneOf/0/properties/mode"
         ],
@@ -32,17 +30,11 @@
             "schemaPath": "#/oneOf/3/additionalProperties",
             "title": "Last",
             "score": 9.6,
-            "matchingDiscriminators": [
-              "mode"
-            ],
+            "matchingDiscriminators": ["mode"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "mode"
-            ],
+            "siblingMatches": ["mode"],
             "missingRequired": [],
-            "additionalProperties": [
-              "mod"
-            ],
+            "additionalProperties": ["mod"],
             "typeCompatible": true
           }
         ],
@@ -56,7 +48,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 5,
+    "validateMs": 6,
     "schemaMs": 0
   }
 }

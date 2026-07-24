@@ -89,7 +89,8 @@ generic.
 - `QR.svg`: Intent URL encoded as a QR code
 - `URL.txt`: Intent URL in plain text
 - `res/`: library files
-- `project/`:  A modular, GCScript multi-file NPM project with auto frontend generation
+- `project/`: A modular, GCScript multi-file NPM (dummy) project with auto
+  frontend generation
 
 ## Snippet flavors
 

@@ -5,7 +5,7 @@ import {
   GCLibInSnippets,
   contact,
   DefaultAPIVersion,
-  DefaultNetwork
+  DefaultNetworkTag
 } from '../../config'
 import {
   APIEncoding,
@@ -152,7 +152,7 @@ export const toBooleanLiteral = (value?: boolean) => (value ? 'true' : 'false')
 export const resolveSnippetOrigin = (
   apiVersion?: APIVersion,
   network?: NetworkType
-) => GCDomains[apiVersion || DefaultAPIVersion][network || DefaultNetwork]
+) => GCDomains[apiVersion || DefaultAPIVersion][network || DefaultNetworkTag]
 
 const ensureTrailingSlash = (value?: string) =>
   value ? (value.endsWith('/') ? value : `${value}/`) : value

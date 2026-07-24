@@ -6,7 +6,7 @@
       "message": "Unknown property \"adress\".",
       "fileName": "009-unrelated-address-typo.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/009-unrelated-address-typo.gcscript",
+      "filePath": "test/validation-fixtures/009-unrelated-address-typo.gcscript",
       "jsonPath": "/adress",
       "location": {
         "line": 3,
@@ -28,17 +28,11 @@
             "schemaPath": "/getCurrentAddress.json/additionalProperties",
             "title": "Get Current Address",
             "score": 9.6,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
+            "siblingMatches": ["type"],
             "missingRequired": [],
-            "additionalProperties": [
-              "adress"
-            ],
+            "additionalProperties": ["adress"],
             "typeCompatible": true
           }
         ],
@@ -52,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 9,
+    "validateMs": 7,
     "schemaMs": 0
   }
 }

@@ -6,7 +6,7 @@
       "message": "Missing required property \"get\".",
       "fileName": "022-query-wrong-shape.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/022-query-wrong-shape.gcscript",
+      "filePath": "test/validation-fixtures/022-query-wrong-shape.gcscript",
       "jsonPath": "/get",
       "location": {
         "line": 1,
@@ -41,19 +41,11 @@
             "schemaPath": "/query.json/required",
             "title": "Get data from ledger",
             "score": 9,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
-            "missingRequired": [
-              "get"
-            ],
-            "additionalProperties": [
-              "queries"
-            ],
+            "siblingMatches": ["type"],
+            "missingRequired": ["get"],
+            "additionalProperties": ["queries"],
             "typeCompatible": true
           }
         ],

@@ -6,7 +6,7 @@
       "message": "Unknown GCScript function type 123.",
       "fileName": "010-wrong-type-number.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/010-wrong-type-number.gcscript",
+      "filePath": "test/validation-fixtures/010-wrong-type-number.gcscript",
       "jsonPath": "/type",
       "location": {
         "line": 2,
@@ -16,9 +16,7 @@
       },
       "error": "Unknown GCScript function type",
       "suggestion": "Use a value allowed by the schema for GCScript function type.",
-      "relatedDocs": [
-        "https://wallet.gamechanger.finance/doc/api/v2/"
-      ],
+      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
       "provided": 123,
       "details": {
         "propertyName": "type",
@@ -31,9 +29,7 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": [
-            "type"
-          ],
+          "additionalProperties": ["type"],
           "typeCompatible": false
         }
       }

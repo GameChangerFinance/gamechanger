@@ -6,7 +6,7 @@
       "message": "Missing required property \"layers\".",
       "fileName": "025-load-config-extra.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/025-load-config-extra.gcscript",
+      "filePath": "test/validation-fixtures/025-load-config-extra.gcscript",
       "jsonPath": "/layers",
       "location": {
         "line": 1,
@@ -33,9 +33,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "derivations"
-              ],
+              "workspaceIds": ["derivations"],
               "namePattern": "{index}_{key}_{kind}_{accountIndex}_{addressIndex}",
               "items": [
                 {
@@ -96,9 +94,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "items": [
                 {
                   "namePattern": "spend-member",
@@ -116,9 +112,7 @@
             },
             {
               "type": "NativeScript",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "namePattern": "dao_{key}_script",
               "items": {
                 "spend": {
@@ -159,9 +153,7 @@
             },
             {
               "type": "Address",
-              "workspaceIds": [
-                "dao"
-              ],
+              "workspaceIds": ["dao"],
               "items": [
                 {
                   "namePattern": "Signer",
@@ -193,9 +185,7 @@
             },
             {
               "type": "Key",
-              "workspaceIds": [
-                "demos"
-              ],
+              "workspaceIds": ["demos"],
               "items": [
                 {
                   "namePattern": "SpendKey-main",
@@ -237,9 +227,7 @@
             },
             {
               "type": "Address",
-              "workspaceIds": [
-                "demos"
-              ],
+              "workspaceIds": ["demos"],
               "items": [
                 {
                   "namePattern": "Address-main",
@@ -290,20 +278,11 @@
             "schemaPath": "/loadConfig.json/required",
             "title": "Load Wallet Configuration",
             "score": 8.4,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
-            "missingRequired": [
-              "layers",
-              "updateId"
-            ],
-            "additionalProperties": [
-              "nam"
-            ],
+            "siblingMatches": ["type"],
+            "missingRequired": ["layers", "updateId"],
+            "additionalProperties": ["nam"],
             "typeCompatible": true
           }
         ],

@@ -6,7 +6,7 @@
       "message": "Unknown GCScript function type \"notARealType\".",
       "fileName": "032-isl-warning-still-schema-invalid.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
+      "filePath": "test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
       "jsonPath": "/type",
       "location": {
         "line": 2,
@@ -31,10 +31,7 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": [
-            "type",
-            "run"
-          ],
+          "additionalProperties": ["type", "run"],
           "typeCompatible": false
         }
       }
@@ -46,7 +43,7 @@
       "message": "Possible ISL function typo: unknown function \"sha51\". Did you mean \"sha512\"?",
       "fileName": "032-isl-warning-still-schema-invalid.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
+      "filePath": "test/validation-fixtures/032-isl-warning-still-schema-invalid.gcscript",
       "jsonPath": "/run",
       "location": {
         "line": 3,
@@ -62,9 +59,7 @@
       "provided": "sha51",
       "details": {
         "functionName": "sha51",
-        "closestFunctions": [
-          "sha512"
-        ],
+        "closestFunctions": ["sha512"],
         "schemaPath": "/lang.json/anyOf/5/anyOf/2"
       }
     }

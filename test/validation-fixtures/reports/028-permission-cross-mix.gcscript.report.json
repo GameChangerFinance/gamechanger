@@ -6,7 +6,7 @@
       "message": "Property \"permissions\" is not allowed in this schema branch.",
       "fileName": "028-permission-cross-mix.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/028-permission-cross-mix.gcscript",
+      "filePath": "test/validation-fixtures/028-permission-cross-mix.gcscript",
       "jsonPath": "/permissions",
       "location": {
         "line": 3,
@@ -28,18 +28,11 @@
             "schemaPath": "/getCurrentAddress.json/additionalProperties",
             "title": "Get Current Address",
             "score": 8.2,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
+            "siblingMatches": ["type"],
             "missingRequired": [],
-            "additionalProperties": [
-              "permissions",
-              "dataHex"
-            ],
+            "additionalProperties": ["permissions", "dataHex"],
             "typeCompatible": true
           }
         ],
@@ -53,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

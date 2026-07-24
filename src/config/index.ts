@@ -6,7 +6,12 @@ export const version = packageJson.version
 export const projectName = packageJson.name
 export const repositoryUrl = packageJson.repository
 
-export const DefaultNetwork: NetworkType = 'mainnet'
+export const DefaultNetworkTag: NetworkType = 'mainnet'
+/**
+ * @deprecated Use {@link DefaultNetworkTag} instead.
+ */
+export const DefaultNetwork: NetworkType = DefaultNetworkTag
+export const DefaultDLTTag = 'cardano'
 export const DefaultAPIVersion: APIVersion = '2'
 export const DefaultAPIEncodings: { [apiVer: string]: APIEncoding } = {
   '1': 'json-url-lzw',

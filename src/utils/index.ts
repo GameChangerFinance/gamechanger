@@ -6,7 +6,7 @@ import {
   apiVersions,
   networks,
   DefaultAPIEncodings,
-  DefaultNetwork,
+  DefaultNetworkTag,
   DefaultAPIVersion,
   ZipDataUriMimeType,
   TarGzDataUriMimeType
@@ -43,7 +43,7 @@ export const validateBuildMsgArgs = (args: {
   encoding: APIEncoding
   input: string
 }) => {
-  const network = args?.network ? args?.network : DefaultNetwork
+  const network = args?.network ? args?.network : DefaultNetworkTag
   if (!networks.includes(network)) {
     throw new Error(`Unknown Cardano network specification '${network || ''}'`)
   }

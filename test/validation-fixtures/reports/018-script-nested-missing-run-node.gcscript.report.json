@@ -6,7 +6,7 @@
       "message": "Missing required property \"type\".",
       "fileName": "018-script-nested-missing-run-node.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/018-script-nested-missing-run-node.gcscript",
+      "filePath": "test/validation-fixtures/018-script-nested-missing-run-node.gcscript",
       "jsonPath": "/run/a/type",
       "location": {
         "line": 4,
@@ -46,12 +46,8 @@
             "score": 1.6,
             "matchingDiscriminators": [],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "title"
-            ],
-            "missingRequired": [
-              "type"
-            ],
+            "siblingMatches": ["title"],
+            "missingRequired": ["type"],
             "additionalProperties": [],
             "typeCompatible": true
           }
@@ -66,7 +62,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 2,
+    "validateMs": 3,
     "schemaMs": 0
   }
 }

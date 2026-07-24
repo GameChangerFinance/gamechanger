@@ -6,7 +6,7 @@
       "message": "Unknown property \"unexpected\".",
       "fileName": "012-additional-root-property.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/012-additional-root-property.gcscript",
+      "filePath": "test/validation-fixtures/012-additional-root-property.gcscript",
       "jsonPath": "/unexpected",
       "location": {
         "line": 3,
@@ -28,17 +28,11 @@
             "schemaPath": "/getCurrentAddress.json/additionalProperties",
             "title": "Get Current Address",
             "score": 9.6,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
+            "siblingMatches": ["type"],
             "missingRequired": [],
-            "additionalProperties": [
-              "unexpected"
-            ],
+            "additionalProperties": ["unexpected"],
             "typeCompatible": true
           }
         ],
@@ -52,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 6,
+    "validateMs": 7,
     "schemaMs": 0
   }
 }

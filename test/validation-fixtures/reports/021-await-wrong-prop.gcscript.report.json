@@ -6,7 +6,7 @@
       "message": "Missing required property \"until\".",
       "fileName": "021-await-wrong-prop.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/021-await-wrong-prop.gcscript",
+      "filePath": "test/validation-fixtures/021-await-wrong-prop.gcscript",
       "jsonPath": "/until",
       "location": {
         "line": 1,
@@ -68,19 +68,11 @@
             "schemaPath": "/await.json/required",
             "title": "Await condition",
             "score": 9,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type"
-            ],
-            "missingRequired": [
-              "until"
-            ],
-            "additionalProperties": [
-              "millisecods"
-            ],
+            "siblingMatches": ["type"],
+            "missingRequired": ["until"],
+            "additionalProperties": ["millisecods"],
             "typeCompatible": true
           }
         ],

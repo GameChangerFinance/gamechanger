@@ -322,7 +322,8 @@ tests.push(
       mod.config.DefaultAPIEncodings[mod.config.DefaultAPIVersion],
       'gzip'
     )
-    assert.equal(mod.config.DefaultNetwork, 'mainnet')
+    assert.equal(mod.config.DefaultNetworkTag, 'mainnet')
+    assert.equal(mod.config.DefaultDLTTag, 'cardano')
     assert.equal(typeof mod.utils.Buffer.from, 'function')
     assert.equal(typeof mod.utils.virtualFileSystemToZip, 'function')
   })
@@ -426,7 +427,7 @@ tests.push(
 
 const handlers = [gc, gcNamed, encode, snippet, build, encodings, utils, config]
 const defaultEncoding = config.DefaultAPIEncodings[config.DefaultAPIVersion]
-const network: NetworkType = config.DefaultNetwork
+const network: NetworkType = config.DefaultNetworkTag
 const bufferValue = utils.Buffer.from('hello')
 const zipValue = utils.virtualFileSystemToZip({ 'hello.txt': { data: bufferValue } })
 void handlers
@@ -652,6 +653,109 @@ tests.push(
         built.run.nested.run.child.run.address.type,
         'getCurrentAddress'
       )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'build.file $importAsScript passes script args and argsByKey through verbatim',
+    async () => {
+      const childSource = JSON.stringify({
+        type: 'script',
+        args: "{get('args')}",
+        run: {
+          leaf: {
+            type: 'data',
+            value: "{get('args.name')}"
+          }
+        }
+      })
+      const input = JSON.stringify({
+        type: 'script',
+        args: {
+          name: 'john doe',
+          age: 25
+        },
+        run: {
+          imported: {
+            type: '$importAsScript',
+            from: {
+              child: 'app://scripts/child.gcscript'
+            },
+            args: "{get('args')}",
+            argsByKey: {
+              child: {
+                name: "{get('args.name')}"
+              },
+              futureChild: {
+                name: "{get('args.name')}"
+              }
+            }
+          }
+        }
+      })
+      const out = await gc.build.file({
+        input,
+        fileUri: 'app:///main.gcscript',
+        doValidate: false,
+        files: {
+          'scripts/child.gcscript': {
+            data: Buffer.from(childSource, 'utf8')
+          }
+        }
+      })
+      const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+      assert.equal(built.run.imported.type, 'script')
+      assert.equal(built.run.imported.args, "{get('args')}")
+      assert.deepEqual(built.run.imported.argsByKey, {
+        child: {
+          name: "{get('args.name')}"
+        },
+        futureChild: {
+          name: "{get('args.name')}"
+        }
+      })
+      assert.equal(built.run.imported.run.child.args, "{get('args')}")
+      assert.equal(
+        built.run.imported.run.child.run.leaf.value,
+        "{get('args.name')}"
+      )
+    }
+  )
+)
+
+tests.push(
+  run(
+    'build.file $importAsScript does not opinionate empty argsByKey',
+    async () => {
+      const input = JSON.stringify({
+        type: 'script',
+        run: {
+          imported: {
+            type: '$importAsScript',
+            from: {
+              child: 'app://scripts/child.gcscript'
+            },
+            argsByKey: {}
+          }
+        }
+      })
+      const out = await gc.build.file({
+        input,
+        fileUri: 'app:///main.gcscript',
+        doValidate: false,
+        files: {
+          'scripts/child.gcscript': {
+            data: Buffer.from(
+              '{"type":"script","run":{"leaf":{"type":"data","value":1}}}',
+              'utf8'
+            )
+          }
+        }
+      })
+      const built = JSON.parse(decodeDataUri(out).toString('utf8'))
+      assert.deepEqual(built.run.imported.argsByKey, {})
     }
   )
 )
@@ -914,6 +1018,22 @@ tests.push(
     const built = JSON.parse(decodeDataUri(out).toString('utf8'))
     assert.equal(built.run.address.type, 'getCurrentAddress')
   })
+)
+
+tests.push(
+  run(
+    'build.file requires useSchema unless validation is disabled',
+    async () => {
+      await assert.rejects(
+        () =>
+          gc.build.file({
+            input: `{"type":"script","run":{}}`,
+            fileUri: 'app:///main.gcscript'
+          }),
+        /Missing useSchema/
+      )
+    }
+  )
 )
 
 tests.push(

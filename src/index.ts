@@ -18,6 +18,14 @@ export const gc = {
   encodings,
   utils,
   config
+} as {
+  encode: typeof encode
+  snippet: typeof snippet
+  build: typeof build
+  validate: typeof validate
+  encodings: typeof encodings
+  utils: typeof utils
+  config: typeof config
 }
 
 export { encodings, utils, config }

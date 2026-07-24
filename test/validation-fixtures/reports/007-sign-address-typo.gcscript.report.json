@@ -6,7 +6,7 @@
       "message": "Unknown property \"adress\". Did you mean \"address\"?",
       "fileName": "007-sign-address-typo.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/007-sign-address-typo.gcscript",
+      "filePath": "test/validation-fixtures/007-sign-address-typo.gcscript",
       "jsonPath": "/adress",
       "location": {
         "line": 3,
@@ -32,31 +32,18 @@
       "details": {
         "propertyName": "adress",
         "propertyJsonPath": "/adress",
-        "closestProperties": [
-          "address"
-        ],
-        "schemaPaths": [
-          "/signDataWithAddress.json/required"
-        ],
+        "closestProperties": ["address"],
+        "schemaPaths": ["/signDataWithAddress.json/required"],
         "branchScores": [
           {
             "schemaPath": "/signDataWithAddress.json/required",
             "title": "Data Signing with address (CIP-8)",
             "score": 11,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type",
-              "dataHex"
-            ],
-            "missingRequired": [
-              "address"
-            ],
-            "additionalProperties": [
-              "adress"
-            ],
+            "siblingMatches": ["type", "dataHex"],
+            "missingRequired": ["address"],
+            "additionalProperties": ["adress"],
             "typeCompatible": true
           }
         ],

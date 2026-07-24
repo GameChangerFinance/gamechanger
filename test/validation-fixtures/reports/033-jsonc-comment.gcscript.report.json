@@ -6,7 +6,7 @@
       "message": "Strict JSON syntax error: InvalidCommentToken. Validation input must be built JSON, not JSONC.",
       "fileName": "033-jsonc-comment.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/033-jsonc-comment.gcscript",
+      "filePath": "test/validation-fixtures/033-jsonc-comment.gcscript",
       "jsonPath": "/",
       "location": {
         "line": 2,

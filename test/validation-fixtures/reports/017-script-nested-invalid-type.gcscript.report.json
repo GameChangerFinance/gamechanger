@@ -6,7 +6,7 @@
       "message": "Unknown GCScript function type \"getCurrentAddresses\". Did you mean \"getCurrentAddress\"?",
       "fileName": "017-script-nested-invalid-type.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/017-script-nested-invalid-type.gcscript",
+      "filePath": "test/validation-fixtures/017-script-nested-invalid-type.gcscript",
       "jsonPath": "/run/a/type",
       "location": {
         "line": 5,
@@ -27,12 +27,8 @@
       "provided": "getCurrentAddresses",
       "details": {
         "propertyName": "type",
-        "closestValues": [
-          "getCurrentAddress"
-        ],
-        "schemaPaths": [
-          "/getCurrentAddress.json/properties/type/const"
-        ],
+        "closestValues": ["getCurrentAddress"],
+        "schemaPaths": ["/getCurrentAddress.json/properties/type/const"],
         "branchScores": {
           "schemaPath": "#/properties/type/const",
           "score": -5.4,
@@ -40,9 +36,7 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": [
-            "type"
-          ],
+          "additionalProperties": ["type"],
           "typeCompatible": false
         }
       }

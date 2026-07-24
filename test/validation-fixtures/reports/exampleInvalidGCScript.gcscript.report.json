@@ -6,7 +6,7 @@
       "message": "Unknown property \"pubKeyHashHexa\". Did you mean \"pubKeyHashHex\"?",
       "fileName": "exampleInvalidGCScript.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/exampleInvalidGCScript.gcscript",
+      "filePath": "test/validation-fixtures/exampleInvalidGCScript.gcscript",
       "jsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
       "location": {
         "line": 108,
@@ -21,9 +21,7 @@
         "propertyName": "pubKeyHashHexa",
         "propertyJsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
         "branchMismatch": false,
-        "closestProperties": [
-          "pubKeyHashHex"
-        ],
+        "closestProperties": ["pubKeyHashHex"],
         "schemaPaths": [
           "/common.json/definitions/ScriptPubKey/properties/pubKeyHashHex"
         ],
@@ -36,9 +34,7 @@
             "mismatchingDiscriminators": [],
             "siblingMatches": [],
             "missingRequired": [],
-            "additionalProperties": [
-              "pubKeyHashHexa"
-            ],
+            "additionalProperties": ["pubKeyHashHexa"],
             "typeCompatible": true
           }
         ],
@@ -52,7 +48,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 14,
+    "validateMs": 40,
     "schemaMs": 0
   }
 }

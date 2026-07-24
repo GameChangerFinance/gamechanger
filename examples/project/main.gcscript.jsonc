@@ -2,7 +2,7 @@
   // Build accepts JSONC comments and trailing commas in source files.
   "type": "script",
   "title": "Build project demo",
-  "description": "Minimal multi-file GCScript build example as a package.json npm/pnpm project",
+  "description": "Minimal multi-file GCScript build (dummy) example as a package.json npm/pnpm project",
   "exportAs": "BuildProjectDemo",
   "run": {
     "config": {

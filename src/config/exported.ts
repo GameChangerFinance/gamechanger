@@ -13,6 +13,8 @@ import {
   projectName,
   repositoryUrl,
   DefaultNetwork,
+  DefaultNetworkTag,
+  DefaultDLTTag,
   DefaultAPIVersion,
   DefaultAPIEncodings,
   DefaultQRTemplate,
@@ -35,7 +37,7 @@ import {
   GCScriptSchemaCacheTTLHours
 } from '.'
 
-export default {
+const config = {
   version,
   projectName,
   repositoryUrl,
@@ -46,7 +48,12 @@ export default {
   networkTags,
   apiVersions,
   apiEncodings,
+  /**
+   * @deprecated Use {@link DefaultNetworkTag} instead.
+   */
   DefaultNetwork,
+  DefaultNetworkTag,
+  DefaultDLTTag,
   DefaultAPIVersion,
   DefaultAPIEncodings,
   DefaultQRTemplate,
@@ -70,3 +77,5 @@ export default {
   snippetTokens,
   QRCodeCorrectLevel
 }
+
+export default config

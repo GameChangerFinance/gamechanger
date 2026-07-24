@@ -6,7 +6,7 @@
       "message": "Unknown \"mode\" \"lst\". Did you mean \"last\"?",
       "fileName": "011-wrong-kind.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/011-wrong-kind.gcscript",
+      "filePath": "test/validation-fixtures/011-wrong-kind.gcscript",
       "jsonPath": "/return/mode",
       "location": {
         "line": 4,
@@ -21,15 +21,11 @@
           "mode": "last"
         }
       ],
-      "relatedDocs": [
-        "https://wallet.gamechanger.finance/doc/api/v2/"
-      ],
+      "relatedDocs": ["https://wallet.gamechanger.finance/doc/api/v2/"],
       "provided": "lst",
       "details": {
         "propertyName": "mode",
-        "closestValues": [
-          "last"
-        ],
+        "closestValues": ["last"],
         "schemaPaths": [
           "/common.json/definitions/ScriptReturnModes/oneOf/3/properties/mode/const"
         ],
@@ -40,9 +36,7 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": [
-            "mode"
-          ],
+          "additionalProperties": ["mode"],
           "typeCompatible": false
         }
       }
@@ -50,7 +44,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

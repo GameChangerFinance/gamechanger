@@ -6,7 +6,7 @@
       "message": "Unknown property \"unknownSection\".",
       "fileName": "026-build-tx-empty.gcscript",
       "fileUri": "app:///main.gcscript",
-      "filePath": "/home/zxpectre/bin/gamechanger-lib/test/validation-fixtures/026-build-tx-empty.gcscript",
+      "filePath": "test/validation-fixtures/026-build-tx-empty.gcscript",
       "jsonPath": "/tx/unknownSection",
       "location": {
         "line": 4,
@@ -32,9 +32,7 @@
             "mismatchingDiscriminators": [],
             "siblingMatches": [],
             "missingRequired": [],
-            "additionalProperties": [
-              "unknownSection"
-            ],
+            "additionalProperties": ["unknownSection"],
             "typeCompatible": true
           }
         ],
@@ -48,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 2236,
+    "validateMs": 3129,
     "schemaMs": 0
   }
 }
