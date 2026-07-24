@@ -294,7 +294,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 1,
+    "validateMs": 0,
     "schemaMs": 0
   }
 }

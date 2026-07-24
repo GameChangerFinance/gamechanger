@@ -54,7 +54,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 5,
+    "validateMs": 4,
     "schemaMs": 0
   }
 }
