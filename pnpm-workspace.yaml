@@ -1,8 +1,2 @@
 packages:
   - .
-
-overrides:
-  fast-uri: 3.1.4
-
-minimumReleaseAgeExclude:
-  - fast-uri

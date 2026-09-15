@@ -21,18 +21,29 @@
         "propertyName": "valu",
         "propertyJsonPath": "/valu",
         "branchMismatch": false,
-        "closestProperties": ["value"],
-        "schemaPaths": ["/data.json/properties/value"],
+        "closestProperties": [
+          "value"
+        ],
+        "schemaPaths": [
+          "/data.json/properties/value"
+        ],
         "branchScores": [
           {
             "schemaPath": "/data.json/additionalProperties",
             "title": "Data constant",
             "score": 11.6,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type", "value"],
+            "siblingMatches": [
+              "type",
+              "value"
+            ],
             "missingRequired": [],
-            "additionalProperties": ["valu"],
+            "additionalProperties": [
+              "valu"
+            ],
             "typeCompatible": true
           }
         ],
@@ -46,7 +57,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 6,
+    "validateMs": 5,
     "schemaMs": 0
   }
 }
