@@ -6,7 +6,7 @@ This changelog follows a Keep a Changelog-style structure, but version headings
 omit dates because project dates here would track tag creation rather than
 publishing.
 
-## [Unreleased]
+## [1.2.2]
 
 ### Security
 
