@@ -6,6 +6,11 @@ This changelog follows a Keep a Changelog-style structure, but version headings
 omit dates because project dates here would track tag creation rather than
 publishing.
 
+## [1.2.3]
+
+### Fixed
+- fixed changelog
+
 ## [1.2.2]
 
 ### Security
