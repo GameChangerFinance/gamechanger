@@ -7,6 +7,7 @@ dist/
 examples/dist/
 # but this was used in the end to be able to deploy on netlify
 examples/res/
+examples/project/res
 # Schemas not committed.
 **/.lang.def
 **/.lang.def.*
