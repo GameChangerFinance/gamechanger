@@ -9,6 +9,7 @@ publishing.
 ## [1.2.3]
 
 ### Fixed
+
 - fixed changelog
 
 ## [1.2.2]

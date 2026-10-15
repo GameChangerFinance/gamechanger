@@ -16,9 +16,7 @@
       },
       "error": "Type mismatch",
       "suggestion": "Use a value of type object.",
-      "provided": [
-        "getCurrentAddress"
-      ],
+      "provided": ["getCurrentAddress"],
       "details": {
         "expected": "object",
         "actual": "array",
