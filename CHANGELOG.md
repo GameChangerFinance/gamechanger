@@ -6,7 +6,10 @@ This changelog follows a Keep a Changelog-style structure, but version headings
 omit dates because project dates here would track tag creation rather than
 publishing.
 
-## [Unreleased]
+## Unreleased
+
+
+## [1.2.4]
 
 ### Security
 
@@ -19,6 +22,8 @@ publishing.
 ### Changed
 
 - Added a visitor-count badge to the README.
+
+## [Unreleased]
 
 ## [1.2.3]
 
@@ -88,7 +93,8 @@ publishing.
 - Blocked path traversal above project roots and unsafe mutable remote imports
   from local resources.
 
-[Unreleased]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.3...v1.2.4
 [1.2.1]:
   https://github.com/GameChangerFinance/gamechanger/compare/v1.2.0...v1.2.1
 [1.2.0]:
