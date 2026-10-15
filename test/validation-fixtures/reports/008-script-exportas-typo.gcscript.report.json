@@ -21,29 +21,18 @@
         "propertyName": "exportAss",
         "propertyJsonPath": "/exportAss",
         "branchMismatch": false,
-        "closestProperties": [
-          "exportAs"
-        ],
-        "schemaPaths": [
-          "/script.json/properties/exportAs"
-        ],
+        "closestProperties": ["exportAs"],
+        "schemaPaths": ["/script.json/properties/exportAs"],
         "branchScores": [
           {
             "schemaPath": "#/additionalProperties",
             "title": "Initial block of code",
             "score": 10.8,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type",
-              "run"
-            ],
+            "siblingMatches": ["type", "run"],
             "missingRequired": [],
-            "additionalProperties": [
-              "exportAss"
-            ],
+            "additionalProperties": ["exportAss"],
             "typeCompatible": true
           }
         ],
@@ -57,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 7,
+    "validateMs": 9,
     "schemaMs": 0
   }
 }

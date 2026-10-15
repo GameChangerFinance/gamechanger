@@ -32,31 +32,18 @@
       "details": {
         "propertyName": "adress",
         "propertyJsonPath": "/adress",
-        "closestProperties": [
-          "address"
-        ],
-        "schemaPaths": [
-          "/signDataWithAddress.json/required"
-        ],
+        "closestProperties": ["address"],
+        "schemaPaths": ["/signDataWithAddress.json/required"],
         "branchScores": [
           {
             "schemaPath": "/signDataWithAddress.json/required",
             "title": "Data Signing with address (CIP-8)",
             "score": 11,
-            "matchingDiscriminators": [
-              "type"
-            ],
+            "matchingDiscriminators": ["type"],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "type",
-              "dataHex"
-            ],
-            "missingRequired": [
-              "address"
-            ],
-            "additionalProperties": [
-              "adress"
-            ],
+            "siblingMatches": ["type", "dataHex"],
+            "missingRequired": ["address"],
+            "additionalProperties": ["adress"],
             "typeCompatible": true
           }
         ],
@@ -70,7 +57,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 0,
+    "validateMs": 1,
     "schemaMs": 0
   }
 }

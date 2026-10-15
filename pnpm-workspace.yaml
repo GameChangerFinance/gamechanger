@@ -1,2 +1,7 @@
 packages:
   - .
+minimumReleaseAgeExclude:
+  - fast-uri@3.1.8
+  - compression@1.8.2
+overrides:
+  compression@<1.8.2: ^1.8.2

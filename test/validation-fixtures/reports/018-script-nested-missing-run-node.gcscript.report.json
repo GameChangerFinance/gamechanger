@@ -46,12 +46,8 @@
             "score": 1.6,
             "matchingDiscriminators": [],
             "mismatchingDiscriminators": [],
-            "siblingMatches": [
-              "title"
-            ],
-            "missingRequired": [
-              "type"
-            ],
+            "siblingMatches": ["title"],
+            "missingRequired": ["type"],
             "additionalProperties": [],
             "typeCompatible": true
           }
@@ -66,7 +62,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 2,
+    "validateMs": 3,
     "schemaMs": 0
   }
 }

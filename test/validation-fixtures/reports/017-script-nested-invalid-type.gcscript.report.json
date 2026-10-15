@@ -27,12 +27,8 @@
       "provided": "getCurrentAddresses",
       "details": {
         "propertyName": "type",
-        "closestValues": [
-          "getCurrentAddress"
-        ],
-        "schemaPaths": [
-          "/getCurrentAddress.json/properties/type/const"
-        ],
+        "closestValues": ["getCurrentAddress"],
+        "schemaPaths": ["/getCurrentAddress.json/properties/type/const"],
         "branchScores": {
           "schemaPath": "#/properties/type/const",
           "score": -5.4,
@@ -40,9 +36,7 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": [
-            "type"
-          ],
+          "additionalProperties": ["type"],
           "typeCompatible": false
         }
       }

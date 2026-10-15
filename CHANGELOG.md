@@ -6,9 +6,29 @@ This changelog follows a Keep a Changelog-style structure, but version headings
 omit dates because project dates here would track tag creation rather than
 publishing.
 
+## Unreleased
+
+
+## [1.2.4]
+
+### Security
+
+- Fixed the latest dependency audit findings by updating `fast-uri`,
+  `brace-expansion`, `serialize-javascript`, `source-map-js`, `proxy-addr`, and
+  `compression` to patched versions.
+- Added a targeted pnpm override to keep vulnerable `compression` versions
+  below `1.8.2` out of the dependency tree.
+
+### Changed
+
+- Added a visitor-count badge to the README.
+
+## [Unreleased]
+
 ## [1.2.3]
 
 ### Fixed
+
 - fixed changelog
 
 ## [1.2.2]
@@ -73,8 +93,8 @@ publishing.
 - Blocked path traversal above project roots and unsafe mutable remote imports
   from local resources.
 
-[Unreleased]:
-  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.3...v1.2.4
 [1.2.1]:
   https://github.com/GameChangerFinance/gamechanger/compare/v1.2.0...v1.2.1
 [1.2.0]:

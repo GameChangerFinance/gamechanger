@@ -36,9 +36,7 @@
         "expectedRootType": "script",
         "wrapperProperty": "run",
         "functionSchemaFile": "macro.json",
-        "knownSchemaPaths": [
-          "/macro.json/properties/type/const"
-        ]
+        "knownSchemaPaths": ["/macro.json/properties/type/const"]
       }
     }
   ],

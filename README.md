@@ -1,5 +1,7 @@
 [![](https://data.jsdelivr.com/v1/package/npm/@gamechanger-finance/gc/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@gamechanger-finance/gc)
 
+[![Hits](https://hits.sh/github.com/GameChangerFinance/gamechanger.svg?extraCount=151)](https://hits.sh/github.com/GameChangerFinance/gamechanger/)
+
 ![Build with us, a great future await us together](src/assets/images/dapp-logo-bg.png?raw=true)
 
 # GameChanger Wallet Library and CLI

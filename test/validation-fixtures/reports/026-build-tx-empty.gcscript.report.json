@@ -32,9 +32,7 @@
             "mismatchingDiscriminators": [],
             "siblingMatches": [],
             "missingRequired": [],
-            "additionalProperties": [
-              "unknownSection"
-            ],
+            "additionalProperties": ["unknownSection"],
             "typeCompatible": true
           }
         ],
@@ -48,7 +46,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 2867,
+    "validateMs": 2772,
     "schemaMs": 0
   }
 }
