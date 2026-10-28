@@ -21,9 +21,11 @@
         "propertyName": "pubKeyHashHexa",
         "propertyJsonPath": "/run/scripts/run/consensus/script/any/Founders/ofThese/2/pubKeyHashHexa",
         "branchMismatch": false,
-        "closestProperties": ["pubKeyHashHex"],
+        "closestProperties": [
+          "pubKeyHashHex"
+        ],
         "schemaPaths": [
-          "/common.json/definitions/ScriptPubKey/properties/pubKeyHashHex"
+          "/common.json/definitions/DRepInfo/properties/pubKeyHashHex"
         ],
         "branchScores": [
           {
@@ -34,7 +36,9 @@
             "mismatchingDiscriminators": [],
             "siblingMatches": [],
             "missingRequired": [],
-            "additionalProperties": ["pubKeyHashHexa"],
+            "additionalProperties": [
+              "pubKeyHashHexa"
+            ],
             "typeCompatible": true
           }
         ],
@@ -48,7 +52,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 14,
+    "validateMs": 18,
     "schemaMs": 0
   }
 }

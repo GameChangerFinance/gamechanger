@@ -3,7 +3,7 @@
   "errors": [
     {
       "code": "code-additional-property",
-      "message": "Unknown property \"networkk\".",
+      "message": "Unknown property \"networkk\". Did you mean \"network\"?",
       "fileName": "023-network-info-extra.gcscript",
       "fileUri": "app:///main.gcscript",
       "filePath": "test/validation-fixtures/023-network-info-extra.gcscript",
@@ -15,24 +15,34 @@
         "length": 9
       },
       "error": "Unknown property",
-      "suggestion": "Remove \"networkk\" or check the property spelling.",
+      "suggestion": "Replace \"networkk\" with \"network\".",
       "provided": "networkk",
       "details": {
         "propertyName": "networkk",
         "propertyJsonPath": "/networkk",
         "branchMismatch": false,
-        "closestProperties": [],
-        "schemaPaths": [],
+        "closestProperties": [
+          "network"
+        ],
+        "schemaPaths": [
+          "/common.json/definitions/AddressInfo/properties/network"
+        ],
         "branchScores": [
           {
             "schemaPath": "/getNetworkInfo.json/additionalProperties",
             "title": "Get Current Network Information",
             "score": 9.6,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
+            "siblingMatches": [
+              "type"
+            ],
             "missingRequired": [],
-            "additionalProperties": ["networkk"],
+            "additionalProperties": [
+              "networkk"
+            ],
             "typeCompatible": true
           }
         ],
@@ -46,7 +56,7 @@
   ],
   "warnings": [],
   "profiling": {
-    "validateMs": 5,
+    "validateMs": 7,
     "schemaMs": 0
   }
 }
