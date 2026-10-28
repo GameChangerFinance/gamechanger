@@ -8,6 +8,23 @@ publishing.
 
 ## Unreleased
 
+## [1.2.5]
+
+### Security
+
+- Updated `fast-uri`, `undici`, and `qs` to patched versions and refreshed the
+  standalone example project's dependencies.
+- Removed pnpm release-age exceptions and enforced a seven-day minimum release
+  age, disabled dependency lifecycle scripts, and rejected dependency trust
+  downgrades in the workspace configuration.
+- Retained the `compression` override because `serve` still pins a vulnerable
+  version.
+
+### Changed
+
+- Updated `express`, `@rollup/plugin-terser`, and the example project's
+  `nodemon` within their existing major versions.
+- Refreshed validation fixture reports against the current wallet schema.
 
 ## [1.2.4]
 
@@ -16,8 +33,8 @@ publishing.
 - Fixed the latest dependency audit findings by updating `fast-uri`,
   `brace-expansion`, `serialize-javascript`, `source-map-js`, `proxy-addr`, and
   `compression` to patched versions.
-- Added a targeted pnpm override to keep vulnerable `compression` versions
-  below `1.8.2` out of the dependency tree.
+- Added a targeted pnpm override to keep vulnerable `compression` versions below
+  `1.8.2` out of the dependency tree.
 
 ### Changed
 
@@ -93,8 +110,12 @@ publishing.
 - Blocked path traversal above project roots and unsafe mutable remote imports
   from local resources.
 
-[Unreleased]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.4...HEAD
-[1.2.4]: https://github.com/GameChangerFinance/gamechanger/compare/v1.2.3...v1.2.4
+[Unreleased]:
+  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.5...HEAD
+[1.2.5]:
+  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.4...v1.2.5
+[1.2.4]:
+  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.3...v1.2.4
 [1.2.1]:
   https://github.com/GameChangerFinance/gamechanger/compare/v1.2.0...v1.2.1
 [1.2.0]:

@@ -19,6 +19,15 @@
       "examples": [
         {
           "type": "importAsScript",
+          "exportAs": "dependencies",
+          "from": {
+            "validator": "https://example.com/contracts/validator.gcscript.json",
+            "datum": "https://example.com/contracts/datum.gcscript.json",
+            "identity": "https://example.com/contracts/identity.gcscript.json"
+          }
+        },
+        {
+          "type": "importAsScript",
           "from": [
             "gcfs://88e0e51d4522c8d9c10e061dca6eb928c1df2a5d10efdcae9059bc85.test@latest://src/script.gcscript"
           ]
@@ -46,8 +55,12 @@
             "score": 1.6,
             "matchingDiscriminators": [],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["title"],
-            "missingRequired": ["type"],
+            "siblingMatches": [
+              "title"
+            ],
+            "missingRequired": [
+              "type"
+            ],
             "additionalProperties": [],
             "typeCompatible": true
           }

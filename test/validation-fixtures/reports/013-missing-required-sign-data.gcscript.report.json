@@ -40,10 +40,17 @@
             "schemaPath": "/signDataWithAddress.json/required",
             "title": "Data Signing with address (CIP-8)",
             "score": 12.4,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type", "address"],
-            "missingRequired": ["dataHex"],
+            "siblingMatches": [
+              "type",
+              "address"
+            ],
+            "missingRequired": [
+              "dataHex"
+            ],
             "additionalProperties": [],
             "typeCompatible": true
           }

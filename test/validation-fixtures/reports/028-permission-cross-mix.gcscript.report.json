@@ -28,11 +28,18 @@
             "schemaPath": "/getCurrentAddress.json/additionalProperties",
             "title": "Get Current Address",
             "score": 8.2,
-            "matchingDiscriminators": ["type"],
+            "matchingDiscriminators": [
+              "type"
+            ],
             "mismatchingDiscriminators": [],
-            "siblingMatches": ["type"],
+            "siblingMatches": [
+              "type"
+            ],
             "missingRequired": [],
-            "additionalProperties": ["permissions", "dataHex"],
+            "additionalProperties": [
+              "permissions",
+              "dataHex"
+            ],
             "typeCompatible": true
           }
         ],

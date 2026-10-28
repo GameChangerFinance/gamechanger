@@ -31,7 +31,10 @@
           "mismatchingDiscriminators": [],
           "siblingMatches": [],
           "missingRequired": [],
-          "additionalProperties": ["type", "run"],
+          "additionalProperties": [
+            "type",
+            "run"
+          ],
           "typeCompatible": false
         }
       }
@@ -53,13 +56,18 @@
       },
       "error": "Possible ISL function typo",
       "suggestion": "Replace \"sha51\" with \"sha512\" if this is intended to be ISL code.",
+      "examples": [
+        "{ sha512(hexToByteArray('84a300d9010281825820020202020202020202020202020202020202020202020202020202020202020200018182581d600d6a577e9441ad8ed9663931906e4d43ece8f82c712b1d0235affb061a001e8480021a00029810a0f5f6')) }"
+      ],
       "relatedDocs": [
         "https://wallet.gamechanger.finance/doc/api/v2/lang.html"
       ],
       "provided": "sha51",
       "details": {
         "functionName": "sha51",
-        "closestFunctions": ["sha512"],
+        "closestFunctions": [
+          "sha512"
+        ],
         "schemaPath": "/lang.json/anyOf/5/anyOf/2"
       }
     }
