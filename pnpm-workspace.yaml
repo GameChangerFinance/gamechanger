@@ -4,5 +4,3 @@ minimumReleaseAge: 10080
 ignoreScripts: true
 verifyDepsBeforeRun: error
 trustPolicy: no-downgrade
-overrides:
-  compression@<1.8.2: ^1.8.2

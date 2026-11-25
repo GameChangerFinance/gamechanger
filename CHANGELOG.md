@@ -8,6 +8,31 @@ publishing.
 
 ## Unreleased
 
+## [1.2.6]
+
+### Security
+
+- Updated `body-parser` to `2.4.0` to resolve a high-severity denial-of-service
+  advisory and `serialize-javascript` to `7.1.4` to resolve a low-severity
+  cross-site scripting advisory.
+- Removed the `compression` override after updating `serve` to a version that
+  requires patched `compression` directly.
+
+### Changed
+
+- Updated `@rollup/plugin-terser`, `serve`, and `tslib` within their existing
+  major versions.
+- Refreshed transitive dependencies: `@csstools/color-helpers`,
+  `@csstools/css-calc`, `@csstools/css-color-parser`,
+  `@csstools/css-parser-algorithms`, `@csstools/css-syntax-patches-for-csstree`,
+  `@csstools/css-tokenizer`, `@eslint-community/regexpp`,
+  `@jridgewell/resolve-uri`, `@rollup/pluginutils`, `@types/estree`,
+  `ansi-regex`, `brace-expansion`, `chalk`, `encodeurl`, `entities`,
+  `is-core-module`, `on-finished`, `parse5`, `qs`, `resolve`, `router`,
+  `semver`, `tldts-core`, `tldts`, `tough-cookie`, and `undici`.
+- Added `tinyclip` through the updated `serve` dependency.
+- Updated packed-package tests to use `pnpm pack` and its JSON output.
+
 ## [1.2.5]
 
 ### Security
@@ -111,7 +136,9 @@ publishing.
   from local resources.
 
 [Unreleased]:
-  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.5...HEAD
+  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.6...HEAD
+[1.2.6]:
+  https://github.com/GameChangerFinance/gamechanger/compare/v1.2.5...v1.2.6
 [1.2.5]:
   https://github.com/GameChangerFinance/gamechanger/compare/v1.2.4...v1.2.5
 [1.2.4]:

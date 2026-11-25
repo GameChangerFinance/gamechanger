@@ -185,16 +185,18 @@ const packBuiltPackage = async () => {
 
   const packDir = path.resolve(tmpDir, 'pack')
   await fs.mkdir(packDir, { recursive: true })
-  const result = execCommand('npm', ['pack', '--pack-destination', packDir], {
-    cwd: rootDir
-  })
-  const archiveName = result.stdout
-    .trim()
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .at(-1)
-  assert.ok(archiveName, 'npm pack did not produce an archive name')
+  const result = execCommand(
+    'pnpm',
+    ['pack', '--json', '--pack-destination', packDir],
+    {
+      cwd: rootDir
+    }
+  )
+  const { filename: archiveName } = JSON.parse(result.stdout)
+  assert.ok(
+    typeof archiveName === 'string' && archiveName.length > 0,
+    'pnpm pack did not produce an archive name'
+  )
   packedArtifactPath = path.resolve(packDir, archiveName)
   return packedArtifactPath
 }
