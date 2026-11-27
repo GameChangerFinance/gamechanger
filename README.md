@@ -4,11 +4,16 @@
 
 ![Build with us, a great future await us together](src/assets/images/dapp-logo-bg.png?raw=true)
 
-# GameChanger Wallet Library and CLI
+# GCScript DSL / GameChanger Library & CLI
 
-Official GameChanger Wallet library and CLI for integrating Cardano via intents
-in links, QRs, dapps, web, screens, social media and solve other related tasks
-(https://gamechanger.finance/)
+TypeScript library and CLI for building and validating GCScript DSL projects and generating 
+HTML/JavaScript, React and Express dApps, reusable QR codes and links to connect with 
+GameChanger Wallet/runners. 
+
+Allow integrations without dependencies nor custom backends, 
+bringing Cardano to websites, devices, screens and printed media with ease.
+
+Official library and CLI for integrating GameChanger Wallet via intents.
 
 > Complete refactor for Node v24.x.x . Supports all GameChanger Wallet V2.x.x
 > flavors
